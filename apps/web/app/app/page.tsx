@@ -99,6 +99,14 @@ export default function AppHome() {
             <p className="mt-1 text-sm text-paper/50">Last 30 days · INR · data refreshed 06 Nov 2026, 23:40 IST</p>
           </motion.div>
           <div className="flex items-center gap-2">
+            <span
+              className="grid h-8 w-8 place-items-center rounded-lg font-mono text-[10px] font-bold text-ink md:hidden"
+              style={{ background: persona?.accent ?? "var(--color-paper)" }}
+              title={name}
+              aria-hidden
+            >
+              {persona?.initials ?? name.slice(0, 2).toUpperCase()}
+            </span>
             <span className="rounded-full border border-haldi/40 bg-haldi/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-haldi">
               Demo data
             </span>
@@ -107,6 +115,26 @@ export default function AppHome() {
             </button>
           </div>
         </header>
+
+        {/* Mobile: section nav replaces the sidebar */}
+        <nav aria-label="App sections" className="-mx-5 mt-5 overflow-x-auto px-5 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden">
+          <ul className="flex w-max gap-2">
+            {NAV.map((n, i) => (
+              <li key={n.label}>
+                <span
+                  aria-current={i === 0 ? "page" : undefined}
+                  aria-disabled={n.phase ? true : undefined}
+                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs ${
+                    i === 0 ? "border-paper bg-paper text-ink" : "border-line text-paper/45"
+                  }`}
+                >
+                  {n.label}
+                  {n.phase && <span className="font-mono text-[9px] text-muted">{n.phase.replace("Phase ", "P")}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         {persona && <FocusStrip persona={persona} />}
 
@@ -158,7 +186,24 @@ export default function AppHome() {
           aria-labelledby="top-title"
         >
           <h2 id="top-title" className="px-5 pt-5 font-semibold">Top products</h2>
-          <div className="overflow-x-auto">
+          {/* Phones: stacked summaries instead of a wide table */}
+          <ul className="mt-3 divide-y divide-line/60 sm:hidden">
+            {TOP_PRODUCTS.map((p) => (
+              <li key={p.sku} className="flex items-center justify-between gap-3 px-5 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm">{p.name}</p>
+                  <p className="font-mono text-[10px] text-muted">
+                    {p.sku} · {p.category}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="text-sm tabular">{formatINR(p.revenue)}</p>
+                  <p className={`font-mono text-[11px] ${p.change >= 0 ? "text-mor" : "text-sindoor"}`}>{formatPct(p.change)}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="hidden overflow-x-auto sm:block">
             <table className="mt-3 w-full min-w-[520px] text-sm">
               <thead>
                 <tr className="border-y border-line text-left font-mono text-[10px] uppercase tracking-[0.14em] text-muted">

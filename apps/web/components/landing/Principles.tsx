@@ -53,7 +53,7 @@ export function Principles() {
       <div className="space-y-3 overflow-hidden border-y border-line py-5 font-mono text-sm" aria-hidden>
         <div className="flex w-max marquee">
           {[...ENTRIES, ...ENTRIES].map((e, i) => (
-            <span key={i} className="mx-6 whitespace-nowrap text-paper/70">
+            <span key={i} className="mx-6 whitespace-nowrap text-fg/70">
               <span className="mr-6 text-sindoor">◆</span>
               {e}
             </span>
@@ -62,7 +62,7 @@ export function Principles() {
         <div className="flex w-max marquee-reverse">
           {[...ENTRIES, ...ENTRIES].reverse().map((e, i) => (
             <span key={i} className="mx-6 whitespace-nowrap text-muted">
-              <span className="mr-6 text-haldi">◇</span>
+              <span className="mr-6 text-haldi-deep">◇</span>
               {e}
             </span>
           ))}
@@ -71,7 +71,7 @@ export function Principles() {
 
       <div className="ledger-rules mx-auto mt-24 max-w-6xl px-5 sm:px-10">
         <h2 id="principles-title" className="pl-16 text-5xl font-bold tracking-tight sm:text-6xl">
-          Our <span className="font-serif font-normal italic text-haldi">rules</span> of the ledger
+          Our <span className="font-serif font-normal italic text-haldi-deep">rules</span> of the ledger
         </h2>
         <ol className="mt-12">
           {PRINCIPLES.map((p) => (
@@ -81,7 +81,7 @@ export function Principles() {
                 {p.t}
                 <span data-strike aria-hidden className="absolute -bottom-2 left-0 h-[2px] w-full origin-left bg-sindoor/70" />
               </h3>
-              <p data-fade className="text-paper/60 md:pt-1">{p.d}</p>
+              <p data-fade className="text-fg/60 md:pt-1">{p.d}</p>
             </li>
           ))}
         </ol>

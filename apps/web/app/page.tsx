@@ -11,7 +11,7 @@ export default function LandingPage() {
   return (
     <SmoothScroll>
       <div className="grain">
-        <a href="#story" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-ink">
+        <a href="#story" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded focus:bg-fg focus:px-3 focus:py-2 focus:text-canvas">
           Skip intro animation
         </a>
         <Nav />

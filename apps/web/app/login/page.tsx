@@ -25,10 +25,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="grain relative min-h-dvh overflow-hidden bg-ink">
+    <div className="grain relative min-h-dvh overflow-hidden bg-canvas">
       <div className="grid min-h-dvh lg:grid-cols-[0.9fr_1.1fr]">
         {/* Left: brand panel */}
-        <aside className="relative hidden flex-col justify-between overflow-hidden border-r border-line bg-ink-2 p-10 lg:flex">
+        <aside className="relative hidden flex-col justify-between overflow-hidden border-r border-line bg-surface p-10 lg:flex">
           <Link href="/" aria-label="Back to home">
             <Logo />
           </Link>
@@ -46,12 +46,12 @@ export default function LoginPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 1 }}
-              className="mt-6 max-w-sm pl-16 font-serif text-3xl italic leading-tight text-paper/80"
+              className="mt-6 max-w-sm pl-16 font-serif text-3xl italic leading-tight text-fg/80"
             >
               Welcome back. Choose a seat at the counter.
             </motion.p>
           </div>
-          <p className="max-w-xs text-sm text-paper/40">
+          <p className="max-w-xs text-sm text-fg/40">
             Demo personas use synthetic data and map to real workspace roles: owner, admin, analyst and viewer.
           </p>
         </aside>
@@ -64,9 +64,9 @@ export default function LoginPage() {
             </Link>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi">Sign in · demo</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi-deep">Sign in · demo</p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Who&apos;s minding the shop today?</h1>
-            <p className="mt-3 max-w-lg text-paper/60">Pick a persona to open their workspace. No password needed for the demo.</p>
+            <p className="mt-3 max-w-lg text-fg/60">Pick a persona to open their workspace. No password needed for the demo.</p>
           </motion.div>
 
           <ul className="mt-10 grid gap-4 sm:grid-cols-2" role="list">
@@ -86,7 +86,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowForm((v) => !v)}
-              className="text-sm text-paper/60 underline decoration-line underline-offset-4 transition-colors hover:text-paper"
+              className="text-sm text-fg/60 underline decoration-line underline-offset-4 transition-colors hover:text-fg"
               aria-expanded={showForm}
             >
               {showForm ? "Hide email sign-in" : "Have an account? Sign in with email"}
@@ -143,7 +143,7 @@ function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onCho
       transition={{ type: "spring", stiffness: 220, damping: 20 }}
       whileTap={{ scale: 0.98 }}
       style={{ transformPerspective: 900, ["--accent" as string]: p.accent }}
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-line bg-ink-2 p-6 text-left transition-colors duration-300 hover:border-[var(--accent)]"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface p-6 text-left transition-colors duration-300 hover:border-[var(--accent)]"
       aria-label={`Continue as ${p.name}, ${p.title}`}
     >
       <span
@@ -161,17 +161,17 @@ function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onCho
         </span>
         <div className="min-w-0">
           <p className="font-semibold leading-tight">{p.name}</p>
-          <p className="mt-0.5 text-xs text-paper/50">{p.title}</p>
+          <p className="mt-0.5 text-xs text-fg/50">{p.title}</p>
         </div>
         <span className="ml-auto self-start rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">
           {p.role}
         </span>
       </div>
-      <p className="mt-5 font-serif text-xl italic leading-snug text-paper/85">“{p.quote}”</p>
-      <p className="mt-2 text-xs text-paper/45">{p.business}</p>
+      <p className="mt-5 font-serif text-xl italic leading-snug text-fg/85">“{p.quote}”</p>
+      <p className="mt-2 text-xs text-fg/45">{p.business}</p>
       <ul className="mt-5 flex flex-wrap gap-1.5">
         {p.focus.map((f) => (
-          <li key={f} className="rounded-full bg-ink-3 px-2.5 py-1 text-[11px] text-paper/70">
+          <li key={f} className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] text-fg/70">
             {f}
           </li>
         ))}
@@ -215,12 +215,12 @@ function EmailForm({ onDone }: { onDone: () => void }) {
     >
       <div className="space-y-3 pt-5">
         <label className="block">
-          <span className="mb-1.5 block text-xs text-paper/60">Email</span>
-          <input name="email" type="email" required autoComplete="email" className="w-full rounded-xl border border-line bg-ink-2 px-4 py-3 text-paper outline-none transition-colors focus:border-haldi" />
+          <span className="mb-1.5 block text-xs text-fg/60">Email</span>
+          <input name="email" type="email" required autoComplete="email" className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-fg outline-none transition-colors focus:border-haldi" />
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-xs text-paper/60">Password</span>
-          <input name="password" type="password" required autoComplete="current-password" className="w-full rounded-xl border border-line bg-ink-2 px-4 py-3 text-paper outline-none transition-colors focus:border-haldi" />
+          <span className="mb-1.5 block text-xs text-fg/60">Password</span>
+          <input name="password" type="password" required autoComplete="current-password" className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-fg outline-none transition-colors focus:border-haldi" />
         </label>
         {error && (
           <p role="alert" className="text-sm text-sindoor">
@@ -230,7 +230,7 @@ function EmailForm({ onDone }: { onDone: () => void }) {
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-xl bg-paper py-3 font-semibold text-ink transition-colors hover:bg-haldi disabled:opacity-60"
+          className="w-full rounded-xl bg-fg py-3 font-semibold text-canvas transition-colors hover:bg-sindoor disabled:opacity-60"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>

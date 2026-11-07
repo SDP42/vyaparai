@@ -30,13 +30,13 @@ export function Cta() {
           <h2 id="cta-title" className="max-w-2xl text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl">
             Open your
             <br />
-            <span className="font-serif font-normal italic text-haldi">first page.</span>
+            <span className="font-serif font-normal italic text-haldi-deep">first page.</span>
           </h2>
           <div onPointerMove={onMove} onPointerLeave={onLeave} className="-m-10 p-10">
             <Link
               ref={btn}
               href="/login"
-              className="group relative inline-flex h-40 w-40 items-center justify-center rounded-full bg-sindoor text-center font-semibold text-paper transition-[transform,background-color] duration-300 ease-out hover:bg-sindoor-deep sm:h-48 sm:w-48"
+              className="group relative inline-flex h-40 w-40 items-center justify-center rounded-full bg-sindoor text-center font-semibold text-canvas transition-[transform,background-color] duration-300 ease-out hover:bg-sindoor-deep sm:h-48 sm:w-48"
             >
               <span className="leading-tight">
                 Choose a
@@ -49,7 +49,7 @@ export function Cta() {
         </div>
       </div>
 
-      <footer className="mx-auto mt-32 flex max-w-7xl flex-col gap-6 border-t border-line pt-8 text-sm text-paper/50 md:flex-row md:items-center md:justify-between">
+      <footer className="mx-auto mt-32 flex max-w-7xl flex-col gap-6 border-t border-line pt-8 text-sm text-fg/50 md:flex-row md:items-center md:justify-between">
         <Logo />
         <p>Built as a portfolio-grade engineering case study. Demo figures are synthetic.</p>
         <p className="font-mono text-xs">© {new Date().getFullYear()} Vyapar AI</p>

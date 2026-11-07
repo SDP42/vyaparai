@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#14110f",
+  themeColor: "#f6efe2",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${bricolage.variable} ${instrument.variable} ${jetbrains.variable} ${tiro.variable}`}
     >
-      <body className="min-h-dvh bg-ink text-paper antialiased">{children}</body>
+      <body className="min-h-dvh bg-canvas text-fg antialiased">{children}</body>
     </html>
   );
 }

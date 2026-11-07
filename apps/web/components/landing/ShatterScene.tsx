@@ -19,11 +19,11 @@ import * as THREE from "three";
 import { NODES } from "./nodes";
 export { NODES };
 
-const PAPER = new THREE.Color("#f3ece0");
+const INK = new THREE.Color("#1b1612");
 const SINDOOR = new THREE.Color("#d9362b");
 const HALDI = new THREE.Color("#e9a426");
 const MOR = new THREE.Color("#1f8a7f");
-const DIM = new THREE.Color("#7d7266");
+const DIM = new THREE.Color("#9c8d78");
 
 function sampleWord(count: number, portrait: boolean): Float32Array {
   const W = portrait ? 1000 : 1600;
@@ -111,7 +111,7 @@ function buildTargets(count: number) {
       const bend = Math.sin(t * Math.PI) * 0.35;
       v.set(node.pos[0] * t, node.pos[1] * t + bend, node.pos[2] * t);
       v.addScalar((Math.random() - 0.5) * 0.04);
-      c.copy(PAPER).lerp(HALDI, t * 0.6);
+      c.copy(INK).lerp(SINDOOR, t * 0.7);
     } else {
       // Orbit ring, tilted like a ledger's binding thread
       const a = Math.random() * Math.PI * 2;
@@ -174,12 +174,12 @@ const vertexShader = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mv;
 
-    float size = mix(2.2, 2.9, aRand.y) + sin(t * 3.14159) * 2.2;
+    float size = mix(2.0, 2.7, aRand.y) + sin(t * 3.14159) * 2.0;
     gl_PointSize = size * uPixelRatio * (9.0 / -mv.z);
 
-    vec3 paper = vec3(0.953, 0.925, 0.878);
-    vec3 haldi = vec3(0.914, 0.643, 0.149);
-    vColor = mix(mix(paper, aColor, t), haldi, sin(t * 3.14159) * 0.55);
+    vec3 ink = vec3(0.106, 0.086, 0.071);
+    vec3 haldi = vec3(0.949, 0.655, 0.106);
+    vColor = mix(mix(ink, aColor, t), haldi, sin(t * 3.14159) * 0.6);
     vAlpha = 0.9;
   }
 `;
@@ -234,7 +234,7 @@ function Particles({ progress, labelRefs, onReady }: Props) {
         fragmentShader,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         uniforms: {
           uProgress: { value: 0 },
           uTime: { value: 0 },

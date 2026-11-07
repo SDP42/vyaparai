@@ -1,24 +1,30 @@
 @import "tailwindcss";
 
 /*
- * Vyapar design tokens — "Bahi-Khata" palette.
- * Inspired by the red cloth-bound Indian trader's ledger: warm ink, ledger paper,
- * sindoor red and haldi (turmeric) yellow, with a peacock-teal for positive data.
+ * Vyapar design tokens — bright "Bahi-Khata" palette.
+ * Sunlit ledger paper, ink, sindoor red, haldi turmeric and peacock teal —
+ * the colours of an Indian bazaar shopfront, not a dark AI dashboard.
  * Defined once here; components never hard-code colours.
  */
 @theme {
-  --color-ink: #14110f;
-  --color-ink-2: #1c1815;
-  --color-ink-3: #27211d;
-  --color-line: #3a322b;
-  --color-paper: #f3ece0;
-  --color-paper-2: #e7dccb;
-  --color-muted: #9a8f80;
+  /* Surfaces — warm, sunlit ledger paper (bright, not the generic dark "AI" look) */
+  --color-canvas: #f6efe2;
+  --color-surface: #fffaf1;
+  --color-surface-2: #efe4d0;
+  --color-line: #dccfb8;
+
+  /* Text */
+  --color-fg: #1b1612;
+  --color-ink: #1b1612;
+  --color-muted: #776a59;
+
+  /* Brand — sindoor red, haldi turmeric, mor peacock, neel indigo */
   --color-sindoor: #d9362b;
   --color-sindoor-deep: #a3241c;
-  --color-haldi: #e9a426;
-  --color-mor: #1f8a7f;
-  --color-neel: #3c4fb8;
+  --color-haldi: #f2a71b;
+  --color-haldi-deep: #9c5d00;
+  --color-mor: #0f7a6f;
+  --color-neel: #3346a8;
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
@@ -30,28 +36,28 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-canvas);
+  color: var(--color-fg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--color-ink);
+  background: var(--color-canvas);
   font-family: var(--font-display);
 }
 
 ::selection {
   background: var(--color-sindoor);
-  color: var(--color-paper);
+  color: var(--color-surface);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-haldi);
+  outline: 2px solid var(--color-sindoor);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -79,7 +85,8 @@ html.lenis body {
   inset: -50%;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.07;
+  opacity: 0.09;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   animation: grain 1.2s steps(6) infinite;
 }
@@ -97,7 +104,7 @@ html.lenis body {
 .ledger-rules {
   background-image:
     linear-gradient(to right, transparent 3.5rem, color-mix(in oklab, var(--color-sindoor) 45%, transparent) 3.5rem, color-mix(in oklab, var(--color-sindoor) 45%, transparent) calc(3.5rem + 1px), transparent calc(3.5rem + 1px)),
-    repeating-linear-gradient(to bottom, transparent 0, transparent 2.25rem, color-mix(in oklab, var(--color-paper) 8%, transparent) 2.25rem, color-mix(in oklab, var(--color-paper) 8%, transparent) calc(2.25rem + 1px));
+    repeating-linear-gradient(to bottom, transparent 0, transparent 2.25rem, color-mix(in oklab, var(--color-fg) 9%, transparent) 2.25rem, color-mix(in oklab, var(--color-fg) 9%, transparent) calc(2.25rem + 1px));
 }
 
 @keyframes marquee {

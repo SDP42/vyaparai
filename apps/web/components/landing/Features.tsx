@@ -82,7 +82,7 @@ export function Features() {
           Built for the <span className="font-serif font-normal italic text-sindoor">dukaan</span>,
           <br /> not the boardroom.
         </h2>
-        <p className="max-w-sm text-paper/60">
+        <p className="max-w-sm text-fg/60">
           Each capability ships only when it is tested, documented and can explain itself. The P0/P1 labels follow
           our public roadmap.
         </p>
@@ -93,7 +93,7 @@ export function Features() {
             key={f.title}
             data-card
             onPointerMove={onMove}
-            className={`group relative overflow-hidden rounded-3xl border border-line bg-ink-2 p-7 transition-colors duration-500 hover:border-haldi/40 ${f.span}`}
+            className={`group relative overflow-hidden rounded-3xl border border-line bg-surface p-7 transition-colors duration-500 hover:border-haldi/40 ${f.span}`}
           >
             <div
               aria-hidden
@@ -109,7 +109,7 @@ export function Features() {
               </span>
               <div className="my-8 flex min-h-28 items-center">{f.art}</div>
               <h3 className="text-2xl font-bold tracking-tight">{f.title}</h3>
-              <p className="mt-2 max-w-xl text-paper/60">{f.body}</p>
+              <p className="mt-2 max-w-xl text-fg/60">{f.body}</p>
             </div>
           </article>
         ))}
@@ -125,7 +125,7 @@ function BarsArt() {
       {h.map((v, i) => (
         <span
           key={i}
-          className="flex-1 origin-bottom rounded-t-sm bg-paper/15 transition-all duration-500 group-hover:bg-haldi/80"
+          className="flex-1 origin-bottom rounded-t-sm bg-fg/15 transition-all duration-500 group-hover:bg-sindoor/80"
           style={{ height: `${v}%`, transitionDelay: `${i * 25}ms` }}
         />
       ))}
@@ -136,7 +136,7 @@ function BarsArt() {
 function WaveArt() {
   return (
     <svg viewBox="0 0 200 80" className="w-full" aria-hidden>
-      <path d="M0,60 C30,55 45,50 70,48 S110,15 125,12 S160,45 200,40" fill="none" stroke="var(--color-paper)" strokeOpacity=".3" strokeWidth="2" />
+      <path d="M0,60 C30,55 45,50 70,48 S110,15 125,12 S160,45 200,40" fill="none" stroke="var(--color-fg)" strokeOpacity=".3" strokeWidth="2" />
       <path d="M0,60 C30,55 45,50 70,48 S110,15 125,12 S160,45 200,40" fill="none" stroke="var(--color-haldi)" strokeWidth="2" strokeDasharray="4 5" className="transition-[stroke-dashoffset] duration-[1.5s] group-hover:[stroke-dashoffset:-60]" />
       <circle cx="125" cy="12" r="4" fill="var(--color-sindoor)" />
     </svg>
@@ -150,7 +150,7 @@ function DotsArt() {
         <span
           key={i}
           className={`aspect-square rounded-full transition-transform duration-500 group-hover:scale-110 ${
-            i % 7 === 0 ? "bg-sindoor" : i % 3 === 0 ? "bg-mor" : "bg-paper/20"
+            i % 7 === 0 ? "bg-sindoor" : i % 3 === 0 ? "bg-mor" : "bg-fg/20"
           }`}
         />
       ))}
@@ -163,16 +163,16 @@ function StockArt() {
     <div className="w-full space-y-2 font-mono text-[11px]" aria-hidden>
       {[
         ["Gift box", 34, "text-sindoor"],
-        ["Ghee 1L", 68, "text-haldi"],
+        ["Ghee 1L", 68, "text-haldi-deep"],
         ["Atta 5kg", 91, "text-mor"],
       ].map(([n, v, c]) => (
         <div key={n as string}>
-          <div className="mb-1 flex justify-between text-paper/60">
+          <div className="mb-1 flex justify-between text-fg/60">
             <span>{n}</span>
             <span className={c as string}>{v}% cover</span>
           </div>
           <div className="h-1.5 rounded-full bg-line">
-            <div className="h-full rounded-full bg-paper/50 transition-all duration-700 group-hover:bg-haldi" style={{ width: `${v}%` }} />
+            <div className="h-full rounded-full bg-fg/50 transition-all duration-700 group-hover:bg-sindoor" style={{ width: `${v}%` }} />
           </div>
         </div>
       ))}
@@ -182,7 +182,7 @@ function StockArt() {
 
 function QuoteArt() {
   return (
-    <p className="font-serif text-2xl italic leading-snug text-paper/80" aria-hidden>
+    <p className="font-serif text-2xl italic leading-snug text-fg/80" aria-hidden>
       “delivery <span className="text-sindoor underline decoration-wavy underline-offset-4">late tha</span> but quality{" "}
       <span className="text-mor underline decoration-wavy underline-offset-4">ekdum mast</span>”
     </p>
@@ -192,15 +192,15 @@ function QuoteArt() {
 function CopilotArt() {
   return (
     <div className="grid w-full gap-3 md:grid-cols-[1fr_1.4fr]" aria-hidden>
-      <div className="self-start rounded-2xl rounded-br-sm bg-paper px-4 py-3 text-sm text-ink">
+      <div className="self-start rounded-2xl rounded-br-sm bg-fg px-4 py-3 text-sm text-canvas">
         Why did sales dip last Tuesday?
       </div>
-      <div className="rounded-2xl rounded-tl-sm border border-line bg-ink p-4 text-sm text-paper/80">
-        Net sales were <b className="text-paper">₹41,200</b> (−18% vs. the previous 4 Tuesdays). 72% of the drop came from{" "}
-        <b className="text-paper">Staples</b>, mostly fewer orders rather than lower prices.
+      <div className="rounded-2xl rounded-tl-sm border border-line bg-canvas p-4 text-sm text-fg/80">
+        Net sales were <b className="text-fg">₹41,200</b> (−18% vs. the previous 4 Tuesdays). 72% of the drop came from{" "}
+        <b className="text-fg">Staples</b>, mostly fewer orders rather than lower prices.
         <div className="mt-3 flex flex-wrap gap-2 font-mono text-[10px]">
-          <span className="rounded border border-line px-2 py-0.5 text-haldi">[1] metric:net_sales v1</span>
-          <span className="rounded border border-line px-2 py-0.5 text-haldi">[2] drivers: volume/price/mix</span>
+          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">[1] metric:net_sales v1</span>
+          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">[2] drivers: volume/price/mix</span>
         </div>
       </div>
     </div>

@@ -35,8 +35,8 @@ export function SalesChart({ data, compact = false }: { data: DailyPoint[]; comp
             )}
           </g>
         ))}
-        <path d={`${aPath} L${x(lastActual.day)},${H - pad.b} L${x(0)},${H - pad.b} Z`} fill="var(--color-paper)" opacity="0.05" />
-        <path d={aPath} fill="none" stroke="var(--color-paper)" strokeWidth="2" strokeLinejoin="round" />
+        <path d={`${aPath} L${x(lastActual.day)},${H - pad.b} L${x(0)},${H - pad.b} Z`} fill="var(--color-fg)" opacity="0.05" />
+        <path d={aPath} fill="none" stroke="var(--color-fg)" strokeWidth="2" strokeLinejoin="round" />
         <path d={fPath} fill="none" stroke="var(--color-haldi)" strokeWidth="2" strokeDasharray="5 5" />
         <line x1={x(lastActual.day)} x2={x(lastActual.day)} y1={pad.t} y2={H - pad.b} stroke="var(--color-line)" />
         <text x={x(lastActual.day) + 4} y={H - 6} fill="var(--color-muted)" fontSize="10" fontFamily="var(--font-mono)">today</text>

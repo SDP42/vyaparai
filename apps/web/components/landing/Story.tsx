@@ -75,21 +75,21 @@ export function Story() {
   }, []);
 
   return (
-    <section ref={root} id="story" className="relative overflow-hidden bg-ink" aria-labelledby="story-title">
+    <section ref={root} id="story" className="relative overflow-hidden bg-canvas" aria-labelledby="story-title">
       <div ref={track} className="flex flex-col gap-6 px-5 py-24 min-[900px]:h-dvh min-[900px]:w-max min-[900px]:flex-row min-[900px]:items-center min-[900px]:gap-0 min-[900px]:px-0 min-[900px]:py-0">
         <div className="flex shrink-0 flex-col justify-center min-[900px]:w-[42vw] min-[900px]:pl-16 min-[900px]:pr-10">
-          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi">From ledger to decision</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi-deep">From ledger to decision</p>
           <h2 id="story-title" className="mt-5 text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl">
             Four steps.
             <br />
-            <span className="font-serif font-normal italic text-paper/70">No black boxes.</span>
+            <span className="font-serif font-normal italic text-fg/70">No black boxes.</span>
           </h2>
         </div>
         {STEPS.map((s) => (
           <article
             key={s.n}
             data-step
-            className="relative flex shrink-0 flex-col overflow-hidden rounded-3xl border border-line bg-ink-2 p-6 min-[900px]:mr-8 min-[900px]:h-[72vh] min-[900px]:w-[min(560px,40vw)] min-[900px]:p-9"
+            className="relative flex shrink-0 flex-col overflow-hidden rounded-3xl border border-line bg-surface p-6 min-[900px]:mr-8 min-[900px]:h-[72vh] min-[900px]:w-[min(560px,40vw)] min-[900px]:p-9"
           >
             <div className="flex items-baseline justify-between">
               <span data-reveal className="font-mono text-sm text-sindoor">{s.n}</span>
@@ -97,7 +97,7 @@ export function Story() {
             </div>
             <div data-reveal className="my-6 flex flex-1 items-center justify-center min-h-48">{s.visual}</div>
             <h3 data-reveal className="text-3xl font-bold tracking-tight">{s.title}</h3>
-            <p data-reveal className="mt-3 max-w-md text-paper/65 leading-relaxed">{s.body}</p>
+            <p data-reveal className="mt-3 max-w-md text-fg/65 leading-relaxed">{s.body}</p>
           </article>
         ))}
         <div className="hidden w-[10vw] shrink-0 min-[900px]:block" />
@@ -114,12 +114,12 @@ function RowsVisual() {
     ["INV-2044", "Oil 5L", "3", "₹1,140"],
   ];
   return (
-    <div className="w-full max-w-sm rounded-xl border border-line bg-ink p-3 font-mono text-xs">
+    <div className="w-full max-w-sm rounded-xl border border-line bg-canvas p-3 font-mono text-xs">
       <div className="mb-2 flex items-center gap-2 text-muted">
         <span className="h-2 w-2 rounded-full bg-mor" /> sales_oct.csv · 12,408 rows
       </div>
       {rows.map((r, i) => (
-        <div key={r[0]} className={`grid grid-cols-4 gap-2 border-t border-line/60 py-2 ${i === 2 ? "text-sindoor" : "text-paper/80"}`}>
+        <div key={r[0]} className={`grid grid-cols-4 gap-2 border-t border-line/60 py-2 ${i === 2 ? "text-sindoor" : "text-fg/80"}`}>
           {r.map((c, j) => (
             <span key={j} className="truncate">{c}</span>
           ))}
@@ -140,9 +140,9 @@ function MapVisual() {
     <div className="w-full max-w-sm space-y-2.5">
       {map.map(([a, b]) => (
         <div key={a} className="flex items-center gap-3 font-mono text-xs">
-          <span className="w-28 rounded-md border border-line bg-ink px-2.5 py-2 text-paper/80">{a}</span>
+          <span className="w-28 rounded-md border border-line bg-canvas px-2.5 py-2 text-fg/80">{a}</span>
           <span className="h-px flex-1 bg-gradient-to-r from-line via-haldi to-line" />
-          <span className="w-28 rounded-md border border-haldi/40 bg-haldi/10 px-2.5 py-2 text-haldi">{b}</span>
+          <span className="w-28 rounded-md border border-haldi/40 bg-haldi/10 px-2.5 py-2 text-haldi-deep">{b}</span>
         </div>
       ))}
       <p className="pt-2 font-mono text-[11px] text-muted">
@@ -171,13 +171,13 @@ function ChartVisual() {
 
 function ApproveVisual() {
   return (
-    <div className="w-full max-w-sm rounded-xl border border-line bg-ink p-4">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-haldi">Recommendation · medium confidence</p>
+    <div className="w-full max-w-sm rounded-xl border border-line bg-canvas p-4">
+      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-haldi-deep">Recommendation · medium confidence</p>
       <p className="mt-2 font-semibold">Reorder 120 gift boxes before Diwali</p>
-      <p className="mt-1 text-xs text-paper/55">Evidence: forecast v3 · stock snapshot 06 Nov · lead time 9 days</p>
+      <p className="mt-1 text-xs text-fg/55">Evidence: forecast v3 · stock snapshot 06 Nov · lead time 9 days</p>
       <div className="mt-4 flex gap-2">
         <span className="rounded-full bg-mor px-3 py-1.5 text-xs font-semibold text-ink">Approve draft</span>
-        <span className="rounded-full border border-line px-3 py-1.5 text-xs text-paper/70">Dismiss</span>
+        <span className="rounded-full border border-line px-3 py-1.5 text-xs text-fg/70">Dismiss</span>
       </div>
     </div>
   );

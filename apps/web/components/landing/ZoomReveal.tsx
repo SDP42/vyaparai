@@ -36,7 +36,7 @@ export function ZoomReveal() {
     <section
       ref={root}
       id="product"
-      className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-ink py-20 [perspective:1400px]"
+      className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-canvas py-20 [perspective:1400px]"
       aria-labelledby="zoom-title"
     >
       <h2
@@ -45,9 +45,9 @@ export function ZoomReveal() {
         className="pointer-events-none absolute z-20 text-center text-[13vw] font-extrabold leading-[0.85] tracking-tighter"
       >
         <span className="block">Every rupee,</span>
-        <span className="block font-serif font-normal italic text-haldi">explained.</span>
+        <span className="block font-serif font-normal italic text-haldi-deep">explained.</span>
       </h2>
-      <div data-zoom="frame" className="relative z-10 w-[min(1180px,94vw)] overflow-hidden border border-line bg-ink-2 shadow-[0_40px_120px_-30px_rgba(217,54,43,0.35)] will-change-transform">
+      <div data-zoom="frame" className="relative z-10 w-[min(1180px,94vw)] overflow-hidden border border-line bg-surface shadow-[0_40px_120px_-30px_rgba(217,54,43,0.35)] will-change-transform">
         <DashboardPreview />
       </div>
       <p data-zoom="caption" className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">

@@ -169,7 +169,7 @@ const vertexShader = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mv;
 
-    float size = mix(1.9, 2.4, aRand.y) + sin(t * 3.14159) * 2.2;
+    float size = mix(2.2, 2.9, aRand.y) + sin(t * 3.14159) * 2.2;
     gl_PointSize = size * uPixelRatio * (9.0 / -mv.z);
 
     vec3 paper = vec3(0.953, 0.925, 0.878);
@@ -262,7 +262,7 @@ function Particles({ progress, labelRefs }: Props) {
     u.uTime.value = state.clock.elapsedTime;
     u.uPixelRatio.value = gl.getPixelRatio();
     u.uWordScale.value = Math.min(viewport.width * 0.86, 11);
-    u.uCoreScale.value = THREE.MathUtils.clamp(viewport.width / 8.6, 0.42, 1.05);
+    u.uCoreScale.value = THREE.MathUtils.clamp(viewport.width / 10.5, 0.36, 0.9);
     (u.uMouse.value as THREE.Vector2).set(
       (mouse.current.x * viewport.width) / 2,
       (mouse.current.y * viewport.height) / 2,
@@ -270,13 +270,14 @@ function Particles({ progress, labelRefs }: Props) {
 
     // Zoom: camera pushes in as the core assembles, then eases back slightly.
     const zoom = THREE.MathUtils.smoothstep(p, 0.35, 0.8);
-    camera.position.z = 9 - zoom * 2.2 + THREE.MathUtils.smoothstep(p, 0.85, 1) * 0.8;
+    camera.position.z = 9 - zoom * 1.6 + THREE.MathUtils.smoothstep(p, 0.85, 1) * 0.9;
     camera.position.y = THREE.MathUtils.lerp(0, 0.35, zoom);
     camera.lookAt(0, 0, 0);
 
     if (group.current) {
       const spin = THREE.MathUtils.smoothstep(p, 0.45, 1);
-      group.current.rotation.y = spin * (0.6 + state.clock.elapsedTime * 0.06) + mouse.current.x * 0.08 * spin;
+      // Gentle sway (not a full spin) so the four domain nodes stay readable.
+      group.current.rotation.y = spin * (0.25 * Math.sin(state.clock.elapsedTime * 0.3)) + mouse.current.x * 0.12 * spin;
       group.current.rotation.x = mouse.current.y * -0.05 * spin;
     }
 

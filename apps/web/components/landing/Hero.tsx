@@ -115,7 +115,7 @@ export function Hero() {
 
           <h1 className="sr-only">Vyapar AI — business intelligence for Indian retailers</h1>
 
-          <div className="relative mx-auto w-full max-w-4xl text-center">
+          <div className="relative mx-auto w-full max-w-4xl translate-y-[18vh] text-center [text-shadow:0_2px_30px_#14110f,0_0_12px_#14110f]">
             <p data-hero="l1" className="absolute inset-x-0 bottom-0 font-serif text-4xl leading-tight opacity-0 sm:text-6xl">
               Every shop is a story <em className="text-haldi">told in numbers.</em>
             </p>

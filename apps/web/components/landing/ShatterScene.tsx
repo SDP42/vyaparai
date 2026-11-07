@@ -25,9 +25,9 @@ const HALDI = new THREE.Color("#e9a426");
 const MOR = new THREE.Color("#1f8a7f");
 const DIM = new THREE.Color("#7d7266");
 
-function sampleWord(count: number): Float32Array {
-  const W = 1600;
-  const H = 760;
+function sampleWord(count: number, portrait: boolean): Float32Array {
+  const W = portrait ? 1000 : 1600;
+  const H = portrait ? 1250 : 760;
   const canvas = document.createElement("canvas");
   canvas.width = W;
   canvas.height = H;
@@ -39,10 +39,19 @@ function sampleWord(count: number): Float32Array {
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.font = `800 330px ${display}`;
-  ctx.fillText("VYAPAR", W / 2, H * 0.38);
-  ctx.font = `400 150px ${deva}`;
-  ctx.fillText("व्यापार", W / 2, H * 0.8);
+  if (portrait) {
+    // Stacked layout so the word stays large on phones.
+    ctx.font = `800 400px ${display}`;
+    ctx.fillText("VYA", W / 2, H * 0.22);
+    ctx.fillText("PAR", W / 2, H * 0.55);
+    ctx.font = `400 190px ${deva}`;
+    ctx.fillText("व्यापार", W / 2, H * 0.86);
+  } else {
+    ctx.font = `800 330px ${display}`;
+    ctx.fillText("VYAPAR", W / 2, H * 0.38);
+    ctx.font = `400 150px ${deva}`;
+    ctx.fillText("व्यापार", W / 2, H * 0.8);
+  }
 
   const data = ctx.getImageData(0, 0, W, H).data;
   const pts: number[] = [];
@@ -190,11 +199,14 @@ const fragmentShader = /* glsl */ `
 type Props = {
   progress: MutableRefObject<number>;
   labelRefs: MutableRefObject<(HTMLDivElement | null)[]>;
+  onReady?: () => void;
 };
 
-function Particles({ progress, labelRefs }: Props) {
+function Particles({ progress, labelRefs, onReady }: Props) {
   const { viewport, size, camera, gl } = useThree();
-  const count = size.width < 768 ? 8000 : 16000;
+  const count = size.width < 768 ? 9000 : 16000;
+  const portrait = size.width / size.height < 0.8;
+  const readySent = useRef(false);
   const points = useRef<THREE.Points>(null);
   const group = useRef<THREE.Group>(null);
   const smooth = useRef(0);
@@ -202,7 +214,7 @@ function Particles({ progress, labelRefs }: Props) {
 
   const geometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
-    const start = sampleWord(count);
+    const start = sampleWord(count, portrait);
     const { target, color } = buildTargets(count);
     const rand = new Float32Array(count * 4);
     for (let i = 0; i < rand.length; i++) rand[i] = Math.random();
@@ -213,7 +225,7 @@ function Particles({ progress, labelRefs }: Props) {
     g.setAttribute("aRand", new THREE.BufferAttribute(rand, 4));
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 20);
     return g;
-  }, [count]);
+  }, [count, portrait]);
 
   const material = useMemo(
     () =>
@@ -257,7 +269,11 @@ function Particles({ progress, labelRefs }: Props) {
     u.uProgress.value = p;
     u.uTime.value = state.clock.elapsedTime;
     u.uPixelRatio.value = gl.getPixelRatio();
-    u.uWordScale.value = Math.min(viewport.width * 0.86, 11);
+    u.uWordScale.value = Math.min(viewport.width * (portrait ? 0.84 : 0.86), 11);
+    if (!readySent.current) {
+      readySent.current = true;
+      onReady?.();
+    }
     u.uCoreScale.value = THREE.MathUtils.clamp(viewport.width / 10.5, 0.36, 0.9);
     (u.uMouse.value as THREE.Vector2).set(
       (mouse.current.x * viewport.width) / 2,
@@ -284,7 +300,9 @@ function Particles({ progress, labelRefs }: Props) {
       if (!el || !group.current) return;
       tmp.set(node.pos[0], node.pos[1], node.pos[2]).multiplyScalar(u.uCoreScale.value as number);
       tmp.applyMatrix4(group.current.matrixWorld).project(camera);
-      const x = (tmp.x * 0.5 + 0.5) * size.width;
+      // Keep labels fully on screen (narrow phones push nodes near the edges).
+      const half = el.offsetWidth / 2 + 8;
+      const x = THREE.MathUtils.clamp((tmp.x * 0.5 + 0.5) * size.width, half, size.width - half);
       const y = (-tmp.y * 0.5 + 0.5) * size.height;
       el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -150%)`;
       el.style.opacity = String(reveal * (tmp.z < 1 ? 1 : 0));
@@ -298,7 +316,7 @@ function Particles({ progress, labelRefs }: Props) {
   );
 }
 
-export default function ShatterScene({ progress, labelRefs, active }: Props & { active: boolean }) {
+export default function ShatterScene({ progress, labelRefs, active, onReady }: Props & { active: boolean }) {
   return (
     <Canvas
       camera={{ position: [0, 0, 9], fov: 35 }}
@@ -307,7 +325,7 @@ export default function ShatterScene({ progress, labelRefs, active }: Props & { 
       frameloop={active ? "always" : "never"}
       aria-hidden
     >
-      <Particles progress={progress} labelRefs={labelRefs} />
+      <Particles progress={progress} labelRefs={labelRefs} onReady={onReady} />
     </Canvas>
   );
 }

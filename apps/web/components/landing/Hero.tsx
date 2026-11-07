@@ -27,6 +27,7 @@ export function Hero() {
   const [ready, setReady] = useState(false);
   const [webgl, setWebgl] = useState(true);
   const [active, setActive] = useState(true);
+  const [sceneReady, setSceneReady] = useState(false);
   const reduced = usePrefersReducedMotion();
 
   // Wait for fonts so the particle word is sampled from the real typeface.
@@ -82,10 +83,19 @@ export function Hero() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,#2a1c16_0%,#14110f_62%)]" />
 
         <div className="absolute inset-0">
-          {ready && webgl ? (
-            <ShatterScene progress={progress} labelRefs={labelRefs} active={active} />
-          ) : (
+          {/* Static word shows instantly, then cross-fades into the particle version. */}
+          <div
+            className={`absolute inset-0 transition-opacity duration-700 ${sceneReady ? "opacity-0" : "opacity-100"}`}
+          >
             <StaticWord />
+          </div>
+          {ready && webgl && (
+            <ShatterScene
+              progress={progress}
+              labelRefs={labelRefs}
+              active={active}
+              onReady={() => setSceneReady(true)}
+            />
           )}
         </div>
 
@@ -137,7 +147,7 @@ export function Hero() {
               Decision support for small and mid-sized retailers. Upload your sales and see what happened, why,
               and what to do next.
             </p>
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50">
+            <div className="flex shrink-0 items-center gap-3 whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50">
               <span className="relative block h-9 w-[1px] overflow-hidden bg-line">
                 <span className="absolute inset-x-0 top-0 h-3 animate-[scrollcue_1.6s_ease-in-out_infinite] bg-haldi" />
               </span>
@@ -157,9 +167,14 @@ export function Hero() {
 
 function StaticWord() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-2 select-none" aria-hidden>
-      <span className="text-[22vw] font-extrabold leading-none tracking-tight text-paper">VYAPAR</span>
-      <span className="font-deva text-[9vw] leading-none text-sindoor">व्यापार</span>
+    <div className="flex h-full select-none flex-col items-center justify-center gap-2 text-paper/90" aria-hidden>
+      <span className="hidden text-[13vw] font-extrabold leading-none tracking-tight landscape:block">VYAPAR</span>
+      <span className="text-[34vw] font-extrabold leading-[0.85] tracking-tight landscape:hidden">
+        VYA
+        <br />
+        PAR
+      </span>
+      <span className="font-deva text-[16vw] leading-none landscape:text-[6vw]">व्यापार</span>
     </div>
   );
 }

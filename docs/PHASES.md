@@ -52,19 +52,22 @@ review validation → command center → sales investigation → forecast → gr
 
 **Exit:** migrations run cleanly; protected-API tests prove tenant boundaries. ✅
 
-## Phase F1 — Brand, landing page & persona auth
+## Phase F1 — Marketing site: cinematic opening + landing page
 
-- [x] Next.js (App Router, TypeScript, Tailwind) app in `apps/web`
-- [x] Design tokens in one place — "Bahi-Khata" palette, not generic AI gradients
-- [x] Landing: "VYAPAR / व्यापार" word shatters into particles that re-form into a 3D data core
-- [x] Scroll narrative: data enters → gets organised → produces insight → becomes an approved action
-- [x] Zoom-through product reveal, bento features, ledger-style metrics, CTA
-- [x] Smooth scrolling (Lenis) + GSAP ScrollTrigger; reduced-motion fallback
-- [x] Persona chooser auth page; clicking a persona signs into a demo session and redirects
-- [x] Persona-aware demo dashboard shell (clearly labelled as demo data)
-- [x] Responsive: phone (375), tablet (768), desktop, all checked in the browser
-- [ ] Real email/password sign-in against the API (form present; wire-up in F2)
-- [ ] Lighthouse/accessibility pass, keyboard-only walkthrough
+Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.md](frontend/PHASE-1-REPORT.md).
+
+- [x] Phase 1: repository inspection and visual direction report
+- [x] Landing page in the yellow "Bahi-Khata" design (owner's choice): simple hero, story scroll,
+      zoom reveal, features, principles, CTA
+- [x] One token source; Bricolage + Instrument Serif typography
+- [x] Responsive at desktop, tablet and mobile; reduced-motion paths; production build passes
+- [x] Key-and-lock opening with HDRI + CC0 PBR textures, slatted shutter, brass padlock, cut key, sound, skip
+- [x] Religious motifs removed
+- [ ] Realism polish: depth of field, bloom, detailed interior goods
+- [ ] Scroll-scrubbed, reversible unlock (0–20–45–60–75–100 %)
+- [ ] Realistic recorded audio, shop interior, ambience
+- [ ] Shop → Vyapar.ai digital transition
+- [ ] Short-viewport polish for pinned sections; full visitor-journey test
 
 ## Phase 1 — Data ingestion & quality
 

@@ -2,6 +2,18 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-07 (late) · Back to the yellow design + a realistic opening
+
+- Owner feedback: the dark/blue 10-section landing felt wrong; the earlier **yellow** design (its
+  content, animations, transitions and scroll effects) was better, and the key/shop looked cartoonish.
+- Restored the yellow landing sections from git (`ea23f8e`) and wrote a **simple hero** in that style.
+  Removed the dark landing components and the Recharts dependency.
+- Rebuilt the opening for realism: CC0 Poly Haven HDRI (`cobblestone_street_night`) for reflections;
+  PBR texture sets for the painted metal shutter, plaster and concrete pavement; 30 individual slats;
+  a bevelled brass padlock (ExtrudeGeometry); a tube-swept steel shackle; a flat key with real
+  bitting; a warm street-lamp spotlight with soft shadows; a backlit sign; ACES tone mapping; a vignette.
+- Assets in `apps/web/public/assets/opening/` (CC0, see `LICENSES.md`), recompressed to ~3 MB.
+
 ## 2026-11-07 · Two-page frontend stage: landing page built (owner reprioritised it first)
 
 - New master prompt: build only (1) a cinematic key-and-lock opening and (2) the Vyapar.ai

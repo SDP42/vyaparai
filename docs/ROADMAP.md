@@ -1,18 +1,35 @@
 # Roadmap & status
 
-_Last updated: 2026-11-07_
+_Last updated: 2026-11-07 (late)_
 
 Legend: ✅ done · 🟡 in progress · ⬜ not started · ⏸ blocked / decision needed
 
-Detailed scope and checklists for each phase live in [PHASES.md](PHASES.md).
+Detailed backend/product phases: [PHASES.md](PHASES.md).
+Current frontend stage (two-page marketing site): [frontend/PHASE-1-REPORT.md](frontend/PHASE-1-REPORT.md).
 
-## At a glance
+## Current focus: two-page frontend stage
+
+Per the master prompt, this stage builds **only** (1) the cinematic key-and-lock opening and
+(2) the Vyapar.ai landing page on `/`. No backend work happens in this stage. The owner reordered the
+work: **landing page first**, then the photoreal opening.
+
+| Frontend phase | Status | Notes |
+|---|---|---|
+| 1 · Inspect repo & visual direction | ✅ | Report: `docs/frontend/PHASE-1-REPORT.md` |
+| 6 · Main landing page | ✅ | **Owner reverted to the yellow "Bahi-Khata" design** (simple hero, story scroll, zoom reveal, features, principles, CTA); dark/blue 10-section version removed |
+| 2 · Realistic key, lock, shutter, storefront | 🟡 | Night scene with CC0 HDRI + PBR textures, slatted shutter, bevelled brass padlock, cut key, backlit sign. Needs a realism review and depth of field |
+| 3 · Click + scroll-controlled unlock (0–20–45–60–75–100 %) | 🟡 | Click-to-unlock works (time-based); scroll-scrubbed, reversible version pending |
+| 4 · Audio + cinematic shop opening | 🟡 | Synthesized key/lock/shutter sounds work; realistic recorded audio + interior pending |
+| 5 · Shop → Vyapar.ai digital transition | ⬜ | |
+| 7 · Integrate + polish responsiveness | 🟡 | Desktop + mobile checked; short-height laptops crop pinned headings |
+| 8 · Full visitor-journey test | ⬜ | |
+
+## Product / backend phases
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done. Dataset + naming decisions open. |
-| F1 · Marketing site: landing page ✅ · cinematic opening 🟡 (interim, photoreal pending) | 🟡 | 3D shatter hero, scroll story, persona login, demo dashboard, responsive (phone/tablet/desktop). Real-API login pending. |
-| 1 · Data ingestion & quality | ⬜ | **Next up.** |
+| 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done |
+| 1 · Data ingestion & quality | ⬜ | Paused during the frontend stage |
 | 2 · Metric layer & sales analytics | ⬜ | |
 | 3 · Customer & product intelligence | ⬜ | |
 | 4 · Forecasting | ⬜ | |
@@ -27,51 +44,60 @@ Detailed scope and checklists for each phase live in [PHASES.md](PHASES.md).
 
 ## Done
 
-### Backend (`apps/api`)
-- FastAPI app factory, `/api/v1` versioning, OpenAPI at `/docs`
-- Typed settings with production guards (refuses dev JWT secret or SQLite in production)
-- Models: `users`, `workspaces`, `memberships`, `datasets`, `jobs`, `audit_logs`,
-  `products`, `customers`, `orders`, `order_items` — UUID keys, `workspace_id` on tenant tables
-- Alembic initial migration; test ensures models ↔ migrations never drift
-- Auth: register, login (OAuth2 password form → JWT), `me`
-- Workspaces: create, list, get, update, members list/add, audit-log listing
-- Datasets/jobs read endpoints (workspace-scoped) ready for Phase 1
-- Request-ID middleware, JSON logs, single error envelope, liveness/readiness probes
-- Test suite: health, auth, tenancy isolation, RBAC, security, migrations
+### Landing page (`apps/web/components/landing`), yellow design restored on 2026-11-07
+- Bright warm "Bahi-Khata" palette (cream, ink, sindoor red, haldi yellow, mor teal), Bricolage
+  Grotesque + Instrument Serif
+- **Simple hero**: "Your business deserves more than *guesswork.*" Clear copy, two buttons, and the
+  product dashboard card tilting upright as you scroll
+- Pinned horizontal **story** (data enters → organised → insight → you approve), **zoom-through**
+  product reveal, **feature bento** with spotlight, **ledger marquee + principles**, magnetic **CTA**
+- No religious motifs; the CTA's large word is now "व्यापार" (business)
 
-### Frontend (`apps/web`)
-- Next.js + TypeScript + Tailwind with central design tokens
-- Landing page: shattering-word 3D hero (React Three Fiber), Lenis smooth scroll,
-  GSAP ScrollTrigger pinned story, zoom-through product reveal, bento features
-- Persona sign-in page → demo session → persona-aware dashboard
-- Responsive at 375 px / 768 px / desktop: stacked hero word on portrait screens, static-to-particle
-  cross-fade, vertical story on phones, 1/2/6-column bento, mobile app nav, stacked product list
-- Landing first-load JS cut from 401 kB to 169 kB by lazy-loading three.js
+### Opening (`apps/web/components/opening`)
+- Night street lit by a CC0 HDRI; PBR textures for the painted steel shutter, plaster and pavement
+- 30 individual shutter slats slide into a drum housing; bevelled brass padlock, nickel cylinder,
+  steel shackle; a flat key with cut teeth; backlit acrylic sign and tube light; warm interior
+- Click the key → it arcs to the lock, inserts, turns → shackle springs → lock drops → shutter
+  rises → camera walks in → landing page
+- Starts muted, with a sound toggle and Skip (Esc); reduced-motion and no-WebGL users skip it
+- No religious motifs
+
+### Backend (`apps/api`)
+- FastAPI app factory, `/api/v1`, OpenAPI at `/docs`, typed settings with production guards
+- Models for users, workspaces, memberships, datasets, jobs, audit logs, products, customers,
+  orders and order items; Alembic migration with a drift test
+- Auth (register/login/me), workspace RBAC, audit log, health probes; 29 tests passing
 
 ### Repo & docs
-- README, PHASES, ROADMAP, ARCHITECTURE, RESEARCH, METRICS, DATA_DICTIONARY, API,
-  THREAT_MODEL, DESIGN_SYSTEM, ADRs, CONTRIBUTING, CHANGELOG, DEVLOG
+- README, PHASES, ROADMAP, ARCHITECTURE, RESEARCH, METRICS, DATA_DICTIONARY, API, THREAT_MODEL,
+  DESIGN_SYSTEM, ADRs, CONTRIBUTING, CHANGELOG, DEVLOG, frontend Phase 1 report
 - GitHub Actions CI; issue & PR templates
 
-## Left to do (next 3 up)
+## Next up
 
-1. **Phase 1 – ingestion:** upload endpoint, inspection, column mapping, validation report,
-   transactional import, job progress. Demo data generator.
-2. **Phase 2 – metric layer:** metric registry + sales analytics endpoints with fixture tests.
-3. **Phase F2:** connect the dashboard to real metrics; upload wizard UI.
+1. **Frontend Phase 2 · photoreal storefront**: HDRI lighting, CC0 PBR textures (painted
+   metal shutter, granite, concrete), a detailed brass padlock and nickel key, an individual-slat
+   shutter, depth of field. Review still frames before animating.
+2. **Phase 3 · scroll-scrubbed unlock**: pinned, reversible 0–100 % sequence.
+3. **Phases 4–5 · audio + interior + digital transition**.
 
-## Open decisions (need owner input)
+## Open decisions
 
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
-| D1 | Starter dataset | UCI Online Retail II · Olist · synthetic only | Synthetic (known answers) + Online Retail II (CC BY 4.0) |
-| D2 | Product name | Keep "Vyapar AI" · rename | Check trademark — "Vyapar" is an existing Indian billing app |
-| D3 | LLM provider | Ollama local · hosted API · both | Provider-agnostic interface; Ollama for local dev |
-| D4 | Background jobs | In-process worker · RQ/arq + Redis · Celery | DB-backed job table + in-process worker for MVP |
-| D5 | Hosting | Render / Railway / Fly + Neon/Supabase Postgres; Vercel for web | Decide in Phase 11 |
+| F-A | Opening audio | You download CC0 clips · I source Pixabay CC0 · keep synthesized | Recorded CC0 clips |
+| F-B | Key & padlock models | Custom-built in code · licensed Sketchfab model | Custom-built |
+| F-C | `/login` and `/app` routes | Leave unlinked · remove | Leave unlinked during this stage |
+| F-D | HDRI mood | `cobblestone_street_night` · `modern_buildings_night` · `dresden_station_night` | `cobblestone_street_night` |
+| D1 | Starter dataset | Synthetic · Online Retail II · Olist | Synthetic + Online Retail II |
+| D2 | Product name | Keep "Vyapar" · rename | Check trademark |
+| D3–D5 | LLM provider, job runner, hosting | see earlier | Decide when those phases start |
 
 ## Known limitations
 
-- SQLite is the default for local development; production requires PostgreSQL.
-- Access tokens are bearer JWTs with no refresh/revocation yet (planned with the web cookie session).
-- The web dashboard currently shows **demo data**, not API data.
+- The opening is far more realistic but not yet film-grade: no depth of field or bloom, and simple interior goods.
+- In dev the opening needs a few seconds to load its assets (~3 MB textures + 1.8 MB HDRI).
+- Pinned sections crop their headings on screens shorter than about 650 px.
+- Landing first-load JS is 171 kB; three.js loads lazily with the opening.
+- All landing figures are illustrative demo data; the Copilot is a front-end simulation.
+- SQLite is used in development; production requires PostgreSQL.

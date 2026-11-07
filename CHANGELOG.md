@@ -5,6 +5,14 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Web:** landing page reverted to the yellow "Bahi-Khata" design with a new simple hero.
+- **Web:** key-and-lock opening rebuilt with HDRI lighting, CC0 PBR textures, slatted shutter,
+  bevelled brass padlock and a properly cut key.
+
+### Removed
+- **Web:** dark/blue 10-section landing page and the Recharts dependency.
+
 ### Added
 - **Web:** new Vyapar.ai landing page (10 sections), bright theme with brand violet/blue accents,
   Geist typography, interactive 3D data core, Recharts product preview, simulated Copilot.

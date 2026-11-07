@@ -298,3 +298,42 @@ apps/web/
 - No cartoon look: every material is PBR and lit by the HDRI.
 - Frame rate and asset sizes measured and reported.
 - No interaction or animation yet (that is Phase 3).
+
+---
+
+## 14. Outcome after approval (2026-11-07)
+
+**Changes the owner made to this plan**
+- **Order:** the landing page (Phase 6) was built **first**; the photoreal opening follows.
+- **Theme:** **bright** instead of dark-first. White and cool-grey surfaces, midnight-navy text,
+  brand violet `#7357E8` and blue `#3296F5` as accents, brass used sparingly. §6's token table is
+  superseded by `apps/web/app/globals.css`.
+- **No religious motifs:** शुभ लाभ, ॥ marks and Samvat dates were removed everywhere.
+- **Git:** commits only when the owner asks; no Co-Authored-By lines.
+
+**Delivered**
+- Landing page, all ten sections (see ROADMAP "Done"), in `apps/web/components/landing/`:
+  `LandingPage`, `Navigation`, `HeroSection` + `DataCore` (R3F), `ProblemSection`,
+  `IntelligenceSection`, `HowItWorksSection`, `ProductPreviewSection` (Recharts), `ShowcaseSection`,
+  `CopilotPreviewSection`, `TrustSection`, `FinalCta` + `Footer`, shared `ui.tsx`, data in
+  `lib/landing-data.ts`.
+- Interim opening in `apps/web/components/opening/` (`CinematicOpening`, `ShopScene`) with
+  synthesized sound (`lib/sfx.ts`): click-to-unlock works end to end; not photoreal yet.
+- Prototypes the owner rejected were removed: particle hero, ledger hero and the v1 bright sections.
+
+**Tests performed**
+- `tsc --noEmit` clean; `next build` passes (`/` first-load 336 kB; three.js lazy-loaded).
+- Browser walk-through of every section at desktop (1024×768) and mobile (375×812), with no
+  horizontal overflow. Opening checked: click → unlock → shutter → dive → landing.
+
+**Remaining issues**
+- The opening is still built from primitives (cartoon-like), which is what Phase 2 fixes.
+- Unlock is time-based, not yet scroll-scrubbed and reversible (Phase 3).
+- Pinned sections crop their headings on viewports shorter than about 650 px.
+- Decisions F-A to F-D (audio source, models, `/login`+`/app`, HDRI) are still open; see ROADMAP.
+
+## 15. Direction change (2026-11-07, late)
+
+The owner preferred the earlier **yellow** design over the blue 10-section page, so the landing page
+was reverted to it with a simpler hero. The opening was rebuilt with real CC0 lighting and textures
+(see ROADMAP). Phase 2 (realistic storefront) is now in progress rather than not started.

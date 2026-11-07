@@ -11,42 +11,42 @@ const FEATURES = [
     tag: "P0",
     title: "Command center",
     body: "Net sales, margin, orders and AOV, each with its definition, period, filters and data freshness.",
-    span: "md:col-span-4",
+    span: "sm:col-span-2 lg:col-span-4",
     art: <BarsArt />,
   },
   {
     tag: "P0",
     title: "Festival-aware forecasts",
     body: "Baselines first, honest intervals, and Diwali and wedding season built in.",
-    span: "md:col-span-2",
+    span: "lg:col-span-2",
     art: <WaveArt />,
   },
   {
     tag: "P0",
     title: "Customer RFM",
     body: "New, repeat and lapsed customers using rules you can read.",
-    span: "md:col-span-2",
+    span: "lg:col-span-2",
     art: <DotsArt />,
   },
   {
     tag: "P1",
     title: "Reorder simulator",
     body: "Lead time, safety stock and demand sliders. Purchase orders stay drafts until you approve them.",
-    span: "md:col-span-2",
+    span: "lg:col-span-2",
     art: <StockArt />,
   },
   {
     tag: "P1",
     title: "Hinglish reviews",
     body: "“delivery late tha but quality ekdum mast” becomes delivery −, quality +.",
-    span: "md:col-span-2",
+    span: "lg:col-span-2",
     art: <QuoteArt />,
   },
   {
     tag: "P1",
     title: "Copilot with citations",
     body: "Ask in plain words. Numbers come from the metric layer and every claim links to its source.",
-    span: "md:col-span-6",
+    span: "sm:col-span-2 lg:col-span-6",
     art: <CopilotArt />,
   },
 ];
@@ -87,7 +87,7 @@ export function Features() {
           our public roadmap.
         </p>
       </div>
-      <div className="grid gap-4 [perspective:1200px] md:grid-cols-6">
+      <div className="grid gap-4 [perspective:1200px] sm:grid-cols-2 lg:grid-cols-6">
         {FEATURES.map((f) => (
           <article
             key={f.title}

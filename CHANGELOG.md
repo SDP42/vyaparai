@@ -5,6 +5,14 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Web:** new Vyapar.ai landing page (10 sections), bright theme with brand violet/blue accents,
+  Geist typography, interactive 3D data core, Recharts product preview, simulated Copilot.
+- **Web:** interim key-and-lock shop opening with synthesized sound (photoreal version pending).
+
+### Removed
+- **Web:** particle "VYAPAR" hero, ledger hero, bright v1 landing sections and religious motifs.
+
 ### Changed
 - **Web:** responsive layouts for phone, tablet and desktop (hero, story, bento, dashboard nav and tables).
 - **Web:** three.js is lazy-loaded; landing first-load JS dropped from 401 kB to 169 kB.

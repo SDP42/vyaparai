@@ -13,6 +13,18 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.9 });
+    // The shop-gate intro locks scrolling until the shutter is open.
+    if (document.documentElement.dataset.gate === "locked") lenis.stop();
+    const onGate = (e: Event) => {
+      const locked = (e as CustomEvent<{ locked: boolean }>).detail.locked;
+      if (locked) lenis.stop();
+      else {
+        lenis.start();
+        lenis.scrollTo(0, { immediate: true });
+        ScrollTrigger.refresh();
+      }
+    };
+    window.addEventListener("vyapar:gate", onGate);
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -31,6 +43,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
     return () => {
       document.removeEventListener("click", onAnchor);
+      window.removeEventListener("vyapar:gate", onGate);
       gsap.ticker.remove(tick);
       lenis.destroy();
     };

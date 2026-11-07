@@ -2,6 +2,22 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-07 · Two-page frontend stage: landing page built (owner reprioritised it first)
+
+- New master prompt: build only (1) a cinematic key-and-lock opening and (2) the Vyapar.ai
+  landing page. Phase 1 inspection report: `docs/frontend/PHASE-1-REPORT.md`.
+- Owner asked for the **landing page first**, in a **bright** theme, and **no religious motifs**.
+- Landing page (`components/landing/*`), all ten sections from the brief: navigation, hero with an
+  interactive R3F "data-to-decision" core (Sales, Customers, Inventory, Forecasts), problem section
+  (scattered fragments snap into order on scroll), 10-capability bento, pinned how-it-works timeline,
+  Recharts product preview, intelligence showcase tabs, simulated Copilot conversation, trust chain,
+  final CTA and footer. One consistent demo story (Oct net sales −6.2%), clearly labelled.
+- Interim key-and-lock opening restored in front of the landing (`components/opening/*`): click the
+  key, it flies into the lock, shackle pops, shutter rolls up, camera dives in, with synthesized sound.
+  **Not yet photoreal**; that is the next phase.
+- Removed rejected prototypes (particle hero, ledger hero, शुभ लाभ elements, bright v1 sections).
+- Verified at desktop and mobile widths; production build passes.
+
 ## 2026-11-07 · Responsive pass + performance
 
 - Phone: the hero word now samples a stacked "VYA / PAR / व्यापार" layout on portrait screens

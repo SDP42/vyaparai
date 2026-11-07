@@ -1,38 +1,53 @@
 @import "tailwindcss";
 
 /*
- * Vyapar design tokens — bright "Bahi-Khata" palette.
- * Sunlit ledger paper, ink, sindoor red, haldi turmeric and peacock teal —
- * the colours of an Indian bazaar shopfront, not a dark AI dashboard.
+ * Vyapar.ai design tokens — bright theme with the Blueprint §04 brand accents.
+ * White and cool-grey surfaces, midnight-navy text, violet + blue accents,
+ * brass used sparingly (where it connects to the key-and-lock opening).
  * Defined once here; components never hard-code colours.
  */
 @theme {
-  /* Surfaces — warm, sunlit ledger paper (bright, not the generic dark "AI" look) */
-  --color-canvas: #f6efe2;
-  --color-surface: #fffaf1;
-  --color-surface-2: #efe4d0;
-  --color-line: #dccfb8;
+  /* Surfaces — bright, airy (owner's direction), brand accents from Blueprint §04 */
+  --color-canvas: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0f7;
+  --color-line: #e2e5ee;
+  --color-line-strong: #c9cedd;
 
-  /* Text */
-  --color-fg: #1b1612;
-  --color-ink: #1b1612;
-  --color-muted: #776a59;
+  /* Text — midnight navy from the brand palette */
+  --color-fg: #0b1020;
+  --color-muted: #5b6478;
+  --color-ink: #0b1020;
 
-  /* Brand — sindoor red, haldi turmeric, mor peacock, neel indigo */
-  --color-sindoor: #d9362b;
-  --color-sindoor-deep: #a3241c;
-  --color-haldi: #f2a71b;
-  --color-haldi-deep: #9c5d00;
-  --color-mor: #0f7a6f;
-  --color-neel: #3346a8;
+  /* Brand accents */
+  --color-violet: #7357e8;
+  --color-violet-soft: #5a3fd8;
+  --color-blue: #3296f5;
+  --color-blue-soft: #1c6fc7;
+  --color-brass: #a07f3f;
+  --color-midnight: #0b1020;
 
-  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  /* Semantic (always paired with an icon or label) */
+  --color-success: #12965a;
+  --color-warning: #c27a0e;
+  --color-danger: #d63c3c;
+
+  /* Legacy names kept so out-of-scope routes (/login, /app) still render */
+  --color-sindoor: #d63c3c;
+  --color-sindoor-deep: #b02f2f;
+  --color-haldi: #f2a93b;
+  --color-haldi-deep: #c27a0e;
+  --color-mor: #12965a;
+  --color-neel: #3296f5;
+
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
-  --font-deva: var(--font-tiro), var(--font-bricolage), serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-deva: var(--font-tiro), var(--font-geist), serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-ledger: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
 }
 
 :root {
@@ -43,27 +58,34 @@ html {
   background: var(--color-canvas);
   color: var(--color-fg);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 body {
   background: var(--color-canvas);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
 }
 
 ::selection {
-  background: var(--color-sindoor);
-  color: var(--color-surface);
+  background: var(--color-violet);
+  color: #fff;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-sindoor);
+  outline: 2px solid var(--color-blue);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* The key-and-lock opening locks the page until the shutter opens */
+html[data-gate="locked"],
+html[data-gate="locked"] body {
+  overflow: hidden;
 }
 
 /* Lenis smooth scroll */
@@ -78,14 +100,14 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* Film grain — gives flat dark surfaces a printed, tactile feel */
+/* Fine film grain over everything — keeps large dark fields from looking flat */
 .grain::after {
   content: "";
   position: fixed;
   inset: -50%;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.09;
+  opacity: 0.06;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   animation: grain 1.2s steps(6) infinite;
@@ -100,35 +122,67 @@ html.lenis body {
   100% { transform: translate(0, 0); }
 }
 
-/* Ruled ledger paper lines */
-.ledger-rules {
-  background-image:
-    linear-gradient(to right, transparent 3.5rem, color-mix(in oklab, var(--color-sindoor) 45%, transparent) 3.5rem, color-mix(in oklab, var(--color-sindoor) 45%, transparent) calc(3.5rem + 1px), transparent calc(3.5rem + 1px)),
-    repeating-linear-gradient(to bottom, transparent 0, transparent 2.25rem, color-mix(in oklab, var(--color-fg) 9%, transparent) 2.25rem, color-mix(in oklab, var(--color-fg) 9%, transparent) calc(2.25rem + 1px));
+/* Dot grid backdrop */
+.dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--color-fg) 14%, transparent) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* Animated gradient border for featured cards */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.ring-sweep {
+  position: relative;
+}
+.ring-sweep::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--angle), transparent 0deg, var(--color-violet) 70deg, var(--color-blue) 140deg, transparent 220deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: sweep 4s linear infinite;
+  pointer-events: none;
+}
+.ring-sweep:hover::before,
+.ring-sweep[data-active="true"]::before {
+  opacity: 1;
+}
+@keyframes sweep {
+  to { --angle: 360deg; }
 }
 
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-
 .marquee {
-  animation: marquee 40s linear infinite;
+  animation: marquee 50s linear infinite;
 }
-.marquee-reverse {
-  animation: marquee 46s linear infinite reverse;
+
+@keyframes caret {
+  50% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .grain::after,
   .marquee,
-  .marquee-reverse {
+  .ring-sweep::before {
     animation: none;
   }
   *,
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }

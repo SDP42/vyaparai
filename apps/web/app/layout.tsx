@@ -1,22 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Serif, JetBrains_Mono, Tiro_Devanagari_Hindi } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif, Tiro_Devanagari_Hindi } from "next/font/google";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-bricolage",
-  display: "swap",
-});
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 const instrument = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
   variable: "--font-instrument",
-  display: "swap",
-});
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
   display: "swap",
 });
 const tiro = Tiro_Devanagari_Hindi({
@@ -27,21 +19,18 @@ const tiro = Tiro_Devanagari_Hindi({
 });
 
 export const metadata: Metadata = {
-  title: "Vyapar AI — your business, explained",
+  title: "Vyapar.ai — Unlock the intelligence behind your business",
   description:
-    "Vyapar AI turns a retailer's sales, customers and stock into trusted numbers, honest forecasts and actions you approve.",
+    "Vyapar.ai is a business intelligence and decision-support platform for small and medium retailers: trusted metrics, honest forecasts, explanations and human-approved actions.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6efe2",
+  themeColor: "#0b1020",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${bricolage.variable} ${instrument.variable} ${jetbrains.variable} ${tiro.variable}`}
-    >
+    <html lang="en" className={`${geist.variable} ${geistMono.variable} ${instrument.variable} ${tiro.variable}`}>
       <body className="min-h-dvh bg-canvas text-fg antialiased">{children}</body>
     </html>
   );

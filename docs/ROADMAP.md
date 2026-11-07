@@ -11,7 +11,7 @@ Detailed scope and checklists for each phase live in [PHASES.md](PHASES.md).
 | Phase | Status | Notes |
 |---|---|---|
 | 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done. Dataset + naming decisions open. |
-| F1 · Landing page & persona auth | 🟡 | 3D shatter hero, scroll story, persona login, demo dashboard, responsive (phone/tablet/desktop). Real-API login pending. |
+| F1 · Marketing site: landing page ✅ · cinematic opening 🟡 (interim, photoreal pending) | 🟡 | 3D shatter hero, scroll story, persona login, demo dashboard, responsive (phone/tablet/desktop). Real-API login pending. |
 | 1 · Data ingestion & quality | ⬜ | **Next up.** |
 | 2 · Metric layer & sales analytics | ⬜ | |
 | 3 · Customer & product intelligence | ⬜ | |

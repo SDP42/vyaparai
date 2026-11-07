@@ -49,8 +49,11 @@ def test_non_member_cannot_update(client: TestClient, two_tenants) -> None:
 def test_viewer_cannot_admin(client: TestClient, two_tenants, make_user) -> None:
     alice, _, ws_a, _ = two_tenants
     viewer = make_user("viewer@example.com")
-    r = client.post(f"/api/v1/workspaces/{ws_a['id']}/members",
-                    json={"email": "viewer@example.com", "role": "viewer"}, headers=alice)
+    r = client.post(
+        f"/api/v1/workspaces/{ws_a['id']}/members",
+        json={"email": "viewer@example.com", "role": "viewer"},
+        headers=alice,
+    )
     assert r.status_code == 201
 
     assert client.get(f"/api/v1/workspaces/{ws_a['id']}", headers=viewer).status_code == 200
@@ -64,10 +67,16 @@ def test_admin_cannot_grant_owner(client: TestClient, two_tenants, make_user) ->
     alice, _, ws_a, _ = two_tenants
     admin = make_user("admin@example.com")
     make_user("third@example.com")
-    client.post(f"/api/v1/workspaces/{ws_a['id']}/members",
-                json={"email": "admin@example.com", "role": "admin"}, headers=alice)
-    r = client.post(f"/api/v1/workspaces/{ws_a['id']}/members",
-                    json={"email": "third@example.com", "role": "owner"}, headers=admin)
+    client.post(
+        f"/api/v1/workspaces/{ws_a['id']}/members",
+        json={"email": "admin@example.com", "role": "admin"},
+        headers=alice,
+    )
+    r = client.post(
+        f"/api/v1/workspaces/{ws_a['id']}/members",
+        json={"email": "third@example.com", "role": "owner"},
+        headers=admin,
+    )
     assert r.status_code == 403
 
 

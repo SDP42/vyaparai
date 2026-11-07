@@ -37,8 +37,7 @@ def test_expired_token_rejected() -> None:
 
 def test_production_refuses_dev_secret() -> None:
     with pytest.raises(ValueError, match="JWT_SECRET_KEY"):
-        Settings(app_env="production", jwt_secret_key=DEV_JWT_SECRET,
-                 database_url="postgresql://x")
+        Settings(app_env="production", jwt_secret_key=DEV_JWT_SECRET, database_url="postgresql://x")
 
 
 def test_production_refuses_sqlite() -> None:

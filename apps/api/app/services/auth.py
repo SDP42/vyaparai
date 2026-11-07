@@ -27,8 +27,9 @@ def register_user(db: Session, data: UserCreate) -> User:
     except IntegrityError as exc:
         db.rollback()
         raise ConflictError("An account with this email already exists") from exc
-    audit.record(db, action="user.registered", actor_user_id=user.id, entity_type="user",
-                 entity_id=user.id)
+    audit.record(
+        db, action="user.registered", actor_user_id=user.id, entity_type="user", entity_id=user.id
+    )
     db.commit()
     return user
 

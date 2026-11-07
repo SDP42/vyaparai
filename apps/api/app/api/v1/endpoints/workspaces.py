@@ -28,8 +28,9 @@ def create_workspace(data: WorkspaceCreate, db: DbSession, user: CurrentUser) ->
 @router.get("", response_model=list[WorkspaceWithRole])
 def list_workspaces(db: DbSession, user: CurrentUser) -> list[WorkspaceWithRole]:
     return [
-        WorkspaceWithRole.model_validate({**WorkspaceRead.model_validate(ws).model_dump(),
-                                          "role": role})
+        WorkspaceWithRole.model_validate(
+            {**WorkspaceRead.model_validate(ws).model_dump(), "role": role}
+        )
         for ws, role in workspace_service.list_for_user(db, user)
     ]
 

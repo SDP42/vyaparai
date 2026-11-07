@@ -32,8 +32,13 @@ def ready(db: DbSession, settings: AppSettings) -> HealthStatus | JSONResponse:
     try:
         db.execute(text("SELECT 1"))
     except Exception:
-        body = HealthStatus(status="unavailable", version=settings.app_version,
-                            environment=settings.app_env, database="unavailable")
+        body = HealthStatus(
+            status="unavailable",
+            version=settings.app_version,
+            environment=settings.app_env,
+            database="unavailable",
+        )
         return JSONResponse(status_code=503, content=body.model_dump())
-    return HealthStatus(status="ok", version=settings.app_version,
-                        environment=settings.app_env, database="ok")
+    return HealthStatus(
+        status="ok", version=settings.app_version, environment=settings.app_env, database="ok"
+    )

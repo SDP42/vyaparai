@@ -4,17 +4,17 @@ os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("LOG_JSON", "false")
 os.environ.setdefault("LOG_LEVEL", "WARNING")
 
-from collections.abc import Callable, Iterator  # noqa: E402
+from collections.abc import Callable, Iterator
 
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
-from sqlalchemy.pool import StaticPool  # noqa: E402
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
-import app.models  # noqa: E402, F401
-from app.db.base import Base  # noqa: E402
-from app.db.session import build_engine, get_db  # noqa: E402
-from app.main import create_app  # noqa: E402
+import app.models  # noqa: F401
+from app.db.base import Base
+from app.db.session import build_engine, get_db
+from app.main import create_app
 
 PASSWORD = "correct-horse-battery"
 
@@ -46,8 +46,9 @@ AuthHeaders = dict[str, str]
 @pytest.fixture
 def make_user(client: TestClient) -> Callable[[str], AuthHeaders]:
     def _make(email: str, name: str = "Test User") -> AuthHeaders:
-        r = client.post("/api/v1/auth/register",
-                        json={"email": email, "full_name": name, "password": PASSWORD})
+        r = client.post(
+            "/api/v1/auth/register", json={"email": email, "full_name": name, "password": PASSWORD}
+        )
         assert r.status_code == 201, r.text
         r = client.post("/api/v1/auth/login", data={"username": email, "password": PASSWORD})
         assert r.status_code == 200, r.text

@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Local databases & uploads
+*.db
+*.sqlite3
+apps/api/storage/
+apps/api/alembic_tmp/
+
+# Secrets — never commit real credentials or customer data
+.env
+.env.*
+!.env.example
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# ML / RAG artifacts (track metadata, not binaries)
+ml/artifacts/
+rag/indexes/
+*.faiss
+*.pkl
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -5,6 +5,10 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Web:** responsive layouts for phone, tablet and desktop (hero, story, bento, dashboard nav and tables).
+- **Web:** three.js is lazy-loaded; landing first-load JS dropped from 401 kB to 169 kB.
+
 ### Added
 - **API:** FastAPI app factory, typed settings with production guards, JSON logging, request IDs,
   uniform error envelope, liveness/readiness probes.

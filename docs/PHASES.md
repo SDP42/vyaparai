@@ -62,6 +62,7 @@ review validation → command center → sales investigation → forecast → gr
 - [x] Smooth scrolling (Lenis) + GSAP ScrollTrigger; reduced-motion fallback
 - [x] Persona chooser auth page; clicking a persona signs into a demo session and redirects
 - [x] Persona-aware demo dashboard shell (clearly labelled as demo data)
+- [x] Responsive: phone (375), tablet (768), desktop, all checked in the browser
 - [ ] Real email/password sign-in against the API (form present; wire-up in F2)
 - [ ] Lighthouse/accessibility pass, keyboard-only walkthrough
 

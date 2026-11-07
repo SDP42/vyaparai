@@ -11,7 +11,7 @@ Detailed scope and checklists for each phase live in [PHASES.md](PHASES.md).
 | Phase | Status | Notes |
 |---|---|---|
 | 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done. Dataset + naming decisions open. |
-| F1 · Landing page & persona auth | 🟡 | 3D shatter hero, scroll story, persona login, demo dashboard built. Real-API login pending. |
+| F1 · Landing page & persona auth | 🟡 | 3D shatter hero, scroll story, persona login, demo dashboard, responsive (phone/tablet/desktop). Real-API login pending. |
 | 1 · Data ingestion & quality | ⬜ | **Next up.** |
 | 2 · Metric layer & sales analytics | ⬜ | |
 | 3 · Customer & product intelligence | ⬜ | |
@@ -44,6 +44,9 @@ Detailed scope and checklists for each phase live in [PHASES.md](PHASES.md).
 - Landing page: shattering-word 3D hero (React Three Fiber), Lenis smooth scroll,
   GSAP ScrollTrigger pinned story, zoom-through product reveal, bento features
 - Persona sign-in page → demo session → persona-aware dashboard
+- Responsive at 375 px / 768 px / desktop: stacked hero word on portrait screens, static-to-particle
+  cross-fade, vertical story on phones, 1/2/6-column bento, mobile app nav, stacked product list
+- Landing first-load JS cut from 401 kB to 169 kB by lazy-loading three.js
 
 ### Repo & docs
 - README, PHASES, ROADMAP, ARCHITECTURE, RESEARCH, METRICS, DATA_DICTIONARY, API,

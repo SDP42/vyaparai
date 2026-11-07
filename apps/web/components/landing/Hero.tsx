@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { NODES } from "./ShatterScene";
+import { NODES } from "./nodes";
 import { usePrefersReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);

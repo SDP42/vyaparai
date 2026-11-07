@@ -160,10 +160,10 @@ function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onCho
           {p.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate font-semibold">{p.name}</p>
-          <p className="truncate text-xs text-paper/50">{p.title}</p>
+          <p className="font-semibold leading-tight">{p.name}</p>
+          <p className="mt-0.5 text-xs text-paper/50">{p.title}</p>
         </div>
-        <span className="ml-auto rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">
+        <span className="ml-auto self-start rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">
           {p.role}
         </span>
       </div>

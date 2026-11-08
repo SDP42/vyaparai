@@ -14,7 +14,7 @@ each phase contains and its exit criteria.
 | M | Marketing site: opening + landing page | 2 | P0 | ✅ (recorded audio open) |
 | 1 | Data ingestion & quality | 4 | P0 | ✅ |
 | 2 | Metric layer & sales analytics (command center) | 5 | P0 | ✅ |
-| 3 | Customer & product intelligence | 6 | P0 | ⬜ |
+| 3 | Customer & product intelligence | 6 | P0 | ✅ |
 | 4 | Forecasting & predictive MVP | 7 | P0 | ⬜ |
 | F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
 | — | **MVP release (end-to-end journey works)** | — | — | — |
@@ -117,12 +117,16 @@ Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.
 
 **Known limits:** returns are excluded (no `returns` table yet, decision D6); customer metrics ignore walk-in orders; `/app` ships Recharts (276 kB first load); changing a workspace timezone does not yet recompute business dates.
 
-## Phase 3 — Customer & product intelligence
+## Phase 3 — Customer & product intelligence ✅
 
-- [ ] Customer activity + RFM features; interpretable segment rules
-- [ ] New / repeat / lapsed definitions; cohort retention summary
-- [ ] Product & category contribution, margin and discount analysis
-- [ ] CSV export of segments and product tables
+- [x] Customer activity + RFM features; interpretable segment rules (8 named segments, tie-fair percentile scoring)
+- [x] New / repeat / lapsed definitions; cohort retention by first-order month
+- [x] Product & category contribution, margin and discount analysis; ABC classes; portfolio quadrants
+- [x] Basket pair analysis (support, confidence, lift)
+- [x] CSV export of customers and products
+- [x] `/app/customers` and `/app/products` pages
+
+**Exit: met.** Scores, segments, cohort counts, margins, ABC and basket statistics match hand-computed fixtures; on the 8,188-row sample segments, statuses, the R×F grid, cohorts, product and category sums all reconcile (170 tests).
 
 ## Phase 4 — Forecasting & the ML platform ⬜
 

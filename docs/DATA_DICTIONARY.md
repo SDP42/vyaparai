@@ -26,7 +26,7 @@ quantity is `NUMERIC(12,3)` (loose goods sold by weight), never float.
 |---|---|---|
 | `products` | `sku`, `name`, `category`, `unit_cost`, `list_price`, `active` | Unique (`workspace_id`, `sku`) |
 | `customers` | `external_key`, `region`, `city`, `marketing_consent`, `status` | Minimal PII by design: no names or phone numbers |
-| `orders` | `external_key`, `customer_id?`, `dataset_id?` (lineage), `order_date`, `status` ∈ pending/completed/cancelled/returned, `channel`, `currency`, `shipping_amount`, `tax_amount` | Unique (`workspace_id`, `external_key`); index (`workspace_id`, `order_date`) |
+| `orders` | `external_key`, `customer_id?`, `dataset_id?` (lineage), `order_date` (UTC instant), **`business_date`** (calendar day in the workspace timezone; analytics buckets by this), `status` ∈ pending/completed/cancelled/returned, `channel`, `currency`, `shipping_amount`, `tax_amount` | Unique (`workspace_id`, `external_key`); indexes (`workspace_id`, `order_date`) and (`workspace_id`, `business_date`). Imported wall-clock times are interpreted in the workspace timezone |
 | `order_items` | `order_id`, `product_id`, `quantity`, `unit_price`, `discount_amount`, `unit_cost_snapshot` | Cost snapshot keeps historical margin accurate |
 
 ## Planned tables

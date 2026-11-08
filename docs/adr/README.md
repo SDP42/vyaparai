@@ -11,3 +11,4 @@ Add a new file `NNNN-title.md`; never rewrite an accepted ADR, supersede it inst
 | [0004](0004-jwt-bearer-auth.md) | Short-lived JWT bearer tokens for the MVP | Accepted |
 | [0005](0005-frontend-stack-and-visual-language.md) | Next.js + R3F + GSAP + Lenis, "Bahi-Khata" visual language | Accepted (amended) |
 | [0006](0006-metric-layer.md) | One metric layer, stored business date, exact-sum drivers | Accepted |
+| [0007](0007-ml-approach.md) | ML approach: model portfolio, one protocol, ship gate | Accepted |

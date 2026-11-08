@@ -9,7 +9,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from sqlalchemy import distinct, func, select
@@ -173,7 +173,7 @@ def top_share(values: list[Decimal], fraction: float = 0.10) -> Decimal | None:
         return None
     k = max(1, math.ceil(len(values) * fraction))
     top = sum(sorted(values, reverse=True)[:k], ZERO)
-    return (top / total * 100).quantize(Decimal("0.01"))
+    return (top / total * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 def summarise(rows: list[CustomerRow]) -> dict[str, Any]:
@@ -217,11 +217,21 @@ def summarise(rows: list[CustomerRow]) -> dict[str, Any]:
 
 
 def _pct(a: Any, b: Any) -> Decimal | None:
-    return None if not b else (Decimal(str(a)) / Decimal(str(b)) * 100).quantize(Decimal("0.01"))
+    return (
+        None
+        if not b
+        else (Decimal(str(a)) / Decimal(str(b)) * 100).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
+    )
 
 
 def _avg(xs: list[int]) -> Decimal | None:
-    return None if not xs else (Decimal(sum(xs)) / len(xs)).quantize(Decimal("0.1"))
+    return (
+        None
+        if not xs
+        else (Decimal(sum(xs)) / len(xs)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
+    )
 
 
 # ------------------------------------------------------------------ SQL

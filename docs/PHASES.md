@@ -8,23 +8,23 @@ finished feature.
 Live status (✅ / 🟡 / ⬜) is tracked in [ROADMAP.md](ROADMAP.md). This file describes *what*
 each phase contains and its exit criteria.
 
-| Phase | Name | Blueprint weeks | Priority |
-|---|---|---|---|
-| 0 | Foundation & discovery | 1, 3 | P0 |
-| F1 | Frontend: brand, landing page & persona auth | 2 | P0 |
-| 1 | Data ingestion & quality | 4 | P0 |
-| 2 | Metric layer & sales analytics (command center) | 5 | P0 |
-| 3 | Customer & product intelligence | 6 | P0 |
-| 4 | Forecasting & predictive MVP | 7 | P0 |
-| F2 | Frontend: app shell wired to real APIs | 2–7 | P0 |
-| — | **MVP release (end-to-end journey works)** | — | — |
-| 5 | Inventory & decision support | 8 | P1 |
-| 6 | NLP review intelligence | 9 | P1 |
-| 7 | Document intelligence & RAG | 10 | P1 |
-| 8 | Vyapar Copilot & safe tool use | 11 | P1 |
-| 9 | Agent workflows (LangGraph) | 12 | P1 |
-| 10 | Recommendations & reporting | 13 | P2 |
-| 11 | Hardening, deployment & launch | 14–16 | P0 for launch |
+| Phase | Name | Blueprint weeks | Priority | Status |
+|---|---|---|---|---|
+| 0 | Foundation & discovery | 1, 3 | P0 | ✅ (3 small items open) |
+| M | Marketing site: opening + landing page | 2 | P0 | ✅ (recorded audio open) |
+| 1 | Data ingestion & quality | 4 | P0 | ✅ |
+| 2 | Metric layer & sales analytics (command center) | 5 | P0 | 🟡 in progress |
+| 3 | Customer & product intelligence | 6 | P0 | ⬜ |
+| 4 | Forecasting & predictive MVP | 7 | P0 | ⬜ |
+| F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
+| — | **MVP release (end-to-end journey works)** | — | — | — |
+| 5 | Inventory & decision support | 8 | P1 | ⬜ |
+| 6 | NLP review intelligence | 9 | P1 | ⬜ |
+| 7 | Document intelligence & RAG | 10 | P1 | ⬜ |
+| 8 | Vyapar Copilot & safe tool use | 11 | P1 | ⬜ |
+| 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
+| 10 | Recommendations & reporting | 13 | P2 | ⬜ |
+| 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
 
 **MVP journey (blueprint §03):** create workspace → upload retail dataset → map columns →
 review validation → command center → sales investigation → forecast → grounded question.
@@ -46,13 +46,13 @@ review validation → command center → sales investigation → forecast → gr
 - [x] Request IDs, structured JSON logs, uniform error envelope, health/readiness probes
 - [x] Tests for health, auth, tenancy boundaries, security and migrations
 - [x] CI (lint, format, type-check, tests), PR/issue templates
-- [ ] Confirm starter dataset + licence (see [RESEARCH.md](RESEARCH.md#starter-datasets))
-- [ ] Low-fidelity wireframes for onboarding, dashboard, sales detail
+- [ ] Decide on a public benchmark dataset + licence (see [RESEARCH.md](RESEARCH.md#3-starter-datasets)); synthetic data is already in use
+- [ ] Wireframes for the command center and sales explorer (done in code during Phase 2)
 - [ ] Decide product name/trademark question (see [RESEARCH.md](RESEARCH.md#naming-risk))
 
 **Exit:** migrations run cleanly; protected-API tests prove tenant boundaries. ✅
 
-## Phase F1 — Marketing site: cinematic opening + landing page
+## Phase M — Marketing site: cinematic opening + landing page
 
 Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.md](frontend/PHASE-1-REPORT.md).
 
@@ -90,15 +90,30 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
 **Known limits:** returns (negative quantities) are rejected for now; a rejected line inside a
 multi-line order leaves the rest of that order imported; job progress jumps 10 → 100 (one transaction).
 
-## Phase 2 — Metric layer & sales analytics
+## Phase 2 — Metric layer & sales analytics 🟡
 
-- [ ] Metric registry (single source of truth, see [METRICS.md](METRICS.md)) with versioned definitions
-- [ ] Net sales, gross profit, margin, orders, AOV, units, discount rate — unit-tested on fixtures
-- [ ] Date range, comparison period, filters (region, channel, category, segment)
-- [ ] Trend, category mix, top/bottom products, driver analysis (volume / price / mix / discount)
-- [ ] Drill-through to transactions; data-freshness labels on every response
+Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.md); definitions in [METRICS.md](METRICS.md).
 
-**Exit:** dashboard values match independent SQL checks on the fixture dataset.
+**Backend**
+- [ ] Business-date column on orders (workspace-timezone day) + migration with backfill
+- [ ] Versioned metric registry: key, label, unit, formula text, inclusions/exclusions, version
+- [ ] One aggregation engine for all metrics (net sales, gross, discounts, units, orders, AOV, units per order,
+      discount rate, gross profit, margin with cost coverage, active/new/repeat customers)
+- [ ] Date range, comparison (previous period · same weekdays last year · none), filters (category, channel, region, product)
+- [ ] Trend (day/week/month, gap-filled), category / channel / region / weekday mix, top and bottom products
+- [ ] Driver analysis: volume, price, mix, new/discontinued products and discounts that **sum exactly** to the change
+- [ ] Contribution by product / category / channel; rule-based insights with evidence references
+- [ ] Drill-through to supporting order lines (paginated, workspace-scoped)
+- [ ] Every response carries period, currency, filters, metric version and data freshness; coverage warnings
+- [ ] Tests on fixtures with hand-computed answers, tenancy tests, reconciliation tests
+
+**Frontend**
+- [ ] App shell for accounts: sidebar (Command center · Sales · Data), workspace context, role-aware actions
+- [ ] Command center: KPI cards with comparison, trend with comparison overlay, category mix, top products, insights
+- [ ] Sales explorer: filters, drivers waterfall, contribution tables, drill-through transactions
+- [ ] Loading, empty, error states; responsive tables; keyboard and screen-reader labels
+
+**Exit:** dashboard values match independent SQL checks on the fixture dataset, and the driver effects reconcile to the change.
 
 ## Phase 3 — Customer & product intelligence
 
@@ -112,14 +127,17 @@ multi-line order leaves the rest of that order imported; job progress jumps 10 �
 - [ ] Naive, seasonal-naive and moving-average baselines
 - [ ] Rolling-origin backtests; MAE, RMSE, WAPE vs baseline
 - [ ] One candidate model (statsforecast ETS/AutoARIMA or LightGBM) must beat baseline to ship
-- [ ] Festival calendar features (Diwali, Navratri, Eid, wedding season) — see RESEARCH.md
+- [ ] Festive-season and wedding-season calendar features (dated holiday table) — see RESEARCH.md
 - [ ] Model metadata + forecast API (7/14/30-day horizons) with intervals and low-confidence flags
 
-## Phase F2 — App shell wired to real APIs
+## Phase F2 — App shell hardening
 
-- [ ] Typed API client generated from OpenAPI (`openapi-typescript`)
-- [ ] Workspace switcher, onboarding/upload wizard, command center, sales & forecast pages
-- [ ] Empty / loading / error states; responsive tables → stacked summaries on mobile
+- [ ] HttpOnly, SameSite cookie session with refresh-token rotation; CSRF protection; logout everywhere
+- [ ] Typed API client generated from OpenAPI (`openapi-typescript`) replacing the hand-written types
+- [ ] Workspace switcher and member invites (owner/admin)
+- [ ] Remove the persona demo once real data is the default (decision F-C)
+- [ ] Consistent empty / loading / error states; mobile layouts for every table
+- [ ] Accessibility pass (keyboard, focus, screen-reader labels, contrast) and Lighthouse check
 
 ## Phase 5 — Inventory & decision support
 

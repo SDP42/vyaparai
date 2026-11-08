@@ -2,6 +2,30 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-08 (later) · Phase 2 shipped; ML plan written
+
+**Research first.** Looked up price-volume-mix conventions, retail KPI definitions, comparison
+alignment and metric registries; decisions are in `docs/research/PHASE-2-RESEARCH.md`. Also researched the
+forecasting model landscape, time-aware tuning and intermittent demand for the owner's ML request:
+`docs/research/PHASE-4-ML-PLAN.md`, `docs/MODELS.md`, ADR 0007.
+
+**Backend.** `orders.business_date` (migration with a timezone-aware backfill; found and fixed that
+imports had been labelling wall-clock times as UTC); `services/analytics/` (registry, queries, comparisons,
+drivers, insights, text helpers, service) and five endpoints. 61 new tests: hand-computed fixture,
+exact-sum identity on 25 random cases, filters, comparison modes, empty and single-day periods, tenancy,
+and reconciliation on the 8,188-row sample.
+
+**Bugs caught by tests or live checks.** The data-summary query kept using the UTC date; a column-level
+`distinct()` warning; a Recharts tooltip typing error; wide tables forcing the Sales page to 570 px on a phone
+(grid items need `min-w-0`).
+
+**Frontend.** App shell with workspace and period/filter context; Command center, Sales explorer and Data page;
+route gate that keeps the persona demo separate from real accounts. Checked in the browser on the real imported
+sample at desktop and phone widths, including drill-through (857 lines for Staples = ₹2,83,054, matching the
+contribution table).
+
+**Next:** Phase 4 (forecasting and the ML platform), starting with 4a.
+
 ## 2026-11-08 · Opening finished · Phase 1 ingestion shipped
 
 **Opening**

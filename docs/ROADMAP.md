@@ -2,108 +2,103 @@
 
 _Last updated: 2026-11-08_
 
-Legend: ✅ done · 🟡 in progress · ⬜ not started · ⏸ blocked / decision needed
+Legend: ✅ done · 🟡 in progress · ⬜ not started · ⏸ blocked / needs a decision
 
-Detailed backend/product phases: [PHASES.md](PHASES.md).
-Current frontend stage (two-page marketing site): [frontend/PHASE-1-REPORT.md](frontend/PHASE-1-REPORT.md).
+Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 
-## Current focus: two-page frontend stage
+## 1. Status at a glance
 
-Per the master prompt, this stage builds **only** (1) the cinematic key-and-lock opening and
-(2) the Vyapar.ai landing page on `/`. No backend work happens in this stage. The owner reordered the
-work: **landing page first**, then the photoreal opening.
+| # | Phase | Status | What it delivers |
+|---|---|---|---|
+| 0 | Foundation & discovery | ✅ | API skeleton, auth, workspaces/RBAC, audit log, migrations, CI |
+| M | Marketing site (opening + landing) | ✅ | Key-and-lock opening, scroll-driven unlock, landing page |
+| 1 | Data ingestion & quality | ✅ | Upload → inspect → map → validate → import; wizard UI |
+| **2** | **Metric layer & sales analytics** | 🟡 **in progress** | Versioned metric registry, comparisons, drivers, command center |
+| 3 | Customer & product intelligence | ⬜ | RFM, cohorts, margin and discount analysis |
+| 4 | Forecasting | ⬜ | Baselines, backtests, 7/14/30-day forecasts |
+| F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
+| 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |
+| 6 | NLP review intelligence | ⬜ | Sentiment and themes, Hinglish (P1) |
+| 7 | Document intelligence (RAG) | ⬜ | Cited answers over documents (P1) |
+| 8 | Vyapar Copilot | ⬜ | Plain-language questions over the metric layer (P1) |
+| 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |
+| 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
+| 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
 
-| Frontend phase | Status | Notes |
-|---|---|---|
-| 1 · Inspect repo & visual direction | ✅ | Report: `docs/frontend/PHASE-1-REPORT.md` |
-| 6 · Main landing page | ✅ | **Owner reverted to the yellow "Bahi-Khata" design** (simple hero, story scroll, zoom reveal, features, principles, CTA); dark/blue 10-section version removed |
-| 2 · Realistic key, lock, shutter, storefront | ✅ | CC0 HDRI + PBR textures, slatted shutter, brass padlock, cut key, backlit sign; depth of field, bloom, vignette, grain |
-| 3 · Click + scroll-controlled unlock (0–20–45–60–75–100 %) | ✅ | Click inserts the key; a pinned 700vh section scrubs settle → turn → release → open → shutter → walk-in; reversible |
-| 4 · Audio + cinematic shop opening | 🟡 | Interior with labelled goods; sounds synced to scroll (synthesized). Recorded CC0 audio still pending (decision F-A) |
-| 5 · Shop → Vyapar.ai transition | ✅ | "Your business is open." → "Now, let's make it intelligent." → cream fade → VYAPAR.ai → hero |
-| 7 · Integrate + polish responsiveness | 🟡 | Desktop + mobile checked; short-height laptops crop pinned headings |
-| 8 · Full visitor-journey test | ⏸ | Needs a visual pass with the browser visible (the 3D can't render in a hidden preview pane) |
+**MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app).
+Phases 5–10 are P1/P2 and follow the MVP.
 
-## Product / backend phases
+## 2. What is done
 
-| Phase | Status | Notes |
-|---|---|---|
-| 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done |
-| 1 · Data ingestion & quality | ✅ | Upload → inspect → map → validate → import, error CSV, background job, demo data, UI wizard, 25 tests |
-| 2 · Metric layer & sales analytics | ⬜ | **Next up**: canonical metrics on the imported data + command center |
-| 3 · Customer & product intelligence | ⬜ | |
-| 4 · Forecasting | ⬜ | |
-| F2 · App shell on real APIs | ⬜ | |
-| 5 · Inventory & decisions | ⬜ | P1 |
-| 6 · NLP reviews | ⬜ | P1 |
-| 7 · RAG | ⬜ | P1 |
-| 8 · Copilot | ⬜ | P1 |
-| 9 · Agents | ⬜ | P1 |
-| 10 · Recommendations & reports | ⬜ | P2 |
-| 11 · Hardening & launch | ⬜ | |
-
-## Done
-
-### Landing page (`apps/web/components/landing`), yellow design restored on 2026-11-07
-- Bright warm "Bahi-Khata" palette (cream, ink, sindoor red, haldi yellow, mor teal), Bricolage
-  Grotesque + Instrument Serif
-- **Simple hero**: "Your business deserves more than *guesswork.*" Clear copy, two buttons, and the
-  product dashboard card tilting upright as you scroll
-- Pinned horizontal **story** (data enters → organised → insight → you approve), **zoom-through**
-  product reveal, **feature bento** with spotlight, **ledger marquee + principles**, magnetic **CTA**
-- No religious motifs; the CTA's large word is now "व्यापार" (business)
-
-### Opening (`apps/web/components/opening`)
-- Night street lit by a CC0 HDRI; PBR textures for the painted steel shutter, plaster and pavement
-- 30 individual shutter slats slide into a drum housing; bevelled brass padlock, nickel cylinder,
-  steel shackle; a flat key with cut teeth; backlit acrylic sign and tube light; warm interior
-- Click the key → it arcs to the lock, inserts, turns → shackle springs → lock drops → shutter
-  rises → camera walks in → landing page
-- Starts muted, with a sound toggle and Skip (Esc); reduced-motion and no-WebGL users skip it
-- No religious motifs
-
-### Backend (`apps/api`)
-- FastAPI app factory, `/api/v1`, OpenAPI at `/docs`, typed settings with production guards
+### Backend (`apps/api`): 54 tests, strict mypy, ruff clean
+- FastAPI app factory, `/api/v1`, uniform error envelope, request IDs, JSON logs, health probes
+- Auth (Argon2id + JWT), workspaces with owner/admin/analyst/viewer roles, audit log
+- 404-on-non-member tenancy, tested; production settings guards
 - Models for users, workspaces, memberships, datasets, jobs, audit logs, products, customers,
-  orders and order items; Alembic migration with a drift test
-- Auth (register/login/me), workspace RBAC, audit log, health probes; 29 tests passing
+  orders, order items; Alembic migrations with a drift test
+- **Ingestion:** CSV/XLSX upload (size, rows, encoding, signature checks), SHA-256 duplicate
+  detection, header inspection and mapping suggestions, Indian-format parsing (₹, lakh commas,
+  day-first dates), row validation with error CSV, idempotent transactional import job
+
+### Frontend (`apps/web`)
+- **Marketing:** scroll-driven key-and-lock opening (HDRI + PBR textures, depth of field, bloom,
+  synced sound, hand-off), then the landing page (simple hero, story scroll, zoom reveal, features,
+  principles, CTA); responsive; reduced-motion and no-WebGL fallbacks
+- **App:** persona demo dashboard; real account sign-up/sign-in, workspace creation, 4-step import
+  wizard, data summary and upload history
 
 ### Repo & docs
-- README, PHASES, ROADMAP, ARCHITECTURE, RESEARCH, METRICS, DATA_DICTIONARY, API, THREAT_MODEL,
-  DESIGN_SYSTEM, ADRs, CONTRIBUTING, CHANGELOG, DEVLOG, frontend Phase 1 report
-- GitHub Actions CI; issue & PR templates
+- README, ROADMAP, PHASES, ARCHITECTURE, API, DATA_DICTIONARY, METRICS, DESIGN_SYSTEM, THREAT_MODEL,
+  RESEARCH, ADRs, CONTRIBUTING, CHANGELOG, DEVLOG; GitHub Actions CI; demo-data generator
 
-## Next up
+## 3. What is left (everything, in order)
 
-1. **Phase 2 · metric layer + command center**: net sales, gross profit, orders, AOV, period
-   comparison, drivers (volume / price / mix), dashboard on real imported data.
-2. Visual QA of the opening with the browser visible; then recorded CC0 audio (F-A).
+Effort is in focused working days for one developer and is an estimate, not a promise.
 
-### Previously listed
+| Phase | Remaining work | Effort | Depends on |
+|---|---|---|---|
+| **2** | Metric registry · analytics queries · period comparison · price-volume-mix drivers · breakdowns · drill-through · filters · command-center UI · sales explorer UI · tests | 4–5 | Phase 1 |
+| 3 | Customer activity and RFM features · segment rules · cohort retention · product/category margin and discount analysis · exports · UI | 4 | Phase 2 |
+| 4 | Baselines (naive, seasonal naive, moving average) · rolling backtests · one candidate model that must beat baseline · festival calendar features · forecast API with intervals · UI | 5–6 | Phase 2 |
+| F2 | HttpOnly cookie + refresh tokens · CSRF · generated TypeScript API client · invite members UI · loading/empty/error states · accessibility pass | 3 | Phases 2–4 |
+| 5 | Stock snapshots import · stock cover and reorder point · slow movers · scenario sliders · draft purchase orders needing approval | 4 | Phase 4 |
+| 6 | Review import · normalisation · TF-IDF baseline vs multilingual transformer · aspect themes · review explorer | 4–5 | Phase 1 |
+| 7 | PDF/DOCX/TXT ingestion · chunking · embeddings + FAISS · permission-filtered retrieval · citations · evaluation set | 5 | Phase 1 |
+| 8 | Typed tools over the metric layer · intent router · streaming UI · evidence panel · evaluation questions | 4–5 | Phases 2, 4, 7 |
+| 9 | LangGraph analyst workflow · bounded retries · trace storage and viewer | 3–4 | Phase 8 |
+| 10 | Recommendation schema and ranking · approval states · PDF/CSV reports · saved analyses | 4 | Phases 2–9 |
+| 11 | Rate limiting · upload fuzzing · dependency audit · Postgres deployment · backups · runbook · model cards · demo video | 5 | All |
+| M | Recorded (not synthesized) opening audio · short-viewport polish · Lighthouse/accessibility pass | 1–2 | Decision F-A |
 
-1. **Frontend Phase 2 · photoreal storefront**: HDRI lighting, CC0 PBR textures (painted
-   metal shutter, granite, concrete), a detailed brass padlock and nickel key, an individual-slat
-   shutter, depth of field. Review still frames before animating.
-2. **Phase 3 · scroll-scrubbed unlock**: pinned, reversible 0–100 % sequence.
-3. **Phases 4–5 · audio + interior + digital transition**.
+**Total remaining to MVP (phases 2, 3, 4, F2):** about 16–18 working days.
+**Total remaining to full blueprint:** about 50 working days.
 
-## Open decisions
+## 4. Next up (this session)
+
+1. **Phase 2:** research ✅ → [docs/research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.md);
+   then backend metric layer and endpoints, then the command center and sales explorer.
+2. After Phase 2: Phase 3 (customers) or Phase 4 (forecasting). Forecasting is the larger risk, so
+   it is better to start it early; see the decision below.
+
+## 5. Open decisions
 
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | F-A | Opening audio | You download CC0 clips · I source Pixabay CC0 · keep synthesized | Recorded CC0 clips |
-| F-B | Key & padlock models | Custom-built in code · licensed Sketchfab model | Custom-built |
-| F-C | `/login` and `/app` routes | Leave unlinked · remove | Leave unlinked during this stage |
-| F-D | HDRI mood | `cobblestone_street_night` · `modern_buildings_night` · `dresden_station_night` | `cobblestone_street_night` |
-| D1 | Starter dataset | Synthetic · Online Retail II · Olist | Synthetic + Online Retail II |
-| D2 | Product name | Keep "Vyapar" · rename | Check trademark |
-| D3–D5 | LLM provider, job runner, hosting | see earlier | Decide when those phases start |
+| F-C | Demo persona routes | Keep the persona demo dashboard · remove it once real data is in | Keep until Phase 2 ships, then remove |
+| D1 | Starter dataset for tests and demos | Synthetic only · add UCI Online Retail II (CC BY 4.0) | Synthetic plus one public dataset for forecasting benchmarks |
+| D2 | Product name | Keep "Vyapar AI" · rename | Check trademark: "Vyapar" is an existing billing app |
+| D3 | LLM provider for the Copilot | Ollama local · hosted API · both behind an interface | Provider-agnostic interface; Ollama for local dev |
+| D4 | Background jobs | Keep in-process tasks · RQ/arq + Redis | In-process until Phase 4 training needs a queue |
+| D5 | Hosting | Render/Railway/Fly + Neon/Supabase; Vercel for web | Decide in Phase 11 |
+| D6 | Returns handling | Add a `returns` table in Phase 3 · keep rejecting negative quantities | Add `returns` (net sales needs it) |
 
-## Known limitations
+## 6. Known limitations
 
-- The opening is far more realistic but not yet film-grade: no depth of field or bloom, and simple interior goods.
-- In dev the opening needs a few seconds to load its assets (~3 MB textures + 1.8 MB HDRI).
-- Pinned sections crop their headings on screens shorter than about 650 px.
-- Landing first-load JS is 171 kB; three.js loads lazily with the opening.
-- All landing figures are illustrative demo data; the Copilot is a front-end simulation.
-- SQLite is used in development; production requires PostgreSQL.
+- Returns (negative quantities) are rejected at import; `returned` orders are excluded from net sales.
+- A rejected line inside a multi-line order leaves the rest of that order imported.
+- Import progress jumps 10 → 100 because the import is one transaction.
+- Opening audio is synthesized in the browser; the 3D opening needs a visible browser tab.
+- Access tokens are 30-minute bearer JWTs in `localStorage`, with no refresh or revocation yet (F2).
+- SQLite is the development default; production requires PostgreSQL.
+- The persona dashboard shows illustrative data, not API data.

@@ -41,12 +41,26 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | POST | `/workspaces/{id}/datasets/{dataset_id}/import` | analyst | 202 + job; runs in the background in one transaction |
 | GET | `/workspaces/{id}/jobs/{job_id}` | viewer | Job status, counts and result |
 | GET | `/workspaces/{id}/data-summary` | viewer | Orders, line items, products, customers, period, net sales in the workspace |
+| GET | `/workspaces/{id}/metrics` | viewer | The metric registry: key, label, unit, version, definition, includes, excludes, plus eligibility and assumptions |
+| GET | `/workspaces/{id}/analytics/filters` | viewer | Category / channel / region options, first and last order date, default period |
+| GET | `/workspaces/{id}/analytics/overview` | viewer | KPIs with comparison, trend (gap-filled, comparison overlay), category/channel/region mix, weekday pattern, top and bottom products, insights, warnings |
+| GET | `/workspaces/{id}/analytics/drivers` | viewer | Volume / mix / price / new-discontinued / discount effects that sum to the net sales change, contribution table (`by=category\|product\|channel\|region`), biggest movers |
+| GET | `/workspaces/{id}/analytics/transactions` | viewer | Drill-through: paginated order lines with total lines and net for the same filters; `search` matches bill, SKU or product |
+
+### Analytics query parameters
+
+`from`, `to` (inclusive business dates, default: 30 days ending at the latest order) · `compare` =
+`previous_period` \| `previous_year` (same weekdays, 364 days earlier) \| `none` · `granularity` = `day` \| `week` \| `month`
+(auto by range) · repeatable filters `category`, `channel`, `region` (`Unspecified` = missing), `sku`.
+Money values are strings with 2 decimals. Every response carries `meta`: period, comparison range,
+currency, timezone, filters, metric versions, data freshness and coverage (days with data, cost
+coverage, excluded orders by status). Invalid ranges return `422 invalid_range`.
 
 ## Planned
 
 | Phase | Endpoint |
 |---|---|
-| 2 | `GET /workspaces/{id}/analytics/sales` · `GET …/metrics` (registry) · `GET …/analytics/drivers` |
+| 3 | `GET …/analytics/customers` (RFM, cohorts) · `GET …/analytics/products` (margin, discount) |
 | 4 | `POST /workspaces/{id}/forecasts` · `GET …/forecasts/{id}` |
 | 7 | `GET /workspaces/{id}/documents/search` |
 | 8 | `POST /workspaces/{id}/copilot/runs` · `GET …/copilot/runs/{id}` |

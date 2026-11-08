@@ -33,7 +33,8 @@ calculation, and the AI never invents figures.
 | Marketing site: cinematic key-and-lock opening → landing page | ✅ (audio is synthesized; recorded audio pending) |
 | Web app: create account → workspace → import wizard | ✅ |
 | **Phase 2 · metric layer + sales analytics + command center** | 🟡 in progress |
-| Customers, forecasting, inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
+| **Phase 4 · forecasting and ML platform** (many models, Optuna tuning, backtests, intervals): plan written | 📝 [ML plan](docs/research/PHASE-4-ML-PLAN.md) · [model catalogue](docs/MODELS.md) |
+| Customers, inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
 
 **Numbers:** 54 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
 reconciled counts (8,025 valid / 163 rejected).
@@ -97,7 +98,8 @@ Regenerate the sample files with `python scripts/generate_demo_data.py`.
 | [METRICS](docs/METRICS.md) | Canonical metric definitions (the single source of truth) |
 | [DESIGN_SYSTEM](docs/DESIGN_SYSTEM.md) | Palette, type, motion, the opening and landing page |
 | [THREAT_MODEL](docs/THREAT_MODEL.md) | Security risks and what is mitigated |
-| [RESEARCH](docs/RESEARCH.md) · [Phase 2 research](docs/research/PHASE-2-RESEARCH.md) | Gaps in the blueprint, India-specific features, method research |
+| [MODELS](docs/MODELS.md) | Model catalogue, evaluation scorecard and model-card template |
+| [RESEARCH](docs/RESEARCH.md) · [Phase 2](docs/research/PHASE-2-RESEARCH.md) · [ML plan](docs/research/PHASE-4-ML-PLAN.md) | Gaps in the blueprint, India-specific features, method research |
 | [ADRs](docs/adr/) | Architecture decision records |
 | [DEVLOG](docs/DEVLOG.md) · [CHANGELOG](CHANGELOG.md) | Day-by-day progress and release notes |
 

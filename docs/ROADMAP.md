@@ -15,7 +15,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 1 | Data ingestion & quality | ✅ | Upload → inspect → map → validate → import; wizard UI |
 | **2** | **Metric layer & sales analytics** | 🟡 **in progress** | Versioned metric registry, comparisons, drivers, command center |
 | 3 | Customer & product intelligence | ⬜ | RFM, cohorts, margin and discount analysis |
-| 4 | Forecasting | ⬜ | Baselines, backtests, 7/14/30-day forecasts |
+| 4 | Forecasting & ML platform | ⬜ | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
 | F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
 | 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |
 | 6 | NLP review intelligence | ⬜ | Sentiment and themes, Hinglish (P1) |
@@ -59,7 +59,7 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 |---|---|---|---|
 | **2** | Metric registry · analytics queries · period comparison · price-volume-mix drivers · breakdowns · drill-through · filters · command-center UI · sales explorer UI · tests | 4–5 | Phase 1 |
 | 3 | Customer activity and RFM features · segment rules · cohort retention · product/category margin and discount analysis · exports · UI | 4 | Phase 2 |
-| 4 | Baselines (naive, seasonal naive, moving average) · rolling backtests · one candidate model that must beat baseline · festival calendar features · forecast API with intervals · UI | 5–6 | Phase 2 |
+| 4 | **4a** data, metrics, backtester, baselines (2 d) · **4b** ETS/ARIMA/Theta + Croston/SBA/TSB (2–3 d) · **4c** features + LightGBM + quantiles (2–3 d) · **4d** Optuna tuning, ensembles, conformal intervals, ship gate (3 d) · **4e** registry, job, API, forecast UI (3 d). See [ML plan](research/PHASE-4-ML-PLAN.md) | 12–14 | Phase 2 |
 | F2 | HttpOnly cookie + refresh tokens · CSRF · generated TypeScript API client · invite members UI · loading/empty/error states · accessibility pass | 3 | Phases 2–4 |
 | 5 | Stock snapshots import · stock cover and reorder point · slow movers · scenario sliders · draft purchase orders needing approval | 4 | Phase 4 |
 | 6 | Review import · normalisation · TF-IDF baseline vs multilingual transformer · aspect themes · review explorer | 4–5 | Phase 1 |
@@ -70,15 +70,15 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 | 11 | Rate limiting · upload fuzzing · dependency audit · Postgres deployment · backups · runbook · model cards · demo video | 5 | All |
 | M | Recorded (not synthesized) opening audio · short-viewport polish · Lighthouse/accessibility pass | 1–2 | Decision F-A |
 
-**Total remaining to MVP (phases 2, 3, 4, F2):** about 16–18 working days.
-**Total remaining to full blueprint:** about 50 working days.
+**Total remaining to MVP (phases 2, 3, 4, F2):** about 24–27 working days (forecasting grew from 5–6 to 12–14).
+**Total remaining to full blueprint:** about 58 working days.
 
 ## 4. Next up (this session)
 
 1. **Phase 2:** research ✅ → [docs/research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.md);
    then backend metric layer and endpoints, then the command center and sales explorer.
-2. After Phase 2: Phase 3 (customers) or Phase 4 (forecasting). Forecasting is the larger risk, so
-   it is better to start it early; see the decision below.
+2. After Phase 2: **Phase 4 (forecasting and the ML platform)**, which is the largest and riskiest phase, then Phase 3.
+   The ML plan, tuning protocol and model catalogue are written: [ML plan](research/PHASE-4-ML-PLAN.md), [MODELS.md](MODELS.md).
 
 ## 5. Open decisions
 
@@ -91,6 +91,7 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 | D3 | LLM provider for the Copilot | Ollama local · hosted API · both behind an interface | Provider-agnostic interface; Ollama for local dev |
 | D4 | Background jobs | Keep in-process tasks · RQ/arq + Redis | In-process until Phase 4 training needs a queue |
 | D5 | Hosting | Render/Railway/Fly + Neon/Supabase; Vercel for web | Decide in Phase 11 |
+| D7 | ML compute | Laptop CPU only · add a GPU/cloud worker later | CPU only; deep models stay optional |
 | D6 | Returns handling | Add a `returns` table in Phase 3 · keep rejecting negative quantities | Add `returns` (net sales needs it) |
 
 ## 6. Known limitations

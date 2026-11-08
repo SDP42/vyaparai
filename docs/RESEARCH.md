@@ -60,7 +60,7 @@ Verify each licence before committing data to the repo. Never commit real custom
 | Passwords | Argon2id via `pwdlib` | Current OWASP recommendation; passlib is unmaintained |
 | Tokens | PyJWT (HS256), short expiry | Simple; move to cookie session for the web app |
 | Data wrangling | pandas (+ `python-calamine` for fast XLSX) | Ecosystem; Polars if imports get slow |
-| Forecasting | `statsforecast` baselines/ETS, LightGBM global model | Fast, well-benchmarked; baselines first |
+| Forecasting | `statsforecast` (ETS/ARIMA/Theta/MSTL, Croston/SBA/TSB), LightGBM global + quantile models, Optuna tuning, conformal intervals, ensembles | One protocol compares many models; see [ML plan](research/PHASE-4-ML-PLAN.md) |
 | NLP | scikit-learn TF-IDF + LR, then multilingual transformer | Blueprint asks for a measured baseline |
 | RAG | Sentence-Transformers + FAISS, `pymupdf` / `python-docx` | Local-first, no paid vector DB |
 | Agents | LangGraph | Explicit typed state graph (blueprint §21) |

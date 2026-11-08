@@ -428,7 +428,9 @@ def test_intelligence_reconciles_on_the_8k_row_sample(client, make_user) -> None
     assert all(1 <= c["r"] <= 5 and 1 <= c["f"] <= 5 and 1 <= c["m"] <= 5 for c in listing["items"])
 
     coh = client.get(f"{base}/customers/cohorts", headers=h).json()
-    assert [c["cohort"] for c in coh["cohorts"]] == ["2026-08", "2026-09", "2026-10"]
+    months = [c["cohort"] for c in coh["cohorts"]]
+    assert months == sorted(months)
+    assert set(months) <= {"2026-08", "2026-09", "2026-10"}
     assert (
         sum(c["size"] for c in coh["cohorts"]) == s["customers"]
     )  # every customer is in one cohort

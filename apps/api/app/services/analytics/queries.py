@@ -130,8 +130,9 @@ def anonymous_orders(db: Session, ws: uuid.UUID, f: Filters) -> int:
 def customer_counts(db: Session, ws: uuid.UUID, f: Filters) -> tuple[int, int, int]:
     """(active, new, repeat). New/repeat use each customer's whole completed history."""
     active_sub = (
-        _lines([distinct(Order.customer_id).label("cid")], ws, f)
+        _lines([Order.customer_id.label("cid")], ws, f)
         .where(Order.customer_id.is_not(None))
+        .distinct()
         .subquery()
     )
     active = int(db.scalar(select(func.count()).select_from(active_sub)) or 0)
@@ -343,21 +344,21 @@ def filter_options(db: Session, ws: uuid.UUID) -> dict[str, list[str]]:
     categories = sorted(
         v
         for (v,) in db.execute(
-            select(distinct(Product.category)).where(Product.workspace_id == ws)
+            select(Product.category).where(Product.workspace_id == ws).distinct()
         ).all()
         if v
     )
     channels = sorted(
         v
         for (v,) in db.execute(
-            select(distinct(Order.channel)).where(Order.workspace_id == ws)
+            select(Order.channel).where(Order.workspace_id == ws).distinct()
         ).all()
         if v
     )
     regions = sorted(
         v
         for (v,) in db.execute(
-            select(distinct(Customer.region)).where(Customer.workspace_id == ws)
+            select(Customer.region).where(Customer.workspace_id == ws).distinct()
         ).all()
         if v
     )

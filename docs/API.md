@@ -46,6 +46,13 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/analytics/overview` | viewer | KPIs with comparison, trend (gap-filled, comparison overlay), category/channel/region mix, weekday pattern, top and bottom products, insights, warnings |
 | GET | `/workspaces/{id}/analytics/drivers` | viewer | Volume / mix / price / new-discontinued / discount effects that sum to the net sales change, contribution table (`by=category\|product\|channel\|region`), biggest movers |
 | GET | `/workspaces/{id}/analytics/transactions` | viewer | Drill-through: paginated order lines with total lines and net for the same filters; `search` matches bill, SKU or product |
+| GET | `/workspaces/{id}/analytics/customers/summary` | viewer | Customer count, repeat rate, revenue per customer, top-10 % share, 8 segments, Active/Cooling/Lapsed counts, 5×5 R×F grid, warnings. Params: `as_of`, `lookback_days`, `new_days`, `active_days`, `lapse_days` (`lapse_days` must exceed `active_days`, else `422 invalid_params`) |
+| GET | `/workspaces/{id}/analytics/customers/list` | viewer | Paged customers with R/F/M, segment, status; filters `segment`, `status`, `search`; `sort` = `net`, `orders`, `recency`, `last_order`, `name`; `descending`, `limit`, `offset` |
+| GET | `/workspaces/{id}/analytics/customers/cohorts` | viewer | Retention matrix by first-order month (`months` 2–36) |
+| GET | `/workspaces/{id}/analytics/customers/export.csv` | viewer | The filtered customer list as CSV |
+| GET | `/workspaces/{id}/analytics/products` | viewer | Per product: net, share, ABC, margin, discount rate, change vs comparison, quadrant, flags; category table; portfolio summary |
+| GET | `/workspaces/{id}/analytics/products/export.csv` | viewer | Product table as CSV |
+| GET | `/workspaces/{id}/analytics/basket` | viewer | Product pairs with orders, support, confidence both ways and lift; `min_orders` (default 5), `limit` |
 
 ### Analytics query parameters
 

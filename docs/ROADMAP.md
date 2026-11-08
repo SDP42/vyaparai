@@ -14,7 +14,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | M | Marketing site (opening + landing) | ✅ | Key-and-lock opening, scroll-driven unlock, landing page |
 | 1 | Data ingestion & quality | ✅ | Upload → inspect → map → validate → import; wizard UI |
 | 2 | Metric layer & sales analytics | ✅ | Versioned metric registry, comparisons, price-volume-mix drivers, command center, sales explorer |
-| 3 | Customer & product intelligence | ⬜ | RFM, cohorts, margin and discount analysis |
+| 3 | Customer & product intelligence | ✅ | RFM, cohorts, margin and discount analysis, ABC, portfolio quadrants, basket pairs |
 | **4** | **Forecasting & ML platform** | ⬜ **next** | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
 | F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
 | 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |
@@ -74,8 +74,8 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 
 ## 4. Next up (this session)
 
-1. **Phase 2 is done** (research: [PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.md)).
-2. **Next: Phase 4 (forecasting and the ML platform)**, starting with 4a (longer synthetic data, metrics, backtester, baselines), which is the largest and riskiest phase, then Phase 3.
+1. **Phases 2 and 3 are done** (research: [PHASE-2](research/PHASE-2-RESEARCH.md), [PHASE-3](research/PHASE-3-RESEARCH.md)).
+2. **Next: Phase 4 (forecasting and the ML platform)**, starting with 4a (longer synthetic data, metrics, backtester, baselines), the largest and riskiest phase.
    The ML plan, tuning protocol and model catalogue are written: [ML plan](research/PHASE-4-ML-PLAN.md), [MODELS.md](MODELS.md).
 
 ## 5. Open decisions

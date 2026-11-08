@@ -10,7 +10,7 @@ Upload your sales, then see what happened, why it happened, what may happen next
 ![Python](https://img.shields.io/badge/python-3.12-3776AB)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![Status](https://img.shields.io/badge/status-Phase%201%20complete%20·%20Phase%202%20in%20progress-E9A426)
+![Status](https://img.shields.io/badge/status-Phase%202%20complete%20·%20Phase%204%20next-E9A426)
 
 </div>
 
@@ -31,12 +31,12 @@ calculation, and the AI never invents figures.
 | Data model: products, customers, orders, line items; Alembic migrations | ✅ |
 | **Phase 1 · data ingestion**: upload CSV/XLSX → inspect → map columns → validate → import | ✅ |
 | Marketing site: cinematic key-and-lock opening → landing page | ✅ (audio is synthesized; recorded audio pending) |
-| Web app: create account → workspace → import wizard | ✅ |
-| **Phase 2 · metric layer + sales analytics + command center** | 🟡 in progress |
+| Web app: account → workspace → import wizard → command center → sales explorer | ✅ |
+| **Phase 2 · metric layer, sales analytics, command center, sales explorer** | ✅ |
 | **Phase 4 · forecasting and ML platform** (many models, Optuna tuning, backtests, intervals): plan written | 📝 [ML plan](docs/research/PHASE-4-ML-PLAN.md) · [model catalogue](docs/MODELS.md) |
 | Customers, inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
 
-**Numbers:** 54 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
+**Numbers:** 116 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
 reconciled counts (8,025 valid / 163 rejected).
 
 ## Repository layout

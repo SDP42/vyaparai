@@ -41,7 +41,48 @@ CATALOGUE = [
     ("SHA-340", "Shampoo 340 ml", "Personal care", 275, 221, 3),
     ("DET-1KG", "Detergent 1 kg", "Household", 135, 108, 4),
     ("DSW-500", "Dishwash Gel 500 ml", "Household", 99, 77, 3),
+    ("MOO-1KG", "Moong Dal 1 kg", "Staples", 150, 126, 5),
+    ("CHA-1KG", "Chana Dal 1 kg", "Staples", 120, 99, 5),
+    ("JAG-1KG", "Jaggery 1 kg", "Staples", 62, 50, 3),
+    ("POH-500", "Poha 500 g", "Staples", 45, 36, 4),
+    ("RAV-500", "Rava 500 g", "Staples", 38, 30, 3),
+    ("BES-500", "Besan 500 g", "Staples", 68, 55, 3),
+    ("SFO-1L", "Sunflower Oil 1 L", "Staples", 142, 124, 6),
+    ("BUT-100", "Butter 100 g", "Dairy", 58, 50, 4),
+    ("CUR-400", "Curd 400 g", "Dairy", 38, 31, 6),
+    ("EGG-12", "Eggs Tray of 12", "Dairy", 84, 72, 6),
+    ("CHE-200", "Cheese Slices 200 g", "Dairy", 135, 111, 2),
+    ("TEB-25", "Tea Bags 25 pack", "Beverages", 120, 94, 3),
+    ("JUI-1L", "Fruit Juice 1 L", "Beverages", 110, 84, 3),
+    ("SOD-750", "Soft Drink 750 ml", "Beverages", 40, 31, 7),
+    ("CHI-52", "Potato Chips 52 g", "Snacks", 20, 15, 9),
+    ("CHO-BAR", "Chocolate Bar", "Snacks", 40, 31, 7),
+    ("RUS-200", "Rusk 200 g", "Snacks", 35, 27, 4),
+    ("TOO-150", "Toothpaste 150 g", "Personal care", 105, 82, 5),
+    ("HOI-200", "Hair Oil 200 ml", "Personal care", 118, 92, 3),
+    ("FAC-100", "Face Wash 100 ml", "Personal care", 185, 140, 2),
+    ("FLO-1L", "Floor Cleaner 1 L", "Household", 175, 138, 3),
+    ("AGA-20", "Incense Sticks 20 pack", "Household", 30, 22, 4),
 ]
+
+# Supplier price changes: (sku, first day the new cost applies, multiplier). Real shops see their
+# cost move like this, so margins are computed from the cost on each bill, not one fixed number.
+COST_CHANGES = [
+    ("OIL-1L", date(2026, 9, 10), 1.07),
+    ("SFO-1L", date(2026, 9, 10), 1.09),
+    ("SUG-1KG", date(2026, 10, 5), 1.06),
+    ("TUR-1KG", date(2026, 10, 1), 1.05),
+    ("GHE-1L", date(2026, 9, 20), 0.97),
+    ("EGG-12", date(2026, 10, 12), 1.08),
+]
+
+
+def cost_on(sku: str, base: int, day: date) -> float:
+    cost = float(base)
+    for k, since, mult in COST_CHANGES:
+        if k == sku and day >= since:
+            cost *= mult
+    return round(cost, 2)
 CITIES = [("Maharashtra", "Pune"), ("Maharashtra", "Pune"), ("Maharashtra", "Pimpri"), ("Maharashtra", "Hadapsar")]
 CHANNELS = ["Store", "Store", "Store", "Phone order", "WhatsApp"]
 
@@ -85,7 +126,7 @@ def generate() -> list[dict[str, str]]:
                         "Qty": str(qty),
                         "Rate": money(price),
                         "Discount": disc,
-                        "Cost": money(cost),
+                        "Cost": money(cost_on(sku, cost, day)),
                         "Customer": cust,
                         "State": state if cust else "",
                         "City": city if cust else "",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type PointerEvent } from "react";
+import { useEffect, useState, type FormEvent, type PointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Logo } from "@/components/landing/Nav";
 import { PERSONAS, type Persona } from "@/lib/personas";
@@ -15,6 +15,11 @@ export default function LoginPage() {
   const reduce = useReducedMotion();
   const [chosen, setChosen] = useState<Persona | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // "/login?mode=account" (used by the demo's Sign in links) opens the real account form straight away.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mode") === "account") setShowForm(true);
+  }, []);
 
   const choose = (p: Persona) => {
     if (chosen) return;

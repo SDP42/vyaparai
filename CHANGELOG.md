@@ -6,6 +6,15 @@ versioning: [SemVer](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **API:** Phase 2 analytics: metric registry (v1, 16 metrics), `/metrics`, `/analytics/{filters,overview,drivers,transactions}`;
+  period comparison, price-volume-mix drivers, insights, coverage warnings; migration `46f90922b2e7` (`orders.business_date`). 61 new tests.
+- **Web:** app shell, Command center, Sales explorer and Data page for accounts; Recharts trend with comparison overlay.
+- **Docs:** Phase 2 and ML research, model catalogue, ADRs 0006 and 0007, refreshed README, roadmap and phases.
+
+### Fixed
+- **API:** imported wall-clock times are now interpreted in the workspace timezone (were stored as UTC).
+
+### Added
 - **API:** Phase 1 ingestion: upload (CSV/XLSX), inspection, mapping suggestions, validation,
   error CSV, background import job, data summary. Migration `56799aeb0cfc`. 25 new tests.
 - **Web:** account creation, workspace setup and a 4-step import wizard on `/app`.

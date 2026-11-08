@@ -42,7 +42,7 @@ export function DemoDashboard({ personaId, onSignOut }: { personaId: PersonaId; 
         <nav className="mt-6 flex flex-col gap-1" aria-label="App">
           {NAV.map((n, i) =>
             n.live ? (
-              <Link key={n.label} href="/login" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-fg/70 hover:bg-surface-2/60 hover:text-fg">
+              <Link key={n.label} href="/login?mode=account" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-fg/70 hover:bg-surface-2/60 hover:text-fg">
                 {n.label}
                 <span className="font-mono text-[9px] uppercase tracking-wider text-mor">Sign in</span>
               </Link>
@@ -113,7 +113,7 @@ export function DemoDashboard({ personaId, onSignOut }: { personaId: PersonaId; 
             {NAV.map((n, i) => (
               <li key={n.label}>
                 {n.live ? (
-                  <Link href="/login" className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs text-fg/70">
+                  <Link href="/login?mode=account" className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs text-fg/70">
                     {n.label}
                     <span className="font-mono text-[9px] text-mor">Sign in</span>
                   </Link>

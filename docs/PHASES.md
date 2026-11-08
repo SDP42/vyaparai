@@ -141,7 +141,7 @@ Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.
 
 Full plan and justification: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Catalogue: [MODELS.md](MODELS.md).
 
-**4a · Foundations** (2 d)
+**4a · Foundations** (2 d) — 🟡 metrics, baselines, backtester, demand classes done (pure Python, 12 tests); synthetic 730-day generator and modelling panel still to do
 - [ ] Generator `--days 730` mode with a known weekly cycle, trend, month-end and festive effects, promotions, stock-outs, intermittent SKUs
 - [ ] Modelling panel (SKU × day, zero-filled, stock-out suspicion flags) and demand-pattern classification (ADI/CV²)
 - [ ] Metrics module (MAE, RMSE, WAPE, sMAPE, MASE, bias, pinball, coverage, forecast value added), unit-tested on known series

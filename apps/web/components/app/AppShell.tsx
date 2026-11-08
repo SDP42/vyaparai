@@ -9,10 +9,11 @@ import { useWorkspace } from "./AppContext";
 const NAV = [
   { href: "/app", label: "Command center", icon: "◧", exact: true },
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
+  { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
+  { href: "/app/products", label: "Products", icon: "◈", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
 ];
 const SOON = [
-  ["Customers", "Phase 3"],
   ["Forecasts", "Phase 4"],
   ["Inventory", "Phase 5"],
   ["Copilot", "Phase 8"],

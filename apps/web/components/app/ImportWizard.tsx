@@ -588,7 +588,18 @@ function ImportStep({ base, dataset, onDone }: { base: string; dataset: Dataset;
               <Stat label="Customers" value={formatNumber(summary.customers)} small />
             </div>
           )}
-          <p className="mt-6 text-xs text-muted">Sales dashboards built on this data arrive in Phase 2.</p>
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {[
+              ["/app", "Open the command center"],
+              ["/app/sales", "Explore sales"],
+              ["/app/customers", "See customers"],
+              ["/app/products", "See products"],
+            ].map(([href, label]) => (
+              <a key={href} href={href} className="rounded-full border border-line px-4 py-2 text-sm font-medium hover:border-fg/40">
+                {label}
+              </a>
+            ))}
+          </div>
         </>
       )}
     </div>

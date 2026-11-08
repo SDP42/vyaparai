@@ -10,7 +10,7 @@ from typing import Literal
 Unit = Literal["inr", "count", "percent"]
 Direction = Literal["up_good", "down_good", "neutral"]
 
-REGISTRY_VERSION = 1
+REGISTRY_VERSION = 2  # 2: added customer-intelligence metrics (each metric keeps its own version)
 
 
 @dataclass(frozen=True, slots=True)
@@ -181,6 +181,46 @@ METRICS: tuple[MetricDef, ...] = (
         "",
         good_direction="neutral",
         compare_in_points=True,
+    ),
+    MetricDef(
+        "repeat_rate",
+        "Repeat rate",
+        "percent",
+        1,
+        "Customers with two or more completed orders in the lookback window ÷ customers",
+        "Identified customers with a completed order in the window",
+        "Walk-in orders",
+        compare_in_points=True,
+    ),
+    MetricDef(
+        "revenue_per_customer",
+        "Revenue per customer",
+        "inr",
+        1,
+        "Net sales in the lookback window ÷ identified customers",
+        "Identified customers with a completed order in the window",
+        "Walk-in orders",
+    ),
+    MetricDef(
+        "top_decile_share",
+        "Top 10% customer share",
+        "percent",
+        1,
+        "Share of net sales from the top 10 % of customers (at least one customer)",
+        "Identified customers with a completed order in the window",
+        "Walk-in orders",
+        good_direction="neutral",
+        compare_in_points=True,
+    ),
+    MetricDef(
+        "lapsed_regulars",
+        "Lapsed regulars",
+        "count",
+        1,
+        "Customers with two or more orders and no order for at least 45 days",
+        "Identified customers",
+        "Walk-in orders",
+        good_direction="down_good",
     ),
 )
 

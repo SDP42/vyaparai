@@ -73,7 +73,7 @@ def test_registry_lists_every_metric_with_versions(client, shop) -> None:
     body = get(client, shop, "/metrics").json()
     keys = {m["key"] for m in body["metrics"]}
     assert {"net_sales", "gross_profit", "aov", "gross_margin", "cost_coverage"} <= keys
-    assert body["registry_version"] == 1
+    assert body["registry_version"] == 2
     assert all(m["version"] >= 1 and m["definition"] for m in body["metrics"])
     assert any("GST" in a for a in body["assumptions"])
 

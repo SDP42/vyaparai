@@ -13,11 +13,7 @@ const NAV = [
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
 ];
-const SOON = [
-  ["Forecasts", "Phase 4"],
-  ["Inventory", "Phase 5"],
-  ["Copilot", "Phase 8"],
-];
+const SOON = ["Forecasts", "Inventory", "Campaigns", "Copilot"];
 
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();
@@ -54,10 +50,10 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
             </Link>
           ))}
           <p className="mt-5 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Coming</p>
-          {SOON.map(([label, phase]) => (
+          {SOON.map((label) => (
             <span key={label} aria-disabled className="flex items-center justify-between rounded-lg px-3 py-1.5 text-sm text-fg/35">
               {label}
-              <span className="font-mono text-[9px] uppercase tracking-wider">{phase}</span>
+              <span className="font-mono text-[9px] uppercase tracking-wider">Soon</span>
             </span>
           ))}
         </nav>

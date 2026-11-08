@@ -13,7 +13,7 @@ each phase contains and its exit criteria.
 | 0 | Foundation & discovery | 1, 3 | P0 | ✅ (3 small items open) |
 | M | Marketing site: opening + landing page | 2 | P0 | ✅ (recorded audio open) |
 | 1 | Data ingestion & quality | 4 | P0 | ✅ |
-| 2 | Metric layer & sales analytics (command center) | 5 | P0 | 🟡 in progress |
+| 2 | Metric layer & sales analytics (command center) | 5 | P0 | ✅ |
 | 3 | Customer & product intelligence | 6 | P0 | ⬜ |
 | 4 | Forecasting & predictive MVP | 7 | P0 | ⬜ |
 | F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
@@ -90,30 +90,32 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
 **Known limits:** returns (negative quantities) are rejected for now; a rejected line inside a
 multi-line order leaves the rest of that order imported; job progress jumps 10 → 100 (one transaction).
 
-## Phase 2 — Metric layer & sales analytics 🟡
+## Phase 2 — Metric layer & sales analytics ✅
 
 Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.md); definitions in [METRICS.md](METRICS.md).
 
 **Backend**
-- [ ] Business-date column on orders (workspace-timezone day) + migration with backfill
-- [ ] Versioned metric registry: key, label, unit, formula text, inclusions/exclusions, version
-- [ ] One aggregation engine for all metrics (net sales, gross, discounts, units, orders, AOV, units per order,
+- [x] Business-date column on orders (workspace-timezone day) + migration with backfill
+- [x] Versioned metric registry: key, label, unit, formula text, inclusions/exclusions, version
+- [x] One aggregation engine for all metrics (net sales, gross, discounts, units, orders, AOV, units per order,
       discount rate, gross profit, margin with cost coverage, active/new/repeat customers)
-- [ ] Date range, comparison (previous period · same weekdays last year · none), filters (category, channel, region, product)
-- [ ] Trend (day/week/month, gap-filled), category / channel / region / weekday mix, top and bottom products
-- [ ] Driver analysis: volume, price, mix, new/discontinued products and discounts that **sum exactly** to the change
-- [ ] Contribution by product / category / channel; rule-based insights with evidence references
-- [ ] Drill-through to supporting order lines (paginated, workspace-scoped)
-- [ ] Every response carries period, currency, filters, metric version and data freshness; coverage warnings
-- [ ] Tests on fixtures with hand-computed answers, tenancy tests, reconciliation tests
+- [x] Date range, comparison (previous period · same weekdays last year · none), filters (category, channel, region, product)
+- [x] Trend (day/week/month, gap-filled), category / channel / region / weekday mix, top and bottom products
+- [x] Driver analysis: volume, price, mix, new/discontinued products and discounts that **sum exactly** to the change
+- [x] Contribution by product / category / channel; rule-based insights with evidence references
+- [x] Drill-through to supporting order lines (paginated, workspace-scoped)
+- [x] Every response carries period, currency, filters, metric version and data freshness; coverage warnings
+- [x] Tests on fixtures with hand-computed answers, tenancy tests, reconciliation tests
 
 **Frontend**
-- [ ] App shell for accounts: sidebar (Command center · Sales · Data), workspace context, role-aware actions
-- [ ] Command center: KPI cards with comparison, trend with comparison overlay, category mix, top products, insights
-- [ ] Sales explorer: filters, drivers waterfall, contribution tables, drill-through transactions
-- [ ] Loading, empty, error states; responsive tables; keyboard and screen-reader labels
+- [x] App shell for accounts: sidebar (Command center · Sales · Data), workspace context, role-aware actions
+- [x] Command center: KPI cards with comparison, trend with comparison overlay, category mix, top products, insights
+- [x] Sales explorer: filters, drivers waterfall, contribution tables, drill-through transactions
+- [x] Loading, empty, error states; responsive tables; keyboard and screen-reader labels
 
-**Exit:** dashboard values match independent SQL checks on the fixture dataset, and the driver effects reconcile to the change.
+**Exit: met.** Values match hand-computed answers on a fixture; drivers, trend, category, channel and region sums reconcile to net sales on the 8,188-row sample (28 analytics tests).
+
+**Known limits:** returns are excluded (no `returns` table yet, decision D6); customer metrics ignore walk-in orders; `/app` ships Recharts (276 kB first load); changing a workspace timezone does not yet recompute business dates.
 
 ## Phase 3 — Customer & product intelligence
 

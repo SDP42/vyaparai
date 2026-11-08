@@ -26,6 +26,14 @@ each phase contains and its exit criteria.
 | 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
 | 10 | Recommendations & reporting | 13 | P2 | ⬜ |
 | 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
+| 12 | Daily and weekly digest (push by WhatsApp/email) | - | P1 | ⬜ |
+| 13 | Cash and credit (udhaar) intelligence | - | P1 | ⬜ |
+| 14 | Alerts and anomalies | - | P1 | ⬜ |
+| 15 | Connectors and scheduled imports | - | P1 | ⬜ |
+| 16 | Pricing and promotion advisor | - | P2 | ⬜ |
+| 17 | Multi-store and staff | - | P2 | ⬜ |
+| 18 | Mobile-first (PWA) and Hinglish/Hindi | - | P1 | ⬜ |
+| 19 | Benchmarks and goals | - | P2 | ⬜ |
 
 **MVP journey (blueprint §03):** create workspace → upload retail dataset → map columns →
 review validation → command center → sales investigation → forecast → grounded question.

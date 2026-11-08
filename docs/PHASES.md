@@ -122,13 +122,40 @@ Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.
 - [ ] Product & category contribution, margin and discount analysis
 - [ ] CSV export of segments and product tables
 
-## Phase 4 — Forecasting & predictive MVP
+## Phase 4 — Forecasting & the ML platform ⬜
 
-- [ ] Naive, seasonal-naive and moving-average baselines
-- [ ] Rolling-origin backtests; MAE, RMSE, WAPE vs baseline
-- [ ] One candidate model (statsforecast ETS/AutoARIMA or LightGBM) must beat baseline to ship
-- [ ] Festive-season and wedding-season calendar features (dated holiday table) — see RESEARCH.md
-- [ ] Model metadata + forecast API (7/14/30-day horizons) with intervals and low-confidence flags
+Full plan and justification: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Catalogue: [MODELS.md](MODELS.md).
+
+**4a · Foundations** (2 d)
+- [ ] Generator `--days 730` mode with a known weekly cycle, trend, month-end and festive effects, promotions, stock-outs, intermittent SKUs
+- [ ] Modelling panel (SKU × day, zero-filled, stock-out suspicion flags) and demand-pattern classification (ADI/CV²)
+- [ ] Metrics module (MAE, RMSE, WAPE, sMAPE, MASE, bias, pinball, coverage, forecast value added), unit-tested on known series
+- [ ] Rolling-origin backtester with a single-use holdout; baselines (naive, seasonal naive, moving average, drift)
+
+**4b · Statistical and intermittent models** (2–3 d)
+- [ ] AutoETS, AutoARIMA, Theta, MSTL, Holt-Winters (statsforecast)
+- [ ] Croston, Croston-SBA, TSB, ADIDA/IMAPA for sparse demand
+- [ ] Per-series model selection from backtest error; leaderboard report
+
+**4c · Global machine-learning models** (2–3 d)
+- [ ] Feature builder (lags, rolling stats, calendar, festive-season table, price/discount, category context), leak-free
+- [ ] LightGBM recursive and direct, ridge on lags, random forest reference
+- [ ] LightGBM quantile models (p10/p50/p90)
+
+**4d · Tuning, ensembles, intervals** (3 d)
+- [ ] Optuna (TPE + median pruning) inside rolling-origin folds, seeded, configurable trial budget, every trial logged
+- [ ] Mean/median, weighted and stacked ensembles
+- [ ] Split-conformal intervals with measured coverage
+- [ ] Holdout evaluation and the **ship gate** (must beat seasonal naive)
+- [ ] Optional: Prophet and N-HiTS as candidates (kept only if they win)
+
+**4e · Registry, API and UI** (3 d)
+- [ ] Tables: `model_runs`, `model_versions`, `forecasts`; model card generation
+- [ ] `forecast_training` background job with progress by fold and trial; `POST /forecasts`, `GET /forecasts/{id}`, `GET /models`
+- [ ] Forecast UI: horizon picker (7/14/30), interval band, leaderboard, per-series model, low-confidence flags, model card view
+- [ ] Anomaly detection on daily sales and a demand-pattern view
+
+**Exit:** a reproducible tuned run with a model card; the shipped model beats seasonal naive on the holdout (or the product shows the baseline); interval coverage near nominal; forecast visible in the app.
 
 ## Phase F2 — App shell hardening
 

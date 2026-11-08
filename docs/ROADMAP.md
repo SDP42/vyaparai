@@ -57,7 +57,6 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 
 | Phase | Remaining work | Effort | Depends on |
 |---|---|---|---|
-| 3 | Customer activity and RFM features · segment rules · cohort retention · product/category margin and discount analysis · exports · UI | 4 | Phase 2 |
 | 4 | **4a** data, metrics, backtester, baselines (2 d) · **4b** ETS/ARIMA/Theta + Croston/SBA/TSB (2–3 d) · **4c** features + LightGBM + quantiles (2–3 d) · **4d** Optuna tuning, ensembles, conformal intervals, ship gate (3 d) · **4e** registry, job, API, forecast UI (3 d). See [ML plan](research/PHASE-4-ML-PLAN.md) | 12–14 | Phase 2 |
 | F2 | HttpOnly cookie + refresh tokens · CSRF · generated TypeScript API client · invite members UI · loading/empty/error states · accessibility pass | 3 | Phases 2–4 |
 | 5 | Stock snapshots import · stock cover and reorder point · slow movers · scenario sliders · draft purchase orders needing approval | 4 | Phase 4 |
@@ -69,8 +68,8 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 | 11 | Rate limiting · upload fuzzing · dependency audit · Postgres deployment · backups · runbook · model cards · demo video | 5 | All |
 | M | Recorded (not synthesized) opening audio · short-viewport polish · Lighthouse/accessibility pass | 1–2 | Decision F-A |
 
-**Total remaining to MVP (phases 3, 4, F2):** about 19–22 working days.
-**Total remaining to full blueprint:** about 53 working days.
+**Total remaining to MVP (phases 4, F2):** about 15–18 working days.
+**Total remaining to full blueprint:** about 49 working days.
 
 ## 4. Next up (this session)
 

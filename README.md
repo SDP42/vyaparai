@@ -34,9 +34,10 @@ calculation, and the AI never invents figures.
 | Web app: account → workspace → import wizard → command center → sales explorer | ✅ |
 | **Phase 2 · metric layer, sales analytics, command center, sales explorer** | ✅ |
 | **Phase 4 · forecasting and ML platform** (many models, Optuna tuning, backtests, intervals): plan written | 📝 [ML plan](docs/research/PHASE-4-ML-PLAN.md) · [model catalogue](docs/MODELS.md) |
-| Customers, inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
+| **Phase 3 · customer and product intelligence**: RFM segments, cohorts, ABC, portfolio quadrants, basket pairs, CSV export | ✅ |
+| Inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
 
-**Numbers:** 116 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
+**Numbers:** 170 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
 reconciled counts (8,025 valid / 163 rejected).
 
 ## Repository layout

@@ -9,6 +9,7 @@
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let muted = false;
+let ambienceNodes: { g: GainNode; src: AudioBufferSourceNode; hum: OscillatorNode } | null = null;
 
 export const isMuted = () => muted;
 export function setMuted(m: boolean) {
@@ -100,6 +101,55 @@ export const sfx = {
     n.connect(hp).connect(g).connect(master!);
     n.start(t);
     n.stop(t + 0.2);
+  },
+  /** Key lifted and carried: a soft metallic jingle. */
+  keyMove() {
+    const c = audio();
+    if (!c || muted) return;
+    const t = c.currentTime;
+    [0, 0.05, 0.13, 0.19, 0.3].forEach((d, i) => tick(c, t + d, 4200 + (i % 2) * 900, 0.12 + (i % 3) * 0.04));
+  },
+  /** Key seats fully in the cylinder. */
+  seat() {
+    const c = audio();
+    if (!c || muted) return;
+    const t = c.currentTime;
+    tick(c, t, 2100, 0.35);
+    thud(c, t, 300, 160, 0.15, 0.08);
+  },
+  /** Low shop-room ambience (fan hum + distant street), looped while inside. */
+  ambience(on: boolean) {
+    const c = audio();
+    if (!c) return;
+    if (!on) {
+      if (ambienceNodes) {
+        const { g, src, hum } = ambienceNodes;
+        g.gain.setTargetAtTime(0.0001, c.currentTime, 0.3);
+        src.stop(c.currentTime + 1.2);
+        hum.stop(c.currentTime + 1.2);
+        ambienceNodes = null;
+      }
+      return;
+    }
+    if (ambienceNodes || muted) return;
+    const src = noise(c, 4);
+    src.loop = true;
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 420;
+    const hum = c.createOscillator();
+    hum.frequency.value = 100; // mains-frequency fan hum
+    const humGain = c.createGain();
+    humGain.gain.value = 0.04;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, c.currentTime);
+    g.gain.setTargetAtTime(0.18, c.currentTime, 0.6);
+    src.connect(lp).connect(g);
+    hum.connect(humGain).connect(g);
+    g.connect(master!);
+    src.start();
+    hum.start();
+    ambienceNodes = { g, src, hum };
   },
   /** Key turns: a ratchet of pin clicks. */
   turn() {

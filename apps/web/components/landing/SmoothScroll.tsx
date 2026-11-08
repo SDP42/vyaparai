@@ -20,7 +20,6 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       if (locked) lenis.stop();
       else {
         lenis.start();
-        lenis.scrollTo(0, { immediate: true });
         ScrollTrigger.refresh();
       }
     };

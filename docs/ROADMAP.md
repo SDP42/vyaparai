@@ -25,6 +25,14 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |
 | 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
+| 12 | Daily and weekly digest (push) | ⬜ | Three numbers and one action, by WhatsApp or email |
+| 13 | Cash and credit (udhaar) intelligence | ⬜ | Dues, ageing, who to remind, expected collection |
+| 14 | Alerts and anomalies | ⬜ | Sales drop, margin leak, stock-out risk |
+| 15 | Connectors and scheduled imports | ⬜ | Billing-app and POS exports kept fresh automatically |
+| 16 | Pricing and promotion advisor | ⬜ | Which discounts paid off, safe price moves |
+| 17 | Multi-store and staff | ⬜ | Compare shops, targets, staff roles |
+| 18 | Mobile-first and Hinglish/Hindi | ⬜ | Installable PWA, language, offline read |
+| 19 | Benchmarks and goals | ⬜ | Targets and peer ranges |
 
 **MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app).
 Phases 5–10 are P1/P2 and follow the MVP.

@@ -2,6 +2,12 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-08 (night) · Product-value research, phases 12–19, Phase 4a started
+
+- Researched why owners would use us ([PRODUCT-VALUE.md](research/PRODUCT-VALUE.md)): billing and udhaar apps record, they rarely advise. Added phases 12–19 (digest, credit, alerts, connectors, pricing, multi-store, mobile/Hinglish, goals) and the campaigns plan (3B).
+- Owner feedback: sidebar and demo showed "Phase 2/3" labels on features that now exist. Replaced with real links or "Soon"; the import wizard now links to the dashboards.
+- 4a: `app/services/forecasting/` with error metrics, baselines, rolling-origin backtester, demand classes. 182 tests. Pure Python by design; statsforecast and LightGBM arrive in 4b/4c.
+
 ## 2026-11-08 (evening) · Phase 3 shipped: customer and product intelligence
 
 **Research first** ([PHASE-3-RESEARCH.md](research/PHASE-3-RESEARCH.md)): RFM scoring methods, segment

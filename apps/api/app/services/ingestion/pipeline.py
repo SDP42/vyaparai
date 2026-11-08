@@ -8,10 +8,11 @@ import uuid
 from collections import Counter
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -381,12 +382,26 @@ def _existing(
     return out
 
 
+def to_utc_and_business_date(wall: datetime, timezone: str) -> tuple[datetime, "date"]:
+    """Treat a parsed wall-clock time as being in the workspace timezone.
+
+    Returns the UTC instant to store and the business date (the shopkeeper's calendar day).
+    """
+    try:
+        tz = ZoneInfo(timezone)
+    except ZoneInfoNotFoundError:
+        tz = ZoneInfo("UTC")
+    local = wall.replace(tzinfo=tz)
+    return local.astimezone(UTC), wall.date()
+
+
 def import_lines(
     db: Session,
     *,
     workspace_id: uuid.UUID,
     dataset_id: uuid.UUID,
     currency: str,
+    timezone: str = "Asia/Kolkata",
     validation: Validation,
 ) -> ImportResult:
     """Normalise validated lines into products, customers, orders and order items.
@@ -440,12 +455,14 @@ def import_lines(
         o = orders.get(ln.order_id)
         if o is None:
             cust = customers.get(ln.customer_id) if ln.customer_id else None
+            placed_at, business_date = to_utc_and_business_date(ln.order_date, timezone)
             o = Order(
                 workspace_id=workspace_id,
                 external_key=ln.order_id,
                 customer_id=cust.id if cust else None,
                 dataset_id=dataset_id,
-                order_date=ln.order_date,
+                order_date=placed_at,
+                business_date=business_date,
                 status=ln.status,
                 channel=ln.channel,
                 currency=currency,

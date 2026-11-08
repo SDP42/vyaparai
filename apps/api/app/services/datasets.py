@@ -233,6 +233,7 @@ def run_import_job(engine: Engine, job_id: uuid.UUID, max_rows: int) -> None:
                 workspace_id=workspace.id,
                 dataset_id=dataset.id,
                 currency=workspace.currency,
+                timezone=workspace.timezone,
                 validation=v,
             )
             dataset.status = DatasetStatus.IMPORTED
@@ -283,7 +284,7 @@ def data_summary(db: Session, workspace_id: uuid.UUID) -> dict[str, Any]:
         )
 
     first, last = db.execute(
-        select(func.min(Order.order_date), func.max(Order.order_date)).where(
+        select(func.min(Order.business_date), func.max(Order.business_date)).where(
             Order.workspace_id == workspace_id
         )
     ).one()
@@ -301,7 +302,7 @@ def data_summary(db: Session, workspace_id: uuid.UUID) -> dict[str, Any]:
         "order_items": count(OrderItem),
         "products": count(Product),
         "customers": count(Customer),
-        "date_from": first.date().isoformat() if first else None,
-        "date_to": last.date().isoformat() if last else None,
+        "date_from": first.isoformat() if first else None,
+        "date_to": last.isoformat() if last else None,
         "net_sales_completed": str(round(float(net or 0), 2)),
     }

@@ -5,11 +5,12 @@ sold by weight (common in Indian kirana stores) are representable.
 """
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
 
 from sqlalchemy import (
+    Date,
     DateTime,
     Enum,
     ForeignKey,
@@ -64,6 +65,7 @@ class Order(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base):
     __table_args__ = (
         UniqueConstraint("workspace_id", "external_key"),
         Index("ix_orders_workspace_id_order_date", "workspace_id", "order_date"),
+        Index("ix_orders_workspace_id_business_date", "workspace_id", "business_date"),
     )
 
     external_key: Mapped[str] = mapped_column(String(120))
@@ -74,6 +76,8 @@ class Order(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base):
         Uuid, ForeignKey("datasets.id", ondelete="SET NULL"), index=True
     )
     order_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    # Calendar day in the workspace timezone when the order was placed; analytics buckets by this.
+    business_date: Mapped[date] = mapped_column(Date)
     status: Mapped[OrderStatus] = mapped_column(
         Enum(
             OrderStatus,

@@ -63,24 +63,32 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
 - [x] Responsive at desktop, tablet and mobile; reduced-motion paths; production build passes
 - [x] Key-and-lock opening with HDRI + CC0 PBR textures, slatted shutter, brass padlock, cut key, sound, skip
 - [x] Religious motifs removed
-- [ ] Realism polish: depth of field, bloom, detailed interior goods
-- [ ] Scroll-scrubbed, reversible unlock (0–20–45–60–75–100 %)
-- [ ] Realistic recorded audio, shop interior, ambience
-- [ ] Shop → Vyapar.ai digital transition
+- [x] Realism polish: depth of field, bloom, vignette, film grain, detailed interior goods
+- [x] Scroll-scrubbed, reversible unlock (0–20–45–60–75–100 %)
+- [x] Shop interior (labelled goods, jars, sacks, counter) and ambience; sounds synced to scroll
+- [ ] Recorded (not synthesized) audio
+- [x] Shop → Vyapar.ai hand-off (captions, cream fade, brand reveal, hero)
 - [ ] Short-viewport polish for pinned sections; full visitor-journey test
 
-## Phase 1 — Data ingestion & quality
+## Phase 1 — Data ingestion & quality ✅
 
-- [ ] `POST /workspaces/{id}/datasets` upload (CSV/XLSX), size/row/encoding limits, signature check
-- [ ] SHA-256 file hash → duplicate detection per workspace
-- [ ] Inspection: headers, sample rows, inferred types, date formats, missingness
-- [ ] Column mapping (order date, product, quantity, price, customer, status) with suggestions
-- [ ] Row-level validation; accepted/rejected counts; downloadable error CSV
-- [ ] Staging → transactional normalisation into products/customers/orders/order_items
-- [ ] Background job runner with progress on `GET /jobs/{id}`
-- [ ] Synthetic demo dataset generator with known answers (`scripts/generate_demo_data.py`)
+- [x] `POST /workspaces/{id}/datasets` upload (CSV/XLSX), 25 MB / 200k-row limits, encoding fallback, file-signature check
+- [x] SHA-256 file hash → duplicate detection per workspace (409 with a link to the existing upload)
+- [x] Inspection: headers (blank/duplicate-safe), sample rows, inferred types, missingness
+- [x] Column mapping with synonym-based suggestions (billing-tool headers like "Bill No", "Rate", "Qty")
+- [x] Row-level validation (dates, numbers, ₹/lakh commas, statuses, cross-row order consistency);
+      accepted/rejected counts reconcile; downloadable error CSV
+- [x] Transactional normalisation into products / customers / orders / order_items; re-imports skip
+      orders that already exist (idempotent)
+- [x] Background import job with status on `GET /jobs/{id}`; failures roll back and are recorded
+- [x] Synthetic demo dataset generator with fixed seed (`scripts/generate_demo_data.py`)
+- [x] Frontend: create account → create workspace → 4-step import wizard → data summary + upload history
+- [x] 25 ingestion tests (54 total); end-to-end check on the 8,188-row sample in the browser
 
-**Exit:** the sample file imports reproducibly; rejected rows + counts reconcile.
+**Exit:** met. The sample file imports reproducibly (8,025 valid / 163 rejected; net sales reconcile).
+
+**Known limits:** returns (negative quantities) are rejected for now; a rejected line inside a
+multi-line order leaves the rest of that order imported; job progress jumps 10 → 100 (one transaction).
 
 ## Phase 2 — Metric layer & sales analytics
 

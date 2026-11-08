@@ -5,6 +5,14 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **API:** Phase 1 ingestion: upload (CSV/XLSX), inspection, mapping suggestions, validation,
+  error CSV, background import job, data summary. Migration `56799aeb0cfc`. 25 new tests.
+- **Web:** account creation, workspace setup and a 4-step import wizard on `/app`.
+- **Web:** scroll-driven, reversible key-and-lock opening with depth of field, bloom, interior goods,
+  synced sounds and a hand-off into the landing page.
+- **Scripts:** `generate_demo_data.py` (90-day demo store, clean + messy CSVs).
+
 ### Changed
 - **Web:** landing page reverted to the yellow "Bahi-Khata" design with a new simple hero.
 - **Web:** key-and-lock opening rebuilt with HDRI lighting, CC0 PBR textures, slatted shutter,

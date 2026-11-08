@@ -17,7 +17,7 @@ quantity is `NUMERIC(12,3)` (loose goods sold by weight), never float.
 
 | Table | Key columns | Notes |
 |---|---|---|
-| `datasets` | `name`, `source_filename`, `file_hash` (SHA-256), `file_size_bytes`, `row_count`, `status`, `column_mapping` (JSON) | Unique (`workspace_id`, `file_hash`) → duplicate upload detection |
+| `datasets` | `name`, `source_filename`, `file_type`, `file_hash` (SHA-256), `file_size_bytes`, `row_count`, `status` (uploaded → mapped → validated → imported / failed), `column_mapping` (JSON: fields + date order), `inspection` (JSON), `validation` (JSON summary), `storage_path` | Unique (`workspace_id`, `file_hash`) → duplicate upload detection. Files are stored outside the web root under `STORAGE_DIR/{workspace_id}/` |
 | `jobs` | `job_type` ∈ import/forecast_training/embedding, `status` ∈ queued/running/succeeded/failed/cancelled, `progress` 0–100, `rows_total/accepted/rejected`, `error_message`, `result` | Polled via `GET /jobs/{id}` |
 
 ## Commerce core
@@ -35,7 +35,7 @@ quantity is `NUMERIC(12,3)` (loose goods sold by weight), never float.
 (Phase 6), `documents`, `document_chunks` (Phase 7), `recommendations` (Phase 10). See
 [RESEARCH.md](RESEARCH.md#1-gaps-in-the-blueprint-things-it-implies-but-does-not-define).
 
-## Import file format (Phase 1 target)
+## Import file format (Phase 1)
 
 One row per order line. Column names are free-form; the user maps them in the UI.
 

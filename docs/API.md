@@ -13,7 +13,7 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
   ```json
   {"error": {"code": "not_found", "message": "Workspace not found", "details": null, "request_id": "…"}}
   ```
-  Codes: `bad_request`, `unauthenticated`, `forbidden`, `not_found`, `conflict`, `validation_error`, `internal_error`.
+  Codes: `bad_request`, `unauthenticated`, `forbidden`, `not_found`, `conflict`, `validation_error`, `invalid_mapping`, `invalid_state`, `unsupported_file`, `payload_too_large`, `internal_error`.
 - **Tracing:** send `X-Request-ID` (8–64 chars `[A-Za-z0-9._-]`) or one is generated; it's echoed on every response.
 
 ## Endpoints (implemented)
@@ -32,15 +32,20 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/members` | viewer | List members |
 | POST | `/workspaces/{id}/members` | admin | Add an existing user (only owners can grant owner) |
 | GET | `/workspaces/{id}/audit-logs` | admin | Paginated audit trail |
+| POST | `/workspaces/{id}/datasets` | analyst | Upload CSV/XLSX (multipart `file`, optional `name`) → inspection + suggested mapping. 409 if the same file was already uploaded, 413 too large, 415 unsupported |
 | GET | `/workspaces/{id}/datasets` | viewer | Paginated datasets |
-| GET | `/workspaces/{id}/datasets/{dataset_id}` | viewer | Dataset detail |
-| GET | `/workspaces/{id}/jobs/{job_id}` | viewer | Job status / progress |
+| GET | `/workspaces/{id}/datasets/{dataset_id}` | viewer | Dataset detail incl. `inspection` and `validation` |
+| PUT | `/workspaces/{id}/datasets/{dataset_id}/mapping` | analyst | `{"fields": {canonical: column}, "date_order": "dmy"\|"mdy"\|"ymd"}`; 422 `invalid_mapping` if a required field is missing |
+| POST | `/workspaces/{id}/datasets/{dataset_id}/validate` | analyst | Validate every row → counts, errors by field, sample errors, preview (orders, products, customers, period, net sales) |
+| GET | `/workspaces/{id}/datasets/{dataset_id}/errors.csv` | viewer | Download all rejected rows with reasons |
+| POST | `/workspaces/{id}/datasets/{dataset_id}/import` | analyst | 202 + job; runs in the background in one transaction |
+| GET | `/workspaces/{id}/jobs/{job_id}` | viewer | Job status, counts and result |
+| GET | `/workspaces/{id}/data-summary` | viewer | Orders, line items, products, customers, period, net sales in the workspace |
 
 ## Planned
 
 | Phase | Endpoint |
 |---|---|
-| 1 | `POST /workspaces/{id}/datasets` (upload) · `POST …/datasets/{id}/mapping` · `POST …/datasets/{id}/import` · `GET …/datasets/{id}/errors.csv` |
 | 2 | `GET /workspaces/{id}/analytics/sales` · `GET …/metrics` (registry) · `GET …/analytics/drivers` |
 | 4 | `POST /workspaces/{id}/forecasts` · `GET …/forecasts/{id}` |
 | 7 | `GET /workspaces/{id}/documents/search` |

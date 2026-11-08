@@ -2,6 +2,31 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-08 · Opening finished · Phase 1 ingestion shipped
+
+**Opening**
+- Now a pinned 700vh section instead of a fixed overlay. Click the key: it arcs to the padlock,
+  rolls into orientation and enters the keyway (time-based). Then **scroll drives** a paused GSAP
+  timeline: settle (0–20 %) → turn (20–45 %) → release (45–60 %) → padlock opens and falls (60–75 %) →
+  shutter rises slat by slat (75–100 %) → walk-in. It's fully reversible.
+- Post-processing: depth of field that auto-focuses on the camera target, bloom on the sign, tube light
+  and interior, vignette and grain (off on low-power devices).
+- Interior: generic, unbranded labelled packets (canvas label atlas), glass jars, grain sacks and a
+  glass-top counter. Sounds fire on forward threshold crossings; shop ambience loops inside.
+- Hand-off: captions → cream fade → "VYAPAR.ai · Unlock the intelligence behind your business" → hero.
+  The navigation stays hidden while the opening is on screen.
+
+**Phase 1: ingestion**
+- Backend: `services/ingestion/{fields,reader,parsing,pipeline}.py`, `services/datasets.py`, new
+  endpoints, migration `56799aeb0cfc` (dataset inspection/validation/storage columns).
+- Indian-format parsing: ₹ symbols, lakh commas, day-first dates, bill-style headers.
+- Import re-validates (single source of truth), runs in one transaction, skips existing orders.
+- 8,188-row sample: 8,025 valid / 163 rejected; imported net sales ₹23,90,515.55 = validation preview.
+- Frontend: create account, create workspace, 4-step wizard (upload → map → review → import),
+  data summary tiles, upload history, duplicate-upload handling, error CSV download.
+- Fixed two client bugs before they shipped: polling cancelled by parent re-renders, and StrictMode
+  double-mount (import start is now deduped per dataset).
+
 ## 2026-11-07 (late) · Back to the yellow design + a realistic opening
 
 - Owner feedback: the dark/blue 10-section landing felt wrong; the earlier **yellow** design (its

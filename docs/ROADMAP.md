@@ -1,6 +1,6 @@
 # Roadmap & status
 
-_Last updated: 2026-11-07 (late)_
+_Last updated: 2026-11-08_
 
 Legend: ✅ done · 🟡 in progress · ⬜ not started · ⏸ blocked / decision needed
 
@@ -17,20 +17,20 @@ work: **landing page first**, then the photoreal opening.
 |---|---|---|
 | 1 · Inspect repo & visual direction | ✅ | Report: `docs/frontend/PHASE-1-REPORT.md` |
 | 6 · Main landing page | ✅ | **Owner reverted to the yellow "Bahi-Khata" design** (simple hero, story scroll, zoom reveal, features, principles, CTA); dark/blue 10-section version removed |
-| 2 · Realistic key, lock, shutter, storefront | 🟡 | Night scene with CC0 HDRI + PBR textures, slatted shutter, bevelled brass padlock, cut key, backlit sign. Needs a realism review and depth of field |
-| 3 · Click + scroll-controlled unlock (0–20–45–60–75–100 %) | 🟡 | Click-to-unlock works (time-based); scroll-scrubbed, reversible version pending |
-| 4 · Audio + cinematic shop opening | 🟡 | Synthesized key/lock/shutter sounds work; realistic recorded audio + interior pending |
-| 5 · Shop → Vyapar.ai digital transition | ⬜ | |
+| 2 · Realistic key, lock, shutter, storefront | ✅ | CC0 HDRI + PBR textures, slatted shutter, brass padlock, cut key, backlit sign; depth of field, bloom, vignette, grain |
+| 3 · Click + scroll-controlled unlock (0–20–45–60–75–100 %) | ✅ | Click inserts the key; a pinned 700vh section scrubs settle → turn → release → open → shutter → walk-in; reversible |
+| 4 · Audio + cinematic shop opening | 🟡 | Interior with labelled goods; sounds synced to scroll (synthesized). Recorded CC0 audio still pending (decision F-A) |
+| 5 · Shop → Vyapar.ai transition | ✅ | "Your business is open." → "Now, let's make it intelligent." → cream fade → VYAPAR.ai → hero |
 | 7 · Integrate + polish responsiveness | 🟡 | Desktop + mobile checked; short-height laptops crop pinned headings |
-| 8 · Full visitor-journey test | ⬜ | |
+| 8 · Full visitor-journey test | ⏸ | Needs a visual pass with the browser visible (the 3D can't render in a hidden preview pane) |
 
 ## Product / backend phases
 
 | Phase | Status | Notes |
 |---|---|---|
 | 0 · Foundation & discovery | ✅ code · ⏸ decisions | Backend skeleton, auth, tenancy, migrations, CI done |
-| 1 · Data ingestion & quality | ⬜ | Paused during the frontend stage |
-| 2 · Metric layer & sales analytics | ⬜ | |
+| 1 · Data ingestion & quality | ✅ | Upload → inspect → map → validate → import, error CSV, background job, demo data, UI wizard, 25 tests |
+| 2 · Metric layer & sales analytics | ⬜ | **Next up**: canonical metrics on the imported data + command center |
 | 3 · Customer & product intelligence | ⬜ | |
 | 4 · Forecasting | ⬜ | |
 | F2 · App shell on real APIs | ⬜ | |
@@ -74,6 +74,12 @@ work: **landing page first**, then the photoreal opening.
 - GitHub Actions CI; issue & PR templates
 
 ## Next up
+
+1. **Phase 2 · metric layer + command center**: net sales, gross profit, orders, AOV, period
+   comparison, drivers (volume / price / mix), dashboard on real imported data.
+2. Visual QA of the opening with the browser visible; then recorded CC0 audio (F-A).
+
+### Previously listed
 
 1. **Frontend Phase 2 · photoreal storefront**: HDRI lighting, CC0 PBR textures (painted
    metal shutter, granite, concrete), a detailed brass padlock and nickel key, an individual-slat

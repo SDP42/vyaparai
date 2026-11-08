@@ -54,14 +54,14 @@ class ProductPerf:
         return self.gross - self.discount
 
 
-def _pct(a: Decimal, b: Decimal) -> Decimal | None:
+def pct(a: Decimal, b: Decimal) -> Decimal | None:
     return None if b == 0 else (a / b * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 def overall_margin(rows: list[ProductPerf]) -> Decimal | None:
     covered = sum((r.covered_net for r in rows), ZERO)
     cogs = sum((r.cogs for r in rows), ZERO)
-    return _pct(covered - cogs, covered)
+    return pct(covered - cogs, covered)
 
 
 def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
@@ -69,7 +69,7 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
     total_net = sum((r.net for r in rows), ZERO)
     total_gross = sum((r.gross for r in rows), ZERO)
     total_discount = sum((r.discount for r in rows), ZERO)
-    overall_discount = _pct(total_discount, total_gross) or ZERO
+    overall_discount = pct(total_discount, total_gross) or ZERO
     margin_ref = overall_margin(rows)
     sellers = [r.units for r in rows if r.units > 0]
     unit_median = Decimal(str(median(sellers))) if sellers else ZERO
@@ -78,11 +78,11 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     cum_before = ZERO
     for r in sorted(rows, key=lambda x: x.net, reverse=True):
-        share = _pct(r.net, total_net)
+        share = pct(r.net, total_net)
         abc = "A" if cum_before < A_LIMIT else "B" if cum_before < B_LIMIT else "C"
         cum_before += share or ZERO
         gp = r.covered_net - r.cogs
-        margin = _pct(gp, r.covered_net)
+        margin = pct(gp, r.covered_net)
         popular = r.units >= unit_median
         if margin is None or margin_ref is None:
             quadrant = "Unknown"
@@ -93,7 +93,7 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
                 if popular
                 else ("Puzzle" if profitable else "Dog")
             )
-        discount_rate = _pct(r.discount, r.gross)
+        discount_rate = pct(r.discount, r.gross)
         flags = []
         if discount_rate is not None and discount_rate >= discount_cut:
             flags.append("discount_heavy")
@@ -118,10 +118,10 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
                 "gross": money(r.gross),
                 "discount": money(r.discount),
                 "discount_rate": discount_rate,
-                "discounted_line_share": _pct(Decimal(r.discounted_lines), Decimal(r.lines)),
+                "discounted_line_share": pct(Decimal(r.discounted_lines), Decimal(r.lines)),
                 "margin_amount": money(gp) if r.covered_net else None,
                 "margin_pct": margin,
-                "cost_coverage_pct": _pct(r.covered_net, r.net),
+                "cost_coverage_pct": pct(r.covered_net, r.net),
                 "share": share,
                 "cumulative_share": min(Decimal(100), cum_before).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
@@ -159,11 +159,11 @@ def by_category(rows: list[ProductPerf]) -> list[dict[str, Any]]:
                 "products": len(members),
                 "units": sum((m.units for m in members), ZERO),
                 "net": money(net),
-                "share": _pct(net, total_net),
-                "discount_rate": _pct(discount, gross),
+                "share": pct(net, total_net),
+                "discount_rate": pct(discount, gross),
                 "margin_amount": money(covered - cogs) if covered else None,
-                "margin_pct": _pct(covered - cogs, covered),
-                "cost_coverage_pct": _pct(covered, net),
+                "margin_pct": pct(covered - cogs, covered),
+                "cost_coverage_pct": pct(covered, net),
                 "previous_net": money(prev) if prev is not None else None,
                 "change_pct": (
                     ((net - prev) / prev * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)

@@ -303,3 +303,26 @@ def test_suggest_mapping_prefers_exact_matches() -> None:
     assert m["order_date"] == "InvoiceDate"
     assert m["unit_price"] == "UnitPrice"
     assert m["customer_id"] == "CustomerID"
+
+
+# ---------- business date (timezone day boundaries) ----------
+
+
+def test_business_date_uses_the_shopkeepers_day() -> None:
+    from datetime import date
+
+    from app.services.ingestion.pipeline import to_utc_and_business_date
+
+    # 00:30 on 5 Oct in India is still 4 Oct in UTC, but the sale belongs to 5 Oct.
+    utc, day = to_utc_and_business_date(datetime(2026, 10, 5, 0, 30), "Asia/Kolkata")
+    assert day == date(2026, 10, 5)
+    assert utc == datetime(2026, 10, 4, 19, 0, tzinfo=UTC)
+
+    utc, day = to_utc_and_business_date(datetime(2026, 10, 5, 23, 45), "Asia/Kolkata")
+    assert day == date(2026, 10, 5)
+    assert utc == datetime(2026, 10, 5, 18, 15, tzinfo=UTC)
+
+    # an unknown timezone falls back to UTC instead of failing the import
+    utc, day = to_utc_and_business_date(datetime(2026, 10, 5, 12, 0), "Not/AZone")
+    assert utc == datetime(2026, 10, 5, 12, 0, tzinfo=UTC)
+    assert day == date(2026, 10, 5)

@@ -10,14 +10,15 @@ import { KPIS, RECOMMENDATIONS, TOP_PRODUCTS, salesSeries } from "@/lib/demo-dat
 import { formatINR, formatPct } from "@/lib/format";
 import { getPersona, type Persona, type PersonaId } from "@/lib/personas";
 
+// `live` features exist and work with a real account; the demo persona has no data, so they lead to sign-in.
 const NAV = [
-  { label: "Overview", phase: null },
-  { label: "Sales", phase: "Phase 2" },
-  { label: "Customers", phase: "Phase 3" },
-  { label: "Forecasts", phase: "Phase 4" },
-  { label: "Inventory", phase: "Phase 5" },
-  { label: "Knowledge", phase: "Phase 7" },
-  { label: "Copilot", phase: "Phase 8" },
+  { label: "Overview", live: false, soon: false },
+  { label: "Sales", live: true, soon: false },
+  { label: "Customers", live: true, soon: false },
+  { label: "Products", live: true, soon: false },
+  { label: "Forecasts", live: false, soon: true },
+  { label: "Inventory", live: false, soon: true },
+  { label: "Copilot", live: false, soon: true },
 ];
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -39,19 +40,24 @@ export function DemoDashboard({ personaId, onSignOut }: { personaId: PersonaId; 
           <p className="mt-1 truncate text-sm font-semibold">{persona?.business.split(" · ")[0] ?? "My workspace"}</p>
         </div>
         <nav className="mt-6 flex flex-col gap-1" aria-label="App">
-          {NAV.map((n, i) => (
-            <span
-              key={n.label}
-              aria-current={i === 0 ? "page" : undefined}
-              aria-disabled={n.phase ? true : undefined}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
-                i === 0 ? "bg-surface-2 text-fg" : "text-fg/40"
-              }`}
-            >
-              {n.label}
-              {n.phase && <span className="font-mono text-[9px] uppercase tracking-wider text-muted">{n.phase}</span>}
-            </span>
-          ))}
+          {NAV.map((n, i) =>
+            n.live ? (
+              <Link key={n.label} href="/login" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-fg/70 hover:bg-surface-2/60 hover:text-fg">
+                {n.label}
+                <span className="font-mono text-[9px] uppercase tracking-wider text-mor">Sign in</span>
+              </Link>
+            ) : (
+              <span
+                key={n.label}
+                aria-current={i === 0 ? "page" : undefined}
+                aria-disabled={n.soon ? true : undefined}
+                className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${i === 0 ? "bg-surface-2 text-fg" : "text-fg/40"}`}
+              >
+                {n.label}
+                {n.soon && <span className="font-mono text-[9px] uppercase tracking-wider text-muted">Soon</span>}
+              </span>
+            ),
+          )}
         </nav>
         <div className="mt-auto flex items-center gap-3 border-t border-line pt-4">
           <span
@@ -106,16 +112,23 @@ export function DemoDashboard({ personaId, onSignOut }: { personaId: PersonaId; 
           <ul className="flex w-max gap-2">
             {NAV.map((n, i) => (
               <li key={n.label}>
-                <span
-                  aria-current={i === 0 ? "page" : undefined}
-                  aria-disabled={n.phase ? true : undefined}
-                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs ${
-                    i === 0 ? "border-fg bg-fg text-canvas" : "border-line text-fg/45"
-                  }`}
-                >
-                  {n.label}
-                  {n.phase && <span className="font-mono text-[9px] text-muted">{n.phase.replace("Phase ", "P")}</span>}
-                </span>
+                {n.live ? (
+                  <Link href="/login" className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs text-fg/70">
+                    {n.label}
+                    <span className="font-mono text-[9px] text-mor">Sign in</span>
+                  </Link>
+                ) : (
+                  <span
+                    aria-current={i === 0 ? "page" : undefined}
+                    aria-disabled={n.soon ? true : undefined}
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs ${
+                      i === 0 ? "border-fg bg-fg text-canvas" : "border-line text-fg/45"
+                    }`}
+                  >
+                    {n.label}
+                    {n.soon && <span className="font-mono text-[9px] text-muted">Soon</span>}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

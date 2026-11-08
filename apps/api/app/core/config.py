@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     log_json: bool = True
 
     max_upload_size_mb: int = 25
+    max_upload_rows: int = 200_000
+    storage_dir: str = "./storage"
 
     @property
     def is_production(self) -> bool:

@@ -4,6 +4,10 @@ os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("LOG_JSON", "false")
 os.environ.setdefault("LOG_LEVEL", "WARNING")
 
+import tempfile
+
+os.environ.setdefault("STORAGE_DIR", tempfile.mkdtemp(prefix="vyapar-test-storage-"))
+
 from collections.abc import Callable, Iterator
 
 import pytest

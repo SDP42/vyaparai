@@ -21,3 +21,15 @@ app/
 ├── services/      domain logic + transactions + audit
 └── api/           deps (auth, workspace RBAC) and v1 routers
 ```
+
+## Local demo data
+
+```bash
+python ../../scripts/generate_demo_data.py   # writes data/sample/vyapar_demo_sales{,_messy}.csv
+```
+
+The web app's import wizard also has a **Try the sample file** button (`apps/web/public/samples/`).
+
+A local-only test account was created in the dev SQLite database while building Phase 1:
+`demo.owner@example.com` / `vyapar-demo-2026` (workspace "Kulkarni General Stores", sample data
+imported). It exists only in your local `vyapar_dev.db`; delete that file to start fresh.

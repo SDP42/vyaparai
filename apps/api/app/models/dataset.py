@@ -57,6 +57,10 @@ class Dataset(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base):
         _enum(DatasetStatus), default=DatasetStatus.UPLOADED
     )
     column_mapping: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    file_type: Mapped[str | None] = mapped_column(String(10))
+    storage_path: Mapped[str | None] = mapped_column(String(500))
+    inspection: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    validation: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     created_by_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL")
     )

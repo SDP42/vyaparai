@@ -1,17 +1,32 @@
 # apps/web: Vyapar AI frontend
 
-Next.js (App Router) + TypeScript + Tailwind v4 · React Three Fiber · GSAP ScrollTrigger · Lenis · Motion.
+Next.js 15 (App Router) · TypeScript · Tailwind v4 · React Three Fiber · GSAP ScrollTrigger · Lenis · Motion.
 
 ```bash
 cp .env.example .env.local
 npm install
-npm run dev     # http://localhost:3000
+npm run dev        # http://localhost:3000
+npm run lint       # tsc --noEmit
+npm run build
 ```
 
 | Route | What |
 |---|---|
-| `/` | Landing page: shattering-word 3D hero, scroll story, zoom reveal, features, principles |
-| `/login` | Persona chooser (demo) + email sign-in against the API |
-| `/app` | Persona-aware dashboard (demo data until Phase F2) |
+| `/` | Cinematic key-and-lock opening (pinned, scroll-driven) → landing page |
+| `/login` | Persona demo, or sign in / create an account against the API |
+| `/app` | Account: command center · Persona: illustrative demo dashboard |
+| `/app/sales` | Sales explorer: drivers, contributions, drill-through (Phase 2) |
+| `/app/data` | Imports: upload → map → review → import |
 
-Design tokens: `app/globals.css`. Design rationale: [docs/DESIGN_SYSTEM.md](../../docs/DESIGN_SYSTEM.md).
+```
+app/                 routes
+components/
+  opening/           3D opening (ShopScene, CinematicOpening)
+  landing/           landing sections
+  app/               product UI (import wizard, dashboards, charts)
+lib/                 api client, session, sound effects, formatting (en-IN), demo data
+public/assets/       CC0 HDRI + PBR textures (see LICENSES.md), sample CSV
+```
+
+Design tokens: `app/globals.css`. Rationale: [docs/DESIGN_SYSTEM.md](../../docs/DESIGN_SYSTEM.md).
+The API base URL comes from `NEXT_PUBLIC_API_URL` (default `http://localhost:8000/api/v1`).

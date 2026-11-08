@@ -37,8 +37,8 @@ calculation, and the AI never invents figures.
 | **Phase 3 · customer and product intelligence**: RFM segments, cohorts, ABC, portfolio quadrants, basket pairs, CSV export | ✅ |
 | Inventory, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) |
 
-**Numbers:** 170 backend tests · strict mypy · ruff clean · 8,188-row sample imports with
-reconciled counts (8,025 valid / 163 rejected).
+**Numbers:** 170 backend tests · strict mypy · ruff clean · sample file (40 products, about 8,100 lines) imports with
+reconciled counts.
 
 ## Repository layout
 

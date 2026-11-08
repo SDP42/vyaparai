@@ -76,11 +76,13 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
     discount_cut = max(DISCOUNT_HEAVY_MIN, overall_discount * 2)
 
     out: list[dict[str, Any]] = []
-    cum_before = ZERO
+    cum_net = ZERO  # accumulate exact amounts: summing rounded shares drifts below 100 %
     for r in sorted(rows, key=lambda x: x.net, reverse=True):
         share = pct(r.net, total_net)
+        cum_before = cum_net / total_net * 100 if total_net else ZERO
         abc = "A" if cum_before < A_LIMIT else "B" if cum_before < B_LIMIT else "C"
-        cum_before += share or ZERO
+        cum_net += r.net
+        cum_after = cum_net / total_net * 100 if total_net else ZERO
         gp = r.covered_net - r.cogs
         margin = pct(gp, r.covered_net)
         popular = r.units >= unit_median
@@ -123,7 +125,7 @@ def classify(rows: list[ProductPerf]) -> list[dict[str, Any]]:
                 "margin_pct": margin,
                 "cost_coverage_pct": pct(r.covered_net, r.net),
                 "share": share,
-                "cumulative_share": min(Decimal(100), cum_before).quantize(
+                "cumulative_share": min(Decimal(100), cum_after).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
                 ),
                 "abc": abc,

@@ -6,7 +6,7 @@ import { useState, type FormEvent, type PointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Logo } from "@/components/landing/Nav";
 import { PERSONAS, type Persona } from "@/lib/personas";
-import { loginWithPassword, saveSession } from "@/lib/session";
+import { loginWithPassword, registerAccount, saveSession } from "@/lib/session";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -89,7 +89,7 @@ export default function LoginPage() {
               className="text-sm text-fg/60 underline decoration-line underline-offset-4 transition-colors hover:text-fg"
               aria-expanded={showForm}
             >
-              {showForm ? "Hide email sign-in" : "Have an account? Sign in with email"}
+              {showForm ? "Hide email sign-in" : "Use your own data: sign in or create an account"}
             </button>
             <AnimatePresence initial={false}>{showForm && <EmailForm onDone={() => router.push("/app")} />}</AnimatePresence>
           </div>
@@ -185,16 +185,23 @@ function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onCho
 }
 
 function EmailForm({ onDone }: { onDone: () => void }) {
+  const [mode, setMode] = useState<"signin" | "register">("signin");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const email = String(fd.get("email") ?? "");
+    const password = String(fd.get("password") ?? "");
     setBusy(true);
     setError(null);
     try {
-      saveSession(await loginWithPassword(String(fd.get("email")), String(fd.get("password"))));
+      const session =
+        mode === "register"
+          ? await registerAccount(String(fd.get("name") ?? ""), email, password)
+          : await loginWithPassword(email, password);
+      saveSession(session);
       onDone();
     } catch (err) {
       setError(err instanceof Error && err.message !== "Failed to fetch" ? err.message : "Could not reach the API. Is it running on port 8000?");
@@ -202,6 +209,8 @@ function EmailForm({ onDone }: { onDone: () => void }) {
       setBusy(false);
     }
   };
+
+  const input = "w-full rounded-xl border border-line bg-surface px-4 py-3 text-fg outline-none transition-colors focus:border-haldi";
 
   return (
     <motion.form
@@ -214,13 +223,43 @@ function EmailForm({ onDone }: { onDone: () => void }) {
       noValidate
     >
       <div className="space-y-3 pt-5">
+        <div role="tablist" aria-label="Account" className="flex gap-1 rounded-full border border-line bg-surface p-1 text-sm">
+          {(["signin", "register"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="tab"
+              aria-selected={mode === m}
+              onClick={() => {
+                setMode(m);
+                setError(null);
+              }}
+              className={`flex-1 rounded-full py-1.5 transition-colors ${mode === m ? "bg-fg text-canvas" : "text-fg/60 hover:text-fg"}`}
+            >
+              {m === "signin" ? "Sign in" : "Create account"}
+            </button>
+          ))}
+        </div>
+        {mode === "register" && (
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-fg/60">Full name</span>
+            <input name="name" type="text" required autoComplete="name" className={input} />
+          </label>
+        )}
         <label className="block">
           <span className="mb-1.5 block text-xs text-fg/60">Email</span>
-          <input name="email" type="email" required autoComplete="email" className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-fg outline-none transition-colors focus:border-haldi" />
+          <input name="email" type="email" required autoComplete="email" className={input} />
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-xs text-fg/60">Password</span>
-          <input name="password" type="password" required autoComplete="current-password" className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-fg outline-none transition-colors focus:border-haldi" />
+          <span className="mb-1.5 block text-xs text-fg/60">Password{mode === "register" ? " (10+ characters)" : ""}</span>
+          <input
+            name="password"
+            type="password"
+            required
+            minLength={mode === "register" ? 10 : undefined}
+            autoComplete={mode === "register" ? "new-password" : "current-password"}
+            className={input}
+          />
         </label>
         {error && (
           <p role="alert" className="text-sm text-sindoor">
@@ -232,7 +271,7 @@ function EmailForm({ onDone }: { onDone: () => void }) {
           disabled={busy}
           className="w-full rounded-xl bg-fg py-3 font-semibold text-canvas transition-colors hover:bg-sindoor disabled:opacity-60"
         >
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? "Please wait…" : mode === "register" ? "Create account" : "Sign in"}
         </button>
       </div>
     </motion.form>

@@ -51,3 +51,17 @@ export async function loginWithPassword(email: string, password: string): Promis
   const user = me.ok ? ((await me.json()) as { email: string; full_name: string }) : { email, full_name: email };
   return { kind: "account", email: user.email, name: user.full_name, token: access_token };
 }
+
+export async function registerAccount(fullName: string, email: string, password: string): Promise<Session> {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, full_name: fullName, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    const detail = data?.error?.details?.[0]?.msg as string | undefined;
+    throw new Error(detail ? `${data?.error?.message}: ${detail}` : (data?.error?.message ?? "Could not create the account"));
+  }
+  return loginWithPassword(email, password);
+}

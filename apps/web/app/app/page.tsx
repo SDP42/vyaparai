@@ -11,6 +11,7 @@ import { KPIS, RECOMMENDATIONS, TOP_PRODUCTS, salesSeries } from "@/lib/demo-dat
 import { formatINR, formatPct } from "@/lib/format";
 import { getPersona, type Persona } from "@/lib/personas";
 import { clearSession, loadSession, type Session } from "@/lib/session";
+import { AccountHome } from "@/components/app/AccountHome";
 
 const NAV = [
   { label: "Overview", phase: null },
@@ -42,6 +43,9 @@ export default function AppHome() {
     clearSession();
     router.push("/login");
   };
+
+  // Signed-in accounts get the real workspace (data import); personas keep the demo dashboard.
+  if (session.kind === "account") return <AccountHome name={session.name} onSignOut={signOut} />;
 
   return (
     <div className="min-h-dvh bg-canvas md:grid md:grid-cols-[240px_1fr]">

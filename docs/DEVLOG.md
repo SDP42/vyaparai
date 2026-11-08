@@ -2,6 +2,22 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-08 (evening) · Phase 3 shipped: customer and product intelligence
+
+**Research first** ([PHASE-3-RESEARCH.md](research/PHASE-3-RESEARCH.md)): RFM scoring methods, segment
+naming, cohort retention, ABC and menu-engineering quadrants, market-basket measures.
+
+**Backend.** Scoring, segments, status, cohorts, product classification, basket pairs and CSV export
+under `/analytics/customers/*`, `/analytics/products*`, `/analytics/basket`. Registry v2 adds four
+customer metrics. 170 tests, including hand-computed fixtures and reconciliation on the 8,188-row sample.
+Fixed a sort bug found by the tests (recency sort returned most recent first).
+
+**Frontend.** `/app/customers` (tiles, segments, activity, R×F grid, cohort heatmap, filterable list,
+CSV) and `/app/products` (portfolio, ABC, categories, product table, basket pairs, CSV). Checked in the
+browser. A stale `.next` cache after adding routes caused 404s for `main-app.js`; clearing it fixed it.
+
+**Next:** Phase 4a (forecasting foundations).
+
 ## 2026-11-08 (later) · Phase 2 shipped; ML plan written
 
 **Research first.** Looked up price-volume-mix conventions, retail KPI definitions, comparison

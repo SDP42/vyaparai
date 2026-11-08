@@ -72,8 +72,31 @@ These are arithmetic attributions of a change, **not** proof of cause.
 - Orders without a customer (walk-ins), which limit customer metrics
 - Current period starts before the first order date
 
+## Customer and product rules (Phase 3)
+
+**RFM scoring.** Recency, frequency (orders) and monetary (net sales) over a lookback window
+(default 365 days). Each score is 1–5 from a tie-fair percentile: `pct = (worse + 0.5 × equal) / n`,
+`score = min(5, floor(pct × 5) + 1)`; recency is reversed so 5 = most recent.
+
+**Segments (first match wins).** Champions R≥4 ∧ F≥4 · Loyal R≥3 ∧ F≥3 · New: one order and first
+order within 30 days · Promising R≥4 · Needs attention R=3 · Can't lose R≤2 ∧ F≥4 ∧ M≥4 ·
+At risk R≤2 ∧ F≥3 · Hibernating (the rest).
+
+**Activity status** (absolute, not relative): Active ≤ 30 days since last order, Lapsed ≥ 45 days,
+Cooling in between.
+
+**Products.** Margin uses only lines with a cost. ABC by cumulative net share: A to 80 %, B to
+95 %, C the rest (a product crossing a boundary keeps the better class). Quadrants: popular = units
+≥ median; profitable = margin % ≥ overall margin %; no cost → Unknown. Discount-heavy = discount rate
+≥ max(3 %, 2 × overall). Declining / rising = ±20 % vs the comparison period.
+
+**Basket.** Support = orders with both ÷ orders; confidence A→B = both ÷ orders with A; lift =
+support ÷ (support A × support B). Pairs need `min_orders`; top 60 products by sales; orders with more
+than 25 products are skipped. Lift shows association, not causation.
+
 ## Change log
 
 | Version | Date | Change |
 |---|---|---|
 | 1 | 2026-11-08 | First registry: sales, profit, order and customer metrics; PVM drivers |
+| 2 | 2026-11-08 | Added `repeat_rate`, `revenue_per_customer`, `top_decile_share`, `lapsed_regulars` (each v1); existing metrics unchanged |

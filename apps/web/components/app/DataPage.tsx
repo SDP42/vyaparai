@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Logo } from "@/components/landing/Nav";
-import { ApiError, api, type DataSummary, type Dataset, type Page, type Workspace } from "@/lib/api";
+import { useCallback, useEffect, useState } from "react";
+import { api, type DataSummary, type Dataset, type Page } from "@/lib/api";
 import { formatINR, formatNumber } from "@/lib/format";
+import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { ImportWizard } from "./ImportWizard";
 
 const STATUS: Record<Dataset["status"], { label: string; cls: string }> = {
@@ -15,93 +14,10 @@ const STATUS: Record<Dataset["status"], { label: string; cls: string }> = {
   failed: { label: "Failed", cls: "bg-sindoor/10 text-sindoor" },
 };
 
-/** Real workspace home for signed-in accounts: create a workspace, then manage data imports. */
-export function AccountHome({ name, onSignOut }: { name: string; onSignOut: () => void }) {
-  const [workspaces, setWorkspaces] = useState<Workspace[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    try {
-      setWorkspaces(await api<Workspace[]>("/workspaces"));
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Could not load workspaces");
-    }
-  }, []);
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  const ws = workspaces?.[0];
-
-  return (
-    <div className="min-h-dvh bg-canvas">
-      <header className="sticky top-0 z-20 border-b border-line bg-canvas/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <Link href="/" aria-label="Vyapar AI home">
-            <Logo />
-          </Link>
-          <div className="flex items-center gap-3 text-sm">
-            {ws && <span className="hidden rounded-full border border-line px-3 py-1 sm:inline">{ws.name}</span>}
-            <span className="hidden text-muted sm:inline">{name}</span>
-            <button type="button" onClick={onSignOut} className="rounded-full border border-line px-3 py-1 text-muted hover:text-fg">
-              Sign out
-            </button>
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-5 py-8">
-        {error && (
-          <p role="alert" className="rounded-xl border border-sindoor/30 bg-sindoor/5 p-4 text-sm text-sindoor">
-            {error}
-          </p>
-        )}
-        {workspaces === null && !error && <p className="text-muted">Loading…</p>}
-        {workspaces && !ws && <CreateWorkspace onCreated={load} />}
-        {ws && <DataHome workspace={ws} />}
-      </main>
-    </div>
-  );
-}
-
-function CreateWorkspace({ onCreated }: { onCreated: () => void }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    setBusy(true);
-    setError(null);
-    try {
-      await api("/workspaces", { method: "POST", body: JSON.stringify({ name: String(fd.get("name") ?? "") }) });
-      onCreated();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not create the workspace");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <form onSubmit={submit} className="mx-auto mt-10 max-w-md rounded-3xl border border-line bg-surface p-8">
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">Step 1 of 2</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight">Name your business</h1>
-      <p className="mt-2 text-sm text-muted">A workspace keeps one business&apos;s data private. You can invite your team later.</p>
-      <label className="mt-6 block">
-        <span className="mb-1.5 block text-xs text-muted">Business name</span>
-        <input name="name" required minLength={2} placeholder="e.g. Kulkarni General Stores" className="w-full rounded-xl border border-line bg-canvas px-4 py-3 outline-none focus:border-haldi" />
-      </label>
-      {error && (
-        <p role="alert" className="mt-3 text-sm text-sindoor">
-          {error}
-        </p>
-      )}
-      <button type="submit" disabled={busy} className="mt-5 w-full rounded-xl bg-fg py-3 font-semibold text-canvas hover:bg-sindoor disabled:opacity-60">
-        {busy ? "Creating…" : "Create workspace"}
-      </button>
-    </form>
-  );
-}
-
-function DataHome({ workspace }: { workspace: Workspace }) {
+/** Imports: upload → map → review → import, plus the upload history. */
+export function DataPage() {
+  const { workspace, canImport } = useWorkspace();
+  const { refreshOptions } = useAnalyticsState();
   const base = `/workspaces/${workspace.id}`;
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [summary, setSummary] = useState<DataSummary | null>(null);
@@ -116,7 +32,12 @@ function DataHome({ workspace }: { workspace: Workspace }) {
     refresh().catch(() => {});
   }, [refresh]);
 
-  const canImport = ["owner", "admin", "analyst"].includes(workspace.role);
+  // After an import, the metric layer has new data: refresh the shared analytics state too.
+  const onChanged = useCallback(() => {
+    refresh().catch(() => {});
+    refreshOptions().catch(() => {});
+  }, [refresh, refreshOptions]);
+
   const empty = summary && summary.orders === 0;
 
   return (
@@ -124,14 +45,10 @@ function DataHome({ workspace }: { workspace: Workspace }) {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Your data</h1>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Data</h1>
         </div>
         {canImport && !wizard.open && (
-          <button
-            type="button"
-            onClick={() => setWizard({ open: true, dataset: null })}
-            className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor"
-          >
+          <button type="button" onClick={() => setWizard({ open: true, dataset: null })} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor">
             + Import sales data
           </button>
         )}
@@ -152,21 +69,13 @@ function DataHome({ workspace }: { workspace: Workspace }) {
         </p>
       )}
 
-      {wizard.open && (
-        <ImportWizard
-          workspaceId={workspace.id}
-          initial={wizard.dataset}
-          onChanged={() => refresh().catch(() => {})}
-          onClose={() => setWizard({ open: false, dataset: null })}
-        />
-      )}
+      {wizard.open && <ImportWizard workspaceId={workspace.id} initial={wizard.dataset} onChanged={onChanged} onClose={() => setWizard({ open: false, dataset: null })} />}
 
       {empty && !wizard.open && (
         <div className="rounded-3xl border border-dashed border-line bg-surface p-10 text-center">
           <h2 className="text-xl font-bold">No sales data yet</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-            Import a CSV or Excel export from your billing software. You can also try our sample file, which has 90 days
-            of a general store with a few deliberate mistakes.
+            Import a CSV or Excel export from your billing software. You can also try our sample file: 90 days of a general store with a few deliberate mistakes.
           </p>
           {canImport && (
             <button type="button" onClick={() => setWizard({ open: true, dataset: null })} className="mt-5 rounded-full bg-fg px-6 py-3 text-sm font-semibold text-canvas hover:bg-sindoor">

@@ -3,6 +3,7 @@
 from app.models.audit import AuditLog
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
+from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.user import User
 from app.models.workspace import Membership, Workspace, WorkspaceRole
 
@@ -11,6 +12,8 @@ __all__ = [
     "Customer",
     "Dataset",
     "DatasetStatus",
+    "ForecastRun",
+    "ForecastSeries",
     "Job",
     "JobStatus",
     "JobType",

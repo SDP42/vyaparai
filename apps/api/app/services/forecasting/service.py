@@ -21,6 +21,7 @@ from app.services.forecasting import engine
 from app.services.forecasting.panel import load_panel
 
 KEEP_RUNS = 5
+STALE_JOB_MINUTES = 15  # a job that never finished (server restarted) must not block new runs
 SORTS = {
     "units_next": lambda r: r.units_next,
     "change": lambda r: _change(r) if _change(r) is not None else -1e9,
@@ -66,7 +67,14 @@ def start_forecast(db: Session, workspace: Workspace, user: User) -> Job:
         )
     ).first()
     if running is not None:
-        return running
+        age = datetime.now(UTC) - running.created_at.replace(
+            tzinfo=running.created_at.tzinfo or UTC
+        )
+        if age < timedelta(minutes=STALE_JOB_MINUTES):
+            return running
+        running.status = JobStatus.FAILED
+        running.error_message = "The server restarted before this forecast finished."
+        running.finished_at = datetime.now(UTC)
     job = Job(
         workspace_id=workspace.id,
         job_type=JobType.FORECAST_TRAINING,

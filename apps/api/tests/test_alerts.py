@@ -26,6 +26,14 @@ from app.services import alerts
 from tests.test_intelligence_api import make_shop
 
 D = Decimal
+
+
+@pytest.fixture(autouse=True)
+def _no_festival_alerts(monkeypatch):
+    """These tests use today's date for the calendar; keep them about the sales rules only."""
+    monkeypatch.setattr(alerts, "rule_events", lambda db, ws, today: [])
+
+
 HEAD = "Bill No,Bill Date,Item Code,Item Name,Category,Qty,Rate,Discount,Cost,Customer,State,City,Channel,Status"
 SUNDAYS = {date(2026, 8, 30): 10, date(2026, 9, 6): 12, date(2026, 9, 13): 8, date(2026, 9, 20): 10,
            date(2026, 9, 27): 10, date(2026, 10, 4): 9, date(2026, 10, 11): 11, date(2026, 10, 18): 10}  # fmt: skip

@@ -372,3 +372,47 @@ def test_the_state_wins_over_the_city_and_cities_set_it(client: TestClient, shop
     ws = client.get(f"/api/v1/workspaces/{shop[1]}", headers=shop[0]).json()
     assert ws["state"] == "Kerala"
     assert ws["city"] == "Pune"
+
+
+# ---------------------------------------------------------------- alerts for coming festivals
+
+
+def test_a_coming_festival_with_thin_stock_becomes_a_high_alert(
+    client: TestClient, shop, db_session_factory
+) -> None:
+    import uuid
+
+    from app.models.workspace import Workspace
+    from app.services import alerts
+
+    h = shop[0]
+    client.post(
+        f"/api/v1/workspaces/{shop[1]}/inventory/import",
+        files={"file": ("s.csv", b"SKU,Stock\nSKU-G,10\nSKU-A,9000\n", "text/csv")},
+        data={"as_of": "2026-10-25"},
+        headers=h,
+    )
+    with db_session_factory() as db:
+        ws = db.get(Workspace, uuid.UUID(shop[1]))
+        found = alerts.rule_events(db, ws, date(2027, 10, 20))
+    keys = {a["key"]: a for a in found}
+    diwali = keys["event_ahead|diwali-season-2027"]
+    assert diwali["severity"] == "high"  # ghee is on the list and 10 units will not last
+    assert "Desi Ghee 1 L" in diwali["detail"]
+    assert diwali["evidence"]["at_risk"] >= 1
+    assert diwali["link"] == "/app/festivals"
+    assert "starts in" in diwali["title"] or "on now" in diwali["title"]
+    assert len(found) <= 3
+
+
+def test_no_festival_alert_when_nothing_is_close_or_nothing_matches(
+    client: TestClient, shop, db_session_factory
+) -> None:
+    import uuid
+
+    from app.models.workspace import Workspace
+    from app.services import alerts
+
+    with db_session_factory() as db:
+        ws = db.get(Workspace, uuid.UUID(shop[1]))
+        assert alerts.rule_events(db, ws, date(2027, 7, 1)) == []  # a quiet stretch of the calendar

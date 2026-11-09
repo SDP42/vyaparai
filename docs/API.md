@@ -64,6 +64,10 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/campaigns/playbook` | viewer | Per segment: goal, idea, kind, customer count, default discount ceiling, assumed redemption |
 | GET | `/workspaces/{id}/campaigns/plan` | viewer | For one `segment`: audience (contact vs holdout), margin-safe offers, step ladder, projection (assumptions labelled), message rows; params `max_discount`, `margin_floor`, `holdout_pct`, `language` (`en`\|`hinglish`), `valid_days`, paging |
 | GET | `/workspaces/{id}/campaigns/export.csv` | analyst | Full contact list with groups and messages for manual sending; each export is audited |
+| GET | `/workspaces/{id}/digests/preview` | viewer | Build a digest now (`kind=daily\|weekly`, optional `as_of`): three numbers, one action, text and HTML; nothing stored |
+| GET / PUT | `/workspaces/{id}/digests/settings` | viewer / admin | Delivery: enabled, frequency, local hour, weekday, up to 5 recipients; reports whether email is configured |
+| POST | `/workspaces/{id}/digests/send-now` | admin | Store and email the digest to the recipients; status is `sent`, `not_configured`, `failed` or `stored` |
+| GET | `/workspaces/{id}/digests/history` | viewer | Digests already generated |
 
 ### Analytics query parameters
 

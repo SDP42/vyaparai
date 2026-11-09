@@ -28,9 +28,9 @@ each phase contains and its exit criteria.
 | 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
 | 12 | Daily and weekly digest (email now; WhatsApp copy-paste; [notes](research/DIGEST.md)) | - | P1 | ✅ |
 | 13 | Cash and credit (udhaar) intelligence | - | P1 | ⬜ |
-| 14 | Alerts and anomalies | - | P1 | ⬜ |
+| 14 | Alerts and anomalies (rules, lifecycle, sidebar badge, digest link; [notes](research/ALERTS.md)) | - | P1 | ✅ |
 | 15 | Connectors and scheduled imports | - | P1 | ⬜ |
-| 15B | Cost history and margin-leak tracking (purchase-bill import, cost history, stale-cost and price-rise flags; [plan](research/COST-TRACKING.md)) | - | P1 | ⬜ |
+| 15B | Cost history and margin-leak tracking (**done** from per-sale costs, with price suggestions; purchase-bill import still to do; [plan](research/COST-TRACKING.md)) | - | P1 | ✅ |
 | 16 | Pricing and promotion advisor | - | P2 | ⬜ |
 | 17 | Multi-store and staff | - | P2 | ⬜ |
 | 18 | Mobile-first (PWA) and Hinglish/Hindi | - | P1 | ⬜ |

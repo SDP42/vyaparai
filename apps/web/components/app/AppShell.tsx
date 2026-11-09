@@ -15,12 +15,14 @@ const NAV = [
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
   { href: "/app/forecasts", label: "Forecasts", icon: "◬", exact: false },
+  { href: "/app/inventory", label: "Stock", icon: "▦", exact: false },
+  { href: "/app/festivals", label: "Festivals", icon: "◎", exact: false },
   { href: "/app/costs", label: "Costs", icon: "₹", exact: false },
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
 ];
-const SOON = ["Inventory", "Copilot"];
+const SOON = ["Copilot"];
 
 /** Open alerts that need a look (high and medium), refreshed when alerts change. */
 function useAlertBadge(wsId: string): number {

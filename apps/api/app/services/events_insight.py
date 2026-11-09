@@ -23,7 +23,7 @@ MIN_WINDOW_DAYS = 3
 def region_of(workspace: Workspace) -> tuple[frozenset[str], str | None]:
     """(zones, state) from the shop's city, when it was chosen from the list."""
     city = weather.find_city(workspace.city or "")
-    state = city[1] if city else None
+    state = workspace.state or (city[1] if city else None)
     return events.zones_for(state), state
 
 

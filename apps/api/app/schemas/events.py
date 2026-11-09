@@ -20,6 +20,7 @@ class EventOut(BaseModel):
     basis: str
     confidence: str
     sources: list[str]
+    relevance: str = "core"  # core | zone (observed in your zone, not named for your state)
 
 
 class MatchedProduct(BaseModel):

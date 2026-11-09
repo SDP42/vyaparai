@@ -2,6 +2,14 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 · Model benchmark: tuning, pretrained and model choice
+
+Ran 21 model variants on a 2-year synthetic panel (40 SKUs) with rolling backtests and a single-use
+holdout ([report](research/PHASE-4-BENCHMARK.md)). LightGBM global model won (28 % better than seasonal
+naive); Optuna tuning gave no measurable gain; Chronos-Bolt pretrained worked zero-shot (16 % better) and
+fits cold start; slow movers sit at the noise floor; all models under-forecast the festive peak.
+PyPI was ~0.06 MB/s on the dev network, so the experiment env was built from conda-forge instead.
+
 ## 2026-11-08 (night) · Product-value research, phases 12–19, Phase 4a started
 
 - Researched why owners would use us ([PRODUCT-VALUE.md](research/PRODUCT-VALUE.md)): billing and udhaar apps record, they rarely advise. Added phases 12–19 (digest, credit, alerts, connectors, pricing, multi-store, mobile/Hinglish, goals) and the campaigns plan (3B).

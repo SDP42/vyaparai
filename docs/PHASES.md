@@ -26,7 +26,7 @@ each phase contains and its exit criteria.
 | 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
 | 10 | Recommendations & reporting | 13 | P2 | ⬜ |
 | 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
-| 12 | Daily and weekly digest (push by WhatsApp/email) | - | P1 | ⬜ |
+| 12 | Daily and weekly digest (email now; WhatsApp copy-paste; [notes](research/DIGEST.md)) | - | P1 | ✅ |
 | 13 | Cash and credit (udhaar) intelligence | - | P1 | ⬜ |
 | 14 | Alerts and anomalies | - | P1 | ⬜ |
 | 15 | Connectors and scheduled imports | - | P1 | ⬜ |

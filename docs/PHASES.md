@@ -15,7 +15,7 @@ each phase contains and its exit criteria.
 | 1 | Data ingestion & quality | 4 | P0 | ✅ |
 | 2 | Metric layer & sales analytics (command center) | 5 | P0 | ✅ |
 | 3 | Customer & product intelligence | 6 | P0 | ✅ |
-| 3B | Campaigns & retention automation (segment audiences, margin-guarded offers, consent, holdout measurement; [plan](research/CAMPAIGNS-PLAN.md)) | 9 | P1 | ⬜ |
+| 3B | Campaigns & retention automation (**C1 done**: audiences, margin-guarded offers, messages, holdout, CSV; C2–C4 consent, sending, measurement still to do; [plan](research/CAMPAIGNS-PLAN.md)) | 9 | P1 | 🟡 |
 | 4 | Forecasting & predictive MVP | 7 | P0 | ⬜ |
 | F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
 | — | **MVP release (end-to-end journey works)** | — | — | — |

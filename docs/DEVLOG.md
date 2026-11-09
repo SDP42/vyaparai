@@ -2,6 +2,17 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (evening) · Forecasting in the product, weather signal
+
+Built the forecasting engine (global LightGBM, simple-average fallback, 3 rolling backtests, intervals
+calibrated to 80 % coverage, per-series model choice), stored runs, the Forecasts page and product drawer.
+Added optional outside signals: the engine runs with and without them and keeps them only if the backtest
+improves by 2 %. Weather comes from Open-Meteo's free endpoint (non-commercial), blocked in production
+without a paid key. A real call for Pune worked; weather was tried and rejected on the sample data
+(39.3 % vs 39.5 % error), which is the right answer because the sample has no weather effect.
+Bugs found by use: a React dev-mode flag stopped the job poller; jobs lost to a server restart could block
+new runs (now recovered after 15 minutes).
+
 ## 2026-11-09 · Model benchmark: tuning, pretrained and model choice
 
 Ran 21 model variants on a 2-year synthetic panel (40 SKUs) with rolling backtests and a single-use

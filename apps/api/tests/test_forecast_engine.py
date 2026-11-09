@@ -3,6 +3,7 @@
 from datetime import date, timedelta
 
 import numpy as np
+import pytest
 
 from app.services.forecasting import engine
 from app.services.forecasting.panel import Panel
@@ -102,3 +103,47 @@ def test_festive_peak_warning_only_when_history_is_short() -> None:
     res = engine.run(short)
     assert res is not None
     assert any("festive season" in w for w in res.summary["warnings"])
+
+
+# ---------------------------------------------------------------- outside signals
+
+
+def weather_panel(days: int = 160, h: int = 14):
+    """Demand for A and B truly depends on the day's temperature (known for the forecast period)."""
+    rng = np.random.default_rng(7)
+    p = make_panel(days, noise=False)
+    temp = 30 + 4 * rng.standard_normal(days + h)  # day-to-day swings that lags cannot predict
+    lift = 1 + 0.06 * (temp[:days] - 30)
+    p.y[0] = np.round(p.y[0] * lift)
+    p.y[1] = np.round(p.y[1] * lift)
+    return p, temp
+
+
+def test_a_signal_that_really_matters_is_used_and_improves_error() -> None:
+    p, temp = weather_panel()
+    res = engine.run(p, exog={"temperature": temp})
+    assert res is not None
+    cov = res.summary["accuracy"]["covariates"]
+    assert cov["used"] is True
+    assert cov["wape_with"] < cov["wape_without"] * 0.95  # clearly better, not marginal
+    assert any("temperature" in f for f in res.summary["model_card"]["features"])
+
+
+def test_a_useless_signal_is_dropped_and_forecasts_are_unchanged() -> None:
+    p, _ = weather_panel()
+    noise = np.random.default_rng(99).standard_normal(p.n_days + 14)
+    base = engine.run(p)
+    res = engine.run(p, exog={"noise": noise})
+    assert base is not None
+    assert res is not None
+    cov = res.summary["accuracy"]["covariates"]
+    assert cov["used"] is False
+    assert any("left out" in w for w in res.summary["warnings"])
+    # dropping it means the published forecast is the no-covariate one, bit for bit
+    assert [s.data["p50"] for s in res.series] == [s.data["p50"] for s in base.series]
+
+
+def test_covariates_must_cover_history_and_forecast_days() -> None:
+    p, temp = weather_panel()
+    with pytest.raises(ValueError, match="one value per history day"):
+        engine.run(p, exog={"temperature": temp[:-5]})

@@ -11,9 +11,10 @@ const NAV = [
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
+  { href: "/app/forecasts", label: "Forecasts", icon: "◬", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
 ];
-const SOON = ["Forecasts", "Inventory", "Campaigns", "Copilot"];
+const SOON = ["Inventory", "Campaigns", "Copilot"];
 
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();

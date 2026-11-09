@@ -13,6 +13,7 @@ const NAV = [
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
   { href: "/app/forecasts", label: "Forecasts", icon: "◬", exact: false },
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
+  { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
 ];
 const SOON = ["Inventory", "Copilot"];

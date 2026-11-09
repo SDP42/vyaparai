@@ -16,7 +16,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 2 | Metric layer & sales analytics | ✅ | Versioned metric registry, comparisons, price-volume-mix drivers, command center, sales explorer |
 | 3 | Customer & product intelligence | ✅ | RFM, cohorts, margin and discount analysis, ABC, portfolio quadrants, basket pairs |
 | **4** | **Forecasting & ML platform** | ⬜ **next** | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
-| 3B | Campaigns & retention automation | ⬜ | Segment audiences, margin-guarded offers, messages, consent, holdout-measured uplift ([plan](research/CAMPAIGNS-PLAN.md)) |
+| 3B | Campaigns & retention automation | 🟡 C1 done | Segment audiences, margin-guarded offers, messages, consent, holdout-measured uplift ([plan](research/CAMPAIGNS-PLAN.md)) |
 | F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
 | 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |
 | 6 | NLP review intelligence | ⬜ | Sentiment and themes, Hinglish (P1) |
@@ -67,7 +67,7 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 
 | Phase | Remaining work | Effort | Depends on |
 |---|---|---|---|
-| 3B | **Campaigns and retention automation**: segment audiences, margin-guarded offers, messages, consent, holdout measurement (C1–C4). See [plan](research/CAMPAIGNS-PLAN.md) | 9–10 | Phase 3 |
+| 3B | **Campaigns and retention automation**: segment audiences, margin-guarded offers, messages, consent, holdout measurement (C1 done; C2–C4 remain). See [plan](research/CAMPAIGNS-PLAN.md) | 9–10 | Phase 3 |
 | 4 | **4a** data, metrics, backtester, baselines (2 d) · **4b** ETS/ARIMA/Theta + Croston/SBA/TSB (2–3 d) · **4c** features + LightGBM + quantiles (2–3 d) · **4d** Optuna tuning, ensembles, conformal intervals, ship gate (3 d) · **4e** registry, job, API, forecast UI (3 d). See [ML plan](research/PHASE-4-ML-PLAN.md) | 12–14 | Phase 2 |
 | F2 | HttpOnly cookie + refresh tokens · CSRF · generated TypeScript API client · invite members UI · loading/empty/error states · accessibility pass | 3 | Phases 2–4 |
 | 5 | Stock snapshots import · stock cover and reorder point · slow movers · scenario sliders · draft purchase orders needing approval | 4 | Phase 4 |

@@ -16,7 +16,7 @@ from app.models.dataset import Job, JobStatus, JobType
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.user import User
 from app.models.workspace import Workspace
-from app.services import audit, weather
+from app.services import audit, events, events_insight, weather
 from app.services.analytics import queries as q
 from app.services.forecasting import engine
 from app.services.forecasting.panel import load_panel
@@ -138,23 +138,46 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
                 raise NotEnoughDataError("No completed sales to forecast from")
             job.progress = 30
             db.commit()
-            exog, winfo = _weather_signal(db, db.get(Workspace, job.workspace_id), panel)
+            workspace = db.get(Workspace, job.workspace_id)
+            exog, winfo = _weather_signal(db, workspace, panel)
+            zones, state = events_insight.region_of(workspace) if workspace else (frozenset(), None)
+            groups: dict[str, Any] = {}
+            ev_cov = events.covariates(panel.dates, engine.H, zones, state)
+            if ev_cov is not None:
+                groups["events"] = ev_cov
+            if exog is not None:
+                groups["weather"] = exog
             opts = (job.result or {}).get("options", {})
             result = engine.run(
                 panel,
-                exog=exog,
+                exog_groups=groups,
                 tune_trials=TUNE_TRIALS if opts.get("tune") else 0,
                 peak_uplift_pct=int(opts.get("peak_uplift_pct", 0)),
+                zones=zones,
+                state=state,
             )
             if result is None:
                 raise NotEnoughDataError("Not enough days of sales to forecast")
-            cov = result.summary["accuracy"].get("covariates")
-            winfo["used"] = bool(cov and cov.get("used"))
+            cov = result.summary["accuracy"].get("covariates") or {}
+            verdict = {g["group"]: g for g in cov.get("groups", [])}
+            winfo["used"] = bool(verdict.get("weather", {}).get("used"))
             if winfo.get("status") == "unavailable":
                 result.summary["warnings"].append(
                     "Weather could not be loaded, so this forecast does not use it."
                 )
-            result.summary["signals"] = {"weather": winfo}
+            ev = verdict.get("events", {})
+            result.summary["signals"] = {
+                "weather": winfo,
+                "events": {
+                    "status": "ok" if ev_cov is not None else "no_data",
+                    "state": state,
+                    "zones": sorted(zones),
+                    "used": bool(ev.get("used")),
+                    "wape_before": ev.get("wape_before"),
+                    "wape_after": ev.get("wape_after"),
+                    "region_known": state is not None,
+                },
+            }
             job.progress = 85
             db.commit()
             version, status, note = _registry_decision(db, job.workspace_id, result.summary)

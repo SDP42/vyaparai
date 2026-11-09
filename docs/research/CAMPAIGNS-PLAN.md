@@ -7,6 +7,19 @@ Status: proposed (2026-11-08). Builds on Phase 3 segments and product margins.
 Turn a segment into an action a shop owner can approve in a minute: who to contact, what to say,
 what offer is safe to give, and how to measure whether it worked.
 
+## What the research added (2026-11-09)
+
+Mostly vendor blogs, so directional only. Sources: [win-back timing and offers](https://www.pecan.ai/blog/how-to-win-back-customers/),
+[win-back campaigns](https://www.talon.one/blog/win-back-campaign),
+[WhatsApp and DPDP consent](https://www.scconline.com/blog/post/2026/07/29/whatsapp-chatbot-opt-in-consent-dpdp-act-compliance/),
+[WhatsApp opt-in in India](https://blog.campaignhq.co/whatsapp-opt-in-management-india-2026/).
+
+- **Do not open with a deep discount**; escalate across steps (value message, small offer, best offer). Built as the step-by-step ladder.
+- **Time by each customer's own rhythm**, not a fixed 90 days: we show how many times their usual gap has passed.
+- **Judge by a holdout**, not attributed revenue; some of the discount goes to people who would have returned anyway. Built as a stable holdout group.
+- **Consent is per channel, purpose-specific, recorded and revocable**, under both Meta's rules and the DPDP Act; no small-business exemption was found. C1 states it and marks every row "not recorded"; C2 stores it.
+- No independent study compares discount depths, so the default ceilings are starting points to test with the holdout.
+
 ## Principles
 
 1. **Draft and approve, never auto-send at first.** The owner reviews every campaign. Automation
@@ -42,7 +55,7 @@ what offer is safe to give, and how to measure whether it worked.
 
 | Slice | What | Effort |
 |---|---|---|
-| C1 | Audience builder from segments/filters, suggested offer with margin check and cost estimate, message templates (English and Hinglish), CSV export for manual sending, no consent-sensitive sending | 2 d |
+| C1 ✅ | Audience builder from segments/filters, suggested offer with margin check and cost estimate, message templates (English and Hinglish), CSV export for manual sending, no consent-sensitive sending | 2 d |
 | C2 | Consent fields and import, suppression and opt-out, campaign records, approval step, holdout | 2 d |
 | C3 | Sending through one provider (WhatsApp Business API or email first), delivery status, rate limits, DLT/template approval handling | 3 d |
 | C4 | Measurement: redemptions, uplift versus holdout, revenue and margin impact; automations ("when a Loyal customer turns Cooling, draft a nudge") that still need approval | 2–3 d |

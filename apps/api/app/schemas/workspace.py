@@ -30,6 +30,8 @@ class WorkspaceRead(ORMModel):
     slug: str
     currency: str
     timezone: str
+    city: str | None = None
+    state: str | None = None
     created_at: datetime
 
 

@@ -53,7 +53,7 @@ def set_location(data: LocationIn, ctx: AdminCtx, db: DbSession) -> WeatherStatu
         found = weather.find_city(data.city or "")
         if found is None:
             raise UnknownCityError("Pick a city from the list, or give coordinates")
-        ws.city, ws.latitude, ws.longitude = found[0], found[2], found[3]
+        ws.city, ws.latitude, ws.longitude, ws.state = found[0], found[2], found[3], found[1]
     audit.record(
         db,
         action="workspace.location_set",

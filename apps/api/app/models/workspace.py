@@ -44,6 +44,7 @@ class Workspace(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     timezone: Mapped[str] = mapped_column(String(64), default="Asia/Kolkata")
     # Shop location, used only to look up local weather (never customer data).
     city: Mapped[str | None] = mapped_column(String(80))
+    state: Mapped[str | None] = mapped_column(String(60))  # decides which regional festivals apply
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
     created_by_id: Mapped[uuid.UUID | None] = mapped_column(

@@ -61,7 +61,7 @@ export async function download(path: string, filename: string) {
 
 // ---------- types mirrored from the API (apps/api/app/schemas) ----------
 
-export type Workspace = { id: string; name: string; slug: string; currency: string; timezone: string; role: string };
+export type Workspace = { id: string; name: string; slug: string; currency: string; timezone: string; role: string; city?: string | null; state?: string | null };
 
 export type FieldSpec = { key: string; label: string; required: boolean; kind: string };
 export type ColumnInfo = { name: string; inferred_type: string; empty_pct: number; samples: string[] };

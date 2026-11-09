@@ -61,6 +61,9 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/weather/cities` | viewer | Cities with coordinates (static list, no external call) |
 | GET | `/workspaces/{id}/weather/status` | viewer | Whether weather is allowed, free tier or paid, shop location, attribution |
 | PUT | `/workspaces/{id}/weather/location` | admin | Set the shop's city (from the list) or latitude/longitude |
+| GET | `/workspaces/{id}/campaigns/playbook` | viewer | Per segment: goal, idea, kind, customer count, default discount ceiling, assumed redemption |
+| GET | `/workspaces/{id}/campaigns/plan` | viewer | For one `segment`: audience (contact vs holdout), margin-safe offers, step ladder, projection (assumptions labelled), message rows; params `max_discount`, `margin_floor`, `holdout_pct`, `language` (`en`\|`hinglish`), `valid_days`, paging |
+| GET | `/workspaces/{id}/campaigns/export.csv` | analyst | Full contact list with groups and messages for manual sending; each export is audited |
 
 ### Analytics query parameters
 

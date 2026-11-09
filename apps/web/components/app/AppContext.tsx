@@ -6,7 +6,7 @@ import { addDays, type Compare, type FilterOptions, type MetricRegistry, type Qu
 
 /* ------------------------------------------------------------------ workspace */
 
-type WorkspaceCtx = { workspace: Workspace; canImport: boolean };
+type WorkspaceCtx = { workspace: Workspace; workspaces: Workspace[]; canImport: boolean; switchTo: (id: string) => void };
 const WorkspaceContext = createContext<WorkspaceCtx | null>(null);
 
 export function useWorkspace(): WorkspaceCtx {
@@ -18,6 +18,14 @@ export function useWorkspace(): WorkspaceCtx {
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [workspaces, setWorkspaces] = useState<Workspace[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      setChosen(localStorage.getItem("vyapar.workspace"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -46,9 +54,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   if (workspaces === null) return <div className="min-h-dvh bg-canvas" aria-busy="true" />;
   if (workspaces.length === 0) return <CreateWorkspace onCreated={load} />;
 
-  const workspace = workspaces[0];
+  const workspace = workspaces.find((w) => w.id === chosen) ?? workspaces[0];
+  const switchTo = (id: string) => {
+    try {
+      localStorage.setItem("vyapar.workspace", id);
+    } catch {
+      /* storage unavailable: the choice lasts for this page only */
+    }
+    setChosen(id);
+  };
   return (
-    <WorkspaceContext.Provider value={{ workspace, canImport: ["owner", "admin", "analyst"].includes(workspace.role) }}>
+    <WorkspaceContext.Provider value={{ workspace, workspaces, switchTo, canImport: ["owner", "admin", "analyst"].includes(workspace.role) }}>
       {children}
     </WorkspaceContext.Provider>
   );

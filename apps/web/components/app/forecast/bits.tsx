@@ -60,4 +60,4 @@ export function ConfidenceChip({ level }: { level: "high" | "medium" | "low" }) 
   return <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${CONF[level]}`}>{level === "high" ? "Reliable" : level === "medium" ? "Fair" : "Rough guide"}</span>;
 }
 
-export const MODEL_LABEL: Record<string, string> = { lightgbm: "Machine learning", seasonal_average: "Recent average" };
+export const MODEL_LABEL: Record<string, string> = { lightgbm: "Machine learning", theta: "Trend and weekday", seasonal_average: "Recent average" };

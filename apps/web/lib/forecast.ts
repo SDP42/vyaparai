@@ -2,7 +2,7 @@ import type { Job } from "./api";
 
 /* Mirrors apps/api/app/schemas/forecast.py */
 
-export type RunInfo = { id: string; created_at: string; as_of: string; horizon: number; history_days: number; n_series: number; seconds: number };
+export type RunInfo = { version?: number; status?: string; note?: string | null; id: string; created_at: string; as_of: string; horizon: number; history_days: number; n_series: number; seconds: number };
 export type ForecastKpis = {
   units_next: number;
   units_next_low: number;
@@ -29,6 +29,9 @@ export type Accuracy = {
   interval_coverage_80_raw?: number | null;
   interval_scale?: number;
   covariates?: { names: string[]; used: boolean; wape_without: number | null; wape_with: number | null; required_gain: number };
+  candidates?: Record<string, number | null>;
+  tuning?: { trials: number; used: boolean; default_wape: number | null; best_wape: number | null; note?: string };
+  engine_version?: string;
 };
 export type ModelCard = {
   models: Record<string, number>;
@@ -64,7 +67,7 @@ export type ProductForecastRow = {
   sku: string;
   name: string;
   category: string | null;
-  model: "lightgbm" | "seasonal_average";
+  model: "lightgbm" | "theta" | "seasonal_average";
   pattern: string;
   confidence: "high" | "medium" | "low";
   backtest_wape: number | null;
@@ -82,3 +85,23 @@ export type ProductDetail = ProductForecastRow & {
   data: { hist_start: string; hist: number[]; fc_start: string; p10: number[]; p50: number[]; p90: number[]; backtest: { d: string; a: number; p: number }[] };
 };
 export type { Job };
+
+export type RunVersion = {
+  id: string;
+  version: number;
+  status: "active" | "superseded" | "rejected";
+  created_at: string;
+  as_of: string;
+  history_days: number;
+  n_series: number;
+  seconds: number;
+  wape: number | null;
+  fva: number | null;
+  gate_passed: boolean | null;
+  interval_coverage: number | null;
+  models: Record<string, number>;
+  options: { tune_trials?: number; peak_uplift_pct?: number };
+  tuning: Accuracy["tuning"] | null;
+  covariates: Accuracy["covariates"] | null;
+  note: string | null;
+};

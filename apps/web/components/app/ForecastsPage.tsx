@@ -10,6 +10,7 @@ import { Card, EmptyNote, ErrorNote, Notices, Skeleton } from "./analytics/parts
 import { ConfidenceChip, MODEL_LABEL, RangeBar, Sparkline, useCountUp } from "./forecast/bits";
 import { ForecastChart } from "./forecast/ForecastChart";
 import { ProductDrawer } from "./forecast/ProductDrawer";
+import { WeatherCard } from "./forecast/WeatherCard";
 
 const PAGE = 15;
 
@@ -78,7 +79,7 @@ export function ForecastsPage() {
       {!d && latest.loading && <Skeleton className="h-96" />}
 
       {d && !hasForecast(d) && !running && <FirstRun can={d.can_forecast} reason={d.reason} days={d.history_days} canRun={canImport} onRun={run} />}
-      {fc && <Overview key={fc.run.id} data={fc} base={base} stale={fc.stale} onRefresh={canImport ? run : undefined} running={running} />}
+      {fc && <Overview key={fc.run.id} data={fc} base={base} stale={fc.stale} onRefresh={canImport ? run : undefined} running={running} wsId={workspace.id} canEdit={["owner", "admin"].includes(workspace.role)} onLocationSaved={() => setVersion((v) => v + 1)} />}
     </div>
   );
 }
@@ -132,7 +133,7 @@ function FirstRun({ can, reason, days, canRun, onRun }: { can: boolean; reason: 
   );
 }
 
-function Overview({ data, base, stale, onRefresh, running }: { data: ForecastOverview; base: string; stale: boolean; onRefresh?: () => void; running: boolean }) {
+function Overview({ data, base, stale, onRefresh, running, wsId, canEdit, onLocationSaved }: { data: ForecastOverview; base: string; stale: boolean; onRefresh?: () => void; running: boolean; wsId: string; canEdit: boolean; onLocationSaved: () => void }) {
   const { kpis, accuracy, totals, model_card: card } = data;
   const series = useMemo(
     () => ({
@@ -188,6 +189,7 @@ function Overview({ data, base, stale, onRefresh, running }: { data: ForecastOve
         <div className="space-y-5">
           <Movers title="Rising" tone="mor" items={data.risers} empty="No product is expected to grow by much." />
           <Movers title="Falling" tone="sindoor" items={data.fallers} empty="No product is expected to drop by much." />
+          <WeatherCard wsId={wsId} signal={data.signals?.weather} accuracy={data.accuracy} canEdit={canEdit} onSaved={onLocationSaved} />
         </div>
       </div>
 

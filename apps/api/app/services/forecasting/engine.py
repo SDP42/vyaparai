@@ -72,7 +72,14 @@ def calendar(dates: list[date]) -> Calendar:
 
 
 def _features(
-    y: Arr, disc: Arr, cal: Calendar, origin: int, h: int, *, yearly: bool
+    y: Arr,
+    disc: Arr,
+    cal: Calendar,
+    origin: int,
+    h: int,
+    *,
+    yearly: bool,
+    exog: Arr | None = None,
 ) -> tuple[Arr, NDArray[np.int64], NDArray[np.int64]]:
     """Feature rows for forecasting days origin..origin+h-1 of every series (k-major blocks)."""
     s = y.shape[0]
@@ -102,6 +109,8 @@ def _features(
         ]
         if yearly:
             cols += [np.full(s, cal.doy[j]), np.full(s, cal.gap[j])]
+        if exog is not None:  # daily covariates known for the forecast period, e.g. temperature
+            cols += [np.full(s, exog[e, j]) for e in range(exog.shape[0])]
         blocks.append(np.column_stack([base_m, *cols]))
         ks.append(np.full(s, k))
         js.append(np.full(s, j))
@@ -109,7 +118,15 @@ def _features(
 
 
 def _train(
-    yc: Arr, disc: Arr, stock: Mask, cal: Calendar, origin: int, h: int, *, yearly: bool
+    yc: Arr,
+    disc: Arr,
+    stock: Mask,
+    cal: Calendar,
+    origin: int,
+    h: int,
+    *,
+    yearly: bool,
+    exog: Arr | None = None,
 ) -> lgb.Booster | None:
     """Fit on windows whose targets all lie before ``origin``."""
     origins = list(range(28, origin - h + 1))
@@ -118,7 +135,7 @@ def _train(
     step = max(1, math.ceil(len(origins) * yc.shape[0] * h / MAX_TRAIN_ROWS))
     xs, ys = [], []
     for o in origins[::step]:
-        x, _k, j = _features(yc, disc, cal, o, h, yearly=yearly)
+        x, _k, j = _features(yc, disc, cal, o, h, yearly=yearly, exog=exog)
         s_idx = np.tile(np.arange(yc.shape[0]), h)
         target = yc[s_idx, j]
         ok = ~stock[s_idx, j]
@@ -155,8 +172,9 @@ def _predict_gbm(
     h: int,
     *,
     yearly: bool,
+    exog: Arr | None = None,
 ) -> Arr:
-    x, _k, _j = _features(yc, disc, cal, origin, h, yearly=yearly)
+    x, _k, _j = _features(yc, disc, cal, origin, h, yearly=yearly, exog=exog)
     pred = np.asarray(model.predict(x), dtype=float).reshape(h, yc.shape[0]).T
     return np.asarray(np.clip(pred, 0, None), dtype=float)
 
@@ -240,7 +258,7 @@ def _interval(pred: Arr, res: Arr | None) -> tuple[Arr, Arr]:
     return np.clip(pred - width, 0, None), pred + width
 
 
-def run(panel: Panel, h: int = H) -> RunResult | None:
+def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> RunResult | None:
     t0 = time.perf_counter()
     t_days = panel.n_days
     if t_days < MIN_DAYS_FORECAST:
@@ -265,17 +283,21 @@ def run(panel: Panel, h: int = H) -> RunResult | None:
             "naive": seasonal_naive(yc, o, h),
         }
         if can_gbm:
-            model = _train(yc, panel.disc, panel.stockout, cal, o, h, yearly=yearly)
+            model = _train(yc, panel.disc, panel.stockout, cal, o, h, yearly=yearly, exog=exog_m)
             if model is not None:
-                entry["gbm"] = _predict_gbm(model, yc, panel.disc, cal, o, h, yearly=yearly)
+                entry["gbm"] = _predict_gbm(
+                    model, yc, panel.disc, cal, o, h, yearly=yearly, exog=exog_m
+                )
         bt.append(entry)
 
     # ---- final model on all data
     final_gbm: Arr | None = None
     if can_gbm:
-        model = _train(yc, panel.disc, panel.stockout, cal, t_days, h, yearly=yearly)
+        model = _train(yc, panel.disc, panel.stockout, cal, t_days, h, yearly=yearly, exog=exog_m)
         if model is not None:
-            final_gbm = _predict_gbm(model, yc, panel.disc, cal, t_days, h, yearly=yearly)
+            final_gbm = _predict_gbm(
+                model, yc, panel.disc, cal, t_days, h, yearly=yearly, exog=exog_m
+            )
     final_avg = seasonal_average(yc, cal, t_days, h)
     gbm_ok = final_gbm is not None and all("gbm" in e for e in bt) and bool(bt)
 
@@ -533,3 +555,40 @@ def run(panel: Panel, h: int = H) -> RunResult | None:
         series=series,
         summary=summary,
     )
+
+
+MIN_EXOG_GAIN = 0.02  # a covariate must cut the pooled backtest error by 2 % (relative) to be kept
+
+
+def run(panel: Panel, h: int = H, exog: dict[str, Arr] | None = None) -> RunResult | None:
+    """Forecast every product. ``exog`` maps a name to daily values covering the history *and* the
+    forecast period (length ``panel.n_days + h``). Covariates are used only if they beat the
+    no-covariate model in the backtest; both errors are recorded in the model card."""
+    base = _run(panel, h, None, [])
+    if base is None or not exog:
+        return base
+    names = sorted(exog)
+    mat = np.vstack([np.asarray(exog[n], dtype=float) for n in names])
+    if mat.shape[1] != panel.n_days + h:
+        raise ValueError("each covariate needs one value per history day plus one per forecast day")
+    with_x = _run(panel, h, mat, names)
+    w0 = base.summary["accuracy"].get("wape")
+    w1 = with_x.summary["accuracy"].get("wape") if with_x else None
+    use = bool(with_x and w0 and w1 is not None and (w0 - w1) / w0 >= MIN_EXOG_GAIN)
+    chosen = with_x if use and with_x else base
+    chosen.summary["accuracy"]["covariates"] = {
+        "names": names,
+        "used": use,
+        "wape_without": w0,
+        "wape_with": w1,
+        "required_gain": MIN_EXOG_GAIN,
+    }
+    if use:
+        chosen.summary["model_card"]["features"].append("outside signals: " + ", ".join(names))
+    else:
+        chosen.summary["warnings"].append(
+            "Outside signals ("
+            + ", ".join(names)
+            + ") did not improve the backtest, so they were left out."
+        )
+    return chosen

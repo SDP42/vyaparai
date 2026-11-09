@@ -346,3 +346,24 @@ def test_scheduled_run_keeps_the_owners_festive_adjustment(
     with db_session_factory() as db:
         service.run_stale(db, datetime.now(UTC) + timedelta(hours=25))
     assert runs(client, shop)[0]["options"]["peak_uplift_pct"] == 15
+
+
+def test_events_are_tested_and_the_region_is_reported(client: TestClient, shop) -> None:
+    client.put(
+        f"/api/v1/workspaces/{shop[1]}/events/region",
+        json={"state": "Maharashtra"},
+        headers=shop[0],
+    )
+    run_forecast(client, shop)
+    r = client.get(url(shop, "/latest"), headers=shop[0]).json()
+    ev = r["signals"]["events"]
+    assert ev["status"] == "ok"
+    assert ev["state"] == "Maharashtra"
+    assert ev["zones"] == ["west"]
+    assert ev["region_known"] is True
+    assert isinstance(ev["used"], bool)  # the backtest decides whether events help this shop
+    groups = {g["group"]: g for g in r["accuracy"]["covariates"]["groups"]}
+    assert groups["events"]["names"] == ["cricket", "event_intensity"]
+    assert any(
+        "festive season" in w and "Diwali" in w for w in r["warnings"]
+    )  # names the actual festival

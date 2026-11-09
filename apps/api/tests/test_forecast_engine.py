@@ -228,18 +228,17 @@ def peak_panel(end: date) -> Panel:
 
 
 def test_festive_uplift_scales_only_the_days_near_the_peak() -> None:
-    p = peak_panel(
-        date(2026, 10, 15)
-    )  # forecast 16-29 Oct; the peak is 8 Nov, so only 29 Oct is within 10 days
+    # forecast 1-14 Oct: the Navratri build-up puts 6-14 Oct inside the festive peak
+    p = peak_panel(date(2026, 9, 30))
     base = engine.run(p)
     up = engine.run(p, peak_uplift_pct=20)
     assert base is not None
     assert up is not None
     for a, b in zip(base.series, up.series, strict=True):
-        assert b.data["p50"][0] == pytest.approx(a.data["p50"][0], abs=0.011)  # 16 Oct: untouched
+        assert b.data["p50"][0] == pytest.approx(a.data["p50"][0], abs=0.011)  # 1 Oct: untouched
         assert b.data["p50"][-1] == pytest.approx(
             a.data["p50"][-1] * 1.2, rel=0.01, abs=0.02
-        )  # 29 Oct: +20 %
+        )  # 14 Oct: +20 %
         assert b.data["p90"][-1] >= a.data["p90"][-1] * 1.19
     assert any("added 20%" in w for w in up.summary["warnings"])
     assert any("set by you" in x for x in up.summary["model_card"]["assumptions"])
@@ -250,11 +249,11 @@ def test_uplift_is_capped_and_inert_away_from_a_peak() -> None:
     near = engine.run(
         peak_panel(date(2026, 10, 31)), peak_uplift_pct=90
     )  # every forecast day is within 10 days
-    far = engine.run(peak_panel(date(2026, 3, 1)), peak_uplift_pct=30)
+    far = engine.run(peak_panel(date(2026, 7, 1)), peak_uplift_pct=30)
     assert near is not None
     assert far is not None
     assert near.summary["options"]["peak_uplift_pct"] == engine.MAX_PEAK_UPLIFT
-    base_far = engine.run(peak_panel(date(2026, 3, 1)))
+    base_far = engine.run(peak_panel(date(2026, 7, 1)))
     assert base_far is not None
     assert [s.data["p50"] for s in far.series] == [s.data["p50"] for s in base_far.series]
     assert not any("set by you" in x for x in far.summary["model_card"]["assumptions"])

@@ -178,9 +178,10 @@ def test_forecast_uses_weather_when_a_location_is_set(
     assert w["status"] == "ok"
     assert w["city"] == "Pune"
     assert "Open-Meteo" in w["attribution"]
-    cov = r["accuracy"]["covariates"]  # the backtest decided whether weather helped
-    assert cov["names"] == ["rain_mm", "temp_max"]
-    assert cov["used"] == w["used"]
+    groups = {g["group"]: g for g in r["accuracy"]["covariates"]["groups"]}  # the backtest decided
+    assert groups["weather"]["names"] == ["rain_mm", "temp_max"]
+    assert groups["weather"]["used"] == w["used"]
+    assert "events" in groups  # festivals and cricket were tested too, separately
     assert fake.calls
 
 

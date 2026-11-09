@@ -49,6 +49,7 @@ class ForecastOverview(BaseModel):
     fallers: list[Mover]
     confidence_counts: dict[str, int]
     warnings: list[str]
+    signals: dict[str, Any] = {}  # outside signals tried, e.g. weather and whether it helped
 
 
 class NoForecast(BaseModel):

@@ -10,12 +10,13 @@ from typing import Any
 from sqlalchemy import Engine, delete, func, select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.errors import AppError, NotFoundError
 from app.models.dataset import Job, JobStatus, JobType
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.user import User
 from app.models.workspace import Workspace
-from app.services import audit
+from app.services import audit, weather
 from app.services.analytics import queries as q
 from app.services.forecasting import engine
 from app.services.forecasting.panel import load_panel
@@ -94,6 +95,24 @@ def start_forecast(db: Session, workspace: Workspace, user: User) -> Job:
     return job
 
 
+def _weather_signal(
+    db: Session, workspace: Workspace | None, panel: Any
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    """Weather covariates for this shop, or (None, why not)."""
+    if workspace is None or not get_settings().weather_allowed:
+        return None, {"status": "off", "note": "Weather signal is switched off."}
+    if workspace.latitude is None or workspace.longitude is None:
+        return None, {"status": "no_location", "note": "Set the shop's city to try weather."}
+    today = datetime.now(UTC).date()
+    cov, info = weather.covariates(
+        db, workspace.latitude, workspace.longitude, panel.dates, engine.H, today=today
+    )
+    base = {**info, "city": workspace.city}
+    if cov is None:
+        return None, {**base, "status": "unavailable", "note": info.get("error")}
+    return cov, {**base, "status": "ok"}
+
+
 def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
     """Background task: build the panel, run the engine, store the results."""
     with Session(bind=engine_, expire_on_commit=False) as db:
@@ -110,9 +129,17 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
                 raise NotEnoughDataError("No completed sales to forecast from")
             job.progress = 30
             db.commit()
-            result = engine.run(panel)
+            exog, winfo = _weather_signal(db, db.get(Workspace, job.workspace_id), panel)
+            result = engine.run(panel, exog=exog)
             if result is None:
                 raise NotEnoughDataError("Not enough days of sales to forecast")
+            cov = result.summary["accuracy"].get("covariates")
+            winfo["used"] = bool(cov and cov.get("used"))
+            if winfo.get("status") == "unavailable":
+                result.summary["warnings"].append(
+                    "Weather could not be loaded, so this forecast does not use it."
+                )
+            result.summary["signals"] = {"weather": winfo}
             job.progress = 85
             db.commit()
             run = ForecastRun(
@@ -240,6 +267,7 @@ def overview(db: Session, workspace: Workspace, run: ForecastRun) -> dict[str, A
             c: sum(1 for r in rows if r.confidence == c) for c in ("high", "medium", "low")
         },
         "warnings": s["warnings"],
+        "signals": s.get("signals", {}),
     }
 
 

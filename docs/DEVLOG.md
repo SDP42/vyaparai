@@ -2,6 +2,15 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (night) · Campaigns C1
+
+Researched win-back practice and consent rules, then built the campaign planner: eight segment plays,
+offers that keep a margin floor (largest safe discount d = 1 - (1-m)/(1-f), checked by hand), a step ladder
+that never opens with the deepest offer, per-customer timing from their own order gap, a stable 10 % holdout,
+English and Hinglish messages with an opt-out line, projections labelled as assumptions, and an audited CSV
+export. Nothing is sent. Page: /app/campaigns. A sample-data test caught my own wrong assertion: products
+already below the floor correctly get no discount. Consent storage (C2), sending (C3) and measurement (C4) remain.
+
 ## 2026-11-09 (evening) · Forecasting in the product, weather signal
 
 Built the forecasting engine (global LightGBM, simple-average fallback, 3 rolling backtests, intervals

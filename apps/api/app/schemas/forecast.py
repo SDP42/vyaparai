@@ -9,6 +9,9 @@ from pydantic import BaseModel
 
 class RunInfo(BaseModel):
     id: uuid.UUID
+    version: int = 1
+    status: str = "active"
+    note: str | None = None
     created_at: datetime
     as_of: date
     horizon: int
@@ -89,3 +92,23 @@ class ProductForecastPage(BaseModel):
 class ProductForecastDetail(ProductForecastRow):
     data: dict[str, Any]
     net_per_unit: float | None
+
+
+class RunVersion(BaseModel):
+    id: uuid.UUID
+    version: int
+    status: str  # active | superseded | rejected
+    created_at: datetime
+    as_of: date
+    history_days: int
+    n_series: int
+    seconds: float
+    wape: float | None
+    fva: float | None
+    gate_passed: bool | None
+    interval_coverage: float | None
+    models: dict[str, int]
+    options: dict[str, Any]
+    tuning: dict[str, Any] | None
+    covariates: dict[str, Any] | None
+    note: str | None

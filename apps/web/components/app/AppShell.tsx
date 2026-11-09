@@ -4,10 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/landing/Nav";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 import { useWorkspace } from "./AppContext";
 
 const NAV = [
   { href: "/app", label: "Command center", icon: "◧", exact: true },
+  { href: "/app/alerts", label: "Alerts", icon: "!", exact: false },
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
@@ -19,9 +22,32 @@ const NAV = [
 ];
 const SOON = ["Inventory", "Copilot"];
 
+/** Open alerts that need a look (high and medium), refreshed when alerts change. */
+function useAlertBadge(wsId: string): number {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    let live = true;
+    const load = () => api<Record<string, number>>(`/workspaces/${wsId}/alerts/summary`).then((c) => live && setN((c.high ?? 0) + (c.medium ?? 0))).catch(() => undefined);
+    load();
+    window.addEventListener("vyapar:alerts-changed", load);
+    return () => {
+      live = false;
+      window.removeEventListener("vyapar:alerts-changed", load);
+    };
+  }, [wsId]);
+  return n;
+}
+
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();
   const { workspace, workspaces, switchTo } = useWorkspace();
+  const alertCount = useAlertBadge(workspace.id);
+  const badge = (href: string) =>
+    href === "/app/alerts" && alertCount > 0 ? (
+      <span aria-label={`${alertCount} open alerts`} className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-sindoor px-1 font-mono text-[10px] font-bold text-canvas">
+        {alertCount}
+      </span>
+    ) : null;
   const active = (n: (typeof NAV)[number]) => (n.exact ? path === n.href : path.startsWith(n.href));
 
   return (
@@ -61,6 +87,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
                 {n.icon}
               </span>
               {n.label}
+              {badge(n.href)}
             </Link>
           ))}
           <p className="mt-5 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Coming</p>
@@ -105,6 +132,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
                 }`}
               >
                 {n.label}
+                {badge(n.href)}
               </Link>
             ))}
           </nav>

@@ -33,9 +33,20 @@ class Settings(BaseSettings):
     max_upload_rows: int = 200_000
     storage_dir: str = "./storage"
 
+    # Weather signal (docs/research/EXTERNAL-FACTORS.md). Open-Meteo's free endpoint is for
+    # non-commercial use only, so production refuses it unless a paid key is configured.
+    weather_enabled: bool = True
+    open_meteo_api_key: str | None = None
+    weather_timeout_seconds: float = 8.0
+
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"
+
+    @property
+    def weather_allowed(self) -> bool:
+        """Free tier only outside production; production needs a paid key (licence rule)."""
+        return self.weather_enabled and (not self.is_production or bool(self.open_meteo_api_key))
 
     @model_validator(mode="after")
     def _validate_production_secrets(self) -> Self:

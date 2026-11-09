@@ -6,7 +6,7 @@ figure is aggregate (no customer names or IDs leave the app in a digest).
 """
 
 import html
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Literal
@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.models.workspace import Workspace
+from app.services import alerts as alert_service
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.types import Filters, metric_values
@@ -49,11 +50,17 @@ class ActionContext:
     cost_coverage: Decimal | None
     sales_change_pct: Decimal | None
     kind: Kind
+    alerts: list[dict[str, str]] = field(
+        default_factory=list
+    )  # open high-severity alerts, first = most important
 
 
 def choose_actions(c: ActionContext) -> list[dict[str, str]]:
     """Ordered actions, most useful first. The digest shows the first and mentions up to two more."""
-    out: list[dict[str, str]] = []
+    out: list[dict[str, str]] = [
+        {"kind": "alert", "title": a["title"], "detail": a["detail"], "link": a["link"]}
+        for a in c.alerts[:1]
+    ]
     if c.lapsed_regulars >= MIN_LAPSED_FOR_ACTION:
         out.append(
             {
@@ -235,7 +242,12 @@ def build(
             f"(likely {k['units_next_low']:,.0f} to {k['units_next_high']:,.0f})"
         )
 
-    actions = choose_actions(ActionContext(lapsed, risers, fallers, coverage, sales_c, kind))
+    alert_service.refresh(db, workspace, as_of=end, today=today)
+    high = [
+        {"title": a.title, "detail": a.detail, "link": a.link}
+        for a in alert_service.top_high(db, workspace.id)
+    ]
+    actions = choose_actions(ActionContext(lapsed, risers, fallers, coverage, sales_c, kind, high))
     notes: list[str] = []
     stale = (today - end).days
     if stale > STALE_AFTER_DAYS:

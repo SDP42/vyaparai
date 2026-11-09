@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     analytics,
     auth,
+    campaigns,
     datasets,
     forecasts,
     health,
@@ -19,4 +20,5 @@ api_router.include_router(datasets.router)
 api_router.include_router(analytics.router)
 api_router.include_router(intelligence.router)
 api_router.include_router(forecasts.router)
+api_router.include_router(campaigns.router)
 api_router.include_router(weather.router)

@@ -147,3 +147,114 @@ def test_covariates_must_cover_history_and_forecast_days() -> None:
     p, temp = weather_panel()
     with pytest.raises(ValueError, match="one value per history day"):
         engine.run(p, exog={"temperature": temp[:-5]})
+
+
+# ---------------------------------------------------------------- Theta, tuning, festive uplift
+
+
+def week_cal(n: int):
+    start = date(2026, 1, 5)
+    return engine.calendar([start + timedelta(days=i) for i in range(n + 14)])
+
+
+def test_theta_reproduces_a_clean_weekly_pattern() -> None:
+    n = 126
+    cal = week_cal(n)
+    yc = np.tile(WEEK, n // 7 + 3)[: n + 14][None, :n].astype(float)
+    out = engine.theta(yc, cal, n, 14)
+    expect = np.array([WEEK[int(cal.dow[n + k])] for k in range(14)], float)
+    assert (
+        np.abs(out[0] - expect).max() / expect.max() < 0.08
+    )  # within 8 % of the true weekly shape
+    assert (
+        out[0, 5 - int(cal.dow[n]) % 7] > out[0, 1 - int(cal.dow[n]) % 7]
+    )  # Saturday above Tuesday
+
+
+def test_theta_follows_a_trend_and_never_goes_negative() -> None:
+    n = 112
+    cal = week_cal(n)
+    rising = (np.arange(n) * 0.2 + 10)[None, :]
+    out = engine.theta(rising, cal, n, 14)
+    assert (
+        out[0].mean() > rising[0, -14:].mean() * 0.97
+    )  # the drift keeps it from lagging far behind
+    falling = np.maximum(0, 30 - np.arange(n) * 0.5)[None, :]
+    assert (engine.theta(falling, cal, n, 14) >= 0).all()
+
+
+def test_the_method_comparison_is_reported_per_shop() -> None:
+    res = engine.run(make_panel(150))
+    assert res is not None
+    cand = res.summary["accuracy"]["candidates"]
+    assert set(cand) == {"seasonal_naive", "lightgbm", "theta", "seasonal_average", "chosen_mix"}
+    assert all(0 <= v < 5 for v in cand.values() if v is not None)
+    assert (
+        cand["chosen_mix"] <= max(cand["lightgbm"], cand["theta"], cand["seasonal_average"]) + 1e-9
+    )
+    models = res.summary["model_card"]["models"]
+    assert set(models) == {"lightgbm", "theta", "seasonal_average"}
+    assert sum(models.values()) == 3
+
+
+def test_tuning_is_leak_free_and_keeps_defaults_unless_better() -> None:
+    p = make_panel(200)
+    base = engine.run(p)
+    tuned = engine.run(p, tune_trials=4)
+    assert base is not None
+    assert tuned is not None
+    info = tuned.summary["accuracy"]["tuning"]
+    assert info["trials"] == 4
+    assert info["default_wape"] is not None
+    assert info["best_wape"] <= info["default_wape"]  # the defaults are trial 0
+    if not info["used"]:
+        assert [s.data["p50"] for s in tuned.series] == [s.data["p50"] for s in base.series]
+    assert "tuning" not in base.summary["accuracy"]
+
+
+def test_tuning_is_skipped_when_there_is_too_little_history() -> None:
+    res = engine.run(make_panel(80), tune_trials=3)
+    assert res is not None
+    t = res.summary["accuracy"]["tuning"]
+    assert t["used"] is False
+    assert t["trials"] == 0
+    assert "Not enough history" in t["note"]
+
+
+def peak_panel(end: date) -> Panel:
+    p = make_panel(100)
+    p.dates = [end - timedelta(days=99 - i) for i in range(100)]
+    return p
+
+
+def test_festive_uplift_scales_only_the_days_near_the_peak() -> None:
+    p = peak_panel(
+        date(2026, 10, 15)
+    )  # forecast 16-29 Oct; the peak is 8 Nov, so only 29 Oct is within 10 days
+    base = engine.run(p)
+    up = engine.run(p, peak_uplift_pct=20)
+    assert base is not None
+    assert up is not None
+    for a, b in zip(base.series, up.series, strict=True):
+        assert b.data["p50"][0] == pytest.approx(a.data["p50"][0], abs=0.011)  # 16 Oct: untouched
+        assert b.data["p50"][-1] == pytest.approx(
+            a.data["p50"][-1] * 1.2, rel=0.01, abs=0.02
+        )  # 29 Oct: +20 %
+        assert b.data["p90"][-1] >= a.data["p90"][-1] * 1.19
+    assert any("added 20%" in w for w in up.summary["warnings"])
+    assert any("set by you" in x for x in up.summary["model_card"]["assumptions"])
+    assert up.summary["options"] == {"tune_trials": 0, "peak_uplift_pct": 20}
+
+
+def test_uplift_is_capped_and_inert_away_from_a_peak() -> None:
+    near = engine.run(
+        peak_panel(date(2026, 10, 31)), peak_uplift_pct=90
+    )  # every forecast day is within 10 days
+    far = engine.run(peak_panel(date(2026, 3, 1)), peak_uplift_pct=30)
+    assert near is not None
+    assert far is not None
+    assert near.summary["options"]["peak_uplift_pct"] == engine.MAX_PEAK_UPLIFT
+    base_far = engine.run(peak_panel(date(2026, 3, 1)))
+    assert base_far is not None
+    assert [s.data["p50"] for s in far.series] == [s.data["p50"] for s in base_far.series]
+    assert not any("set by you" in x for x in far.summary["model_card"]["assumptions"])

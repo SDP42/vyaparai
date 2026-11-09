@@ -211,3 +211,36 @@ def demand_categories(name: str, category: str | None) -> set[str]:
 
 def window(e: Event) -> tuple[date, date]:
     return e.start - timedelta(days=e.lead), e.end + timedelta(days=e.tail)
+
+
+def festival_peak_days(
+    dates: list[date],
+    zones: frozenset[str] = frozenset(),
+    state: str | None = None,
+    floor: float = 0.5,
+) -> NDArray[np.bool_]:
+    """Days inside a tier-1 festival's build-up, peak or first days after (phase at least ``floor``)."""
+    ev = [e for e in relevant(zones, state) if e.tier == 1 and e.category == "festival"]
+    return np.array([any(e.phase(d) >= floor for e in ev) for d in dates], dtype=bool)
+
+
+def peak_names(
+    dates: list[date], zones: frozenset[str] = frozenset(), state: str | None = None
+) -> list[str]:
+    """Names of the tier-1 festivals whose build-up or peak touches these dates, soonest first."""
+    seen: dict[str, date] = {}
+    for e in relevant(zones, state):
+        if e.tier == 1 and e.category == "festival" and any(e.phase(d) >= 0.5 for d in dates):
+            seen.setdefault(e.name, e.start)
+    return [n for n, _ in sorted(seen.items(), key=lambda kv: kv[1])]
+
+
+def gap_to_peak(dates: list[date], cap: int = 60) -> Arr:
+    """Days from each date to the nearest tier-1 festival start, capped."""
+    peaks = np.array([p.toordinal() for p in peak_dates()], dtype=float)
+    if len(peaks) == 0:
+        return np.full(len(dates), float(cap))
+    days = np.array([d.toordinal() for d in dates], dtype=float)
+    return np.asarray(
+        np.minimum(np.abs(days[:, None] - peaks[None, :]).min(axis=1), cap), dtype=float
+    )

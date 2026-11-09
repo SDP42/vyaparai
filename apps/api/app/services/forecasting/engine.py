@@ -19,6 +19,7 @@ import lightgbm as lgb
 import numpy as np
 from numpy.typing import NDArray
 
+from app.services import events
 from app.services.forecasting.demand import classify
 from app.services.forecasting.panel import Arr, Panel, clean
 
@@ -31,8 +32,6 @@ MAX_TRAIN_ROWS = 150_000
 LAGS = (1, 2, 3, 7, 14, 21, 28)
 
 # Festive-season peaks move each year, so they are a dated table, not a formula.
-FESTIVE_PEAKS = (date(2024, 11, 1), date(2025, 10, 20), date(2026, 11, 8), date(2027, 10, 29))
-PEAK_WARN_DAYS = 10
 TARGET_COVERAGE = 0.80
 ENGINE_VERSION = "1.2"
 TUNE_MAX_SECONDS = 60.0
@@ -69,9 +68,7 @@ def calendar(dates: list[date]) -> Calendar:
         dom=np.array([d.day for d in dates], float),
         doy=np.array([d.timetuple().tm_yday for d in dates], float),
         month=np.array([d.month for d in dates], float),
-        gap=np.array(
-            [min(60, min(abs((d - p).days) for p in FESTIVE_PEAKS)) for d in dates], float
-        ),
+        gap=events.gap_to_peak(dates),
     )
 
 
@@ -373,6 +370,8 @@ def _run(
     exog_names: list[str],
     tune_trials: int = 0,
     peak_uplift_pct: int = 0,
+    zones: frozenset[str] = frozenset(),
+    state: str | None = None,
 ) -> RunResult | None:
     t0 = time.perf_counter()
     t_days = panel.n_days
@@ -582,9 +581,7 @@ def _run(
     p10_all = np.zeros((s, h))
     p90_all = np.zeros((s, h))
     peak_u = max(0, min(MAX_PEAK_UPLIFT, int(peak_uplift_pct)))
-    peak_days = np.array(
-        [min(abs((d - p).days) for p in FESTIVE_PEAKS) <= PEAK_WARN_DAYS for d in fdays]
-    )
+    peak_days = events.festival_peak_days(fdays, zones, state)
     mult = np.where(peak_days, 1 + peak_u / 100, 1.0)  # the owner's festive-season adjustment
     for i, sr in enumerate(series):
         lo, hi = _interval(chosen_fc[i], chosen_res[i])
@@ -671,13 +668,19 @@ def _run(
         )
     elif t_days < 180:
         warnings.append("Under six months of history: expect wider ranges until more data arrives.")
-    near_peak = [
-        d for d in fdays if min(abs((d - p).days) for p in FESTIVE_PEAKS) <= PEAK_WARN_DAYS
-    ]
+    peak_list = events.peak_names(fdays, zones, state)
+    near_peak = bool(peak_list)
+    names = ", ".join(peak_list[:3])
     if near_peak and t_days < 365:
         warnings.append(
-            "A festive season falls inside this forecast. With under a year of history the model "
-            "has not seen one, so demand is likely to run above the forecast."
+            f"The festive season ({names}) falls inside this forecast. With under a year "
+            "of history "
+            "the model has not seen one, so demand is likely to run above it."
+        )
+    elif near_peak:
+        warnings.append(
+            f"The festive season ({names}) falls inside this forecast. The model has seen a past "
+            "peak, but it may still under-forecast one, so check the range."
         )
     if near_peak and peak_u > 0:
         warnings.append(
@@ -740,42 +743,84 @@ def _run(
 MIN_EXOG_GAIN = 0.02  # a covariate must cut the pooled backtest error by 2 % (relative) to be kept
 
 
+def _matrix(signals: dict[str, Arr], need: int) -> Arr:
+    if any(len(v) != need for v in signals.values()):
+        raise ValueError("each covariate needs one value per history day plus one per forecast day")
+    return np.vstack([np.asarray(signals[n], dtype=float) for n in sorted(signals)])
+
+
 def run(
     panel: Panel,
     h: int = H,
     exog: dict[str, Arr] | None = None,
     *,
+    exog_groups: dict[str, dict[str, Arr]] | None = None,
     tune_trials: int = 0,
     peak_uplift_pct: int = 0,
+    zones: frozenset[str] = frozenset(),
+    state: str | None = None,
 ) -> RunResult | None:
-    """Forecast every product. ``exog`` maps a name to daily values covering the history *and* the
-    forecast period (length ``panel.n_days + h``). Covariates are used only if they beat the
-    no-covariate model in the backtest; both errors are recorded in the model card."""
-    base = _run(panel, h, None, [], tune_trials, peak_uplift_pct)
-    if base is None or not exog:
-        return base
-    names = sorted(exog)
-    mat = np.vstack([np.asarray(exog[n], dtype=float) for n in names])
-    if mat.shape[1] != panel.n_days + h:
-        raise ValueError("each covariate needs one value per history day plus one per forecast day")
-    with_x = _run(panel, h, mat, names, tune_trials, peak_uplift_pct)
-    w0 = base.summary["accuracy"].get("wape")
-    w1 = with_x.summary["accuracy"].get("wape") if with_x else None
-    use = bool(with_x and w0 and w1 is not None and (w0 - w1) / w0 >= MIN_EXOG_GAIN)
-    chosen = with_x if use and with_x else base
+    """Forecast every product.
+
+    Outside signals are daily series covering the history *and* the forecast period (length
+    ``panel.n_days + h``), in named groups (for example events, then weather). Each group is tried
+    on top of what was already accepted and kept only if the pooled backtest error falls by at
+    least ``MIN_EXOG_GAIN``; every decision goes in the model card. ``exog`` is one group called
+    "signals".
+    """
+    groups = dict(exog_groups or {})
+    if exog:
+        groups["signals"] = exog
+    chosen = _run(panel, h, None, [], tune_trials, peak_uplift_pct, zones, state)
+    if chosen is None or not groups:
+        return chosen
+    need = panel.n_days + h
+    selected: dict[str, Arr] = {}
+    base_w = chosen.summary["accuracy"].get("wape")
+    cur_w = base_w
+    report: list[dict[str, Any]] = []
+    for gname, arrays in groups.items():
+        trial = {**selected, **arrays}
+        res = _run(
+            panel,
+            h,
+            _matrix(trial, need),
+            sorted(trial),
+            tune_trials,
+            peak_uplift_pct,
+            zones,
+            state,
+        )
+        w = res.summary["accuracy"].get("wape") if res else None
+        ok = bool(res and cur_w and w is not None and (cur_w - w) / cur_w >= MIN_EXOG_GAIN)
+        report.append(
+            {
+                "group": gname,
+                "names": sorted(arrays),
+                "used": ok,
+                "wape_before": cur_w,
+                "wape_after": w,
+            }
+        )
+        if ok and res is not None:
+            selected, chosen, cur_w = trial, res, w
     chosen.summary["accuracy"]["covariates"] = {
-        "names": names,
-        "used": use,
-        "wape_without": w0,
-        "wape_with": w1,
+        "names": sorted(selected),
+        "used": bool(selected),
+        "wape_without": base_w,
+        "wape_with": cur_w if selected else report[-1]["wape_after"],
         "required_gain": MIN_EXOG_GAIN,
+        "groups": report,
     }
-    if use:
-        chosen.summary["model_card"]["features"].append("outside signals: " + ", ".join(names))
-    else:
+    if selected:
+        chosen.summary["model_card"]["features"].append(
+            "outside signals: " + ", ".join(sorted(selected))
+        )
+    dropped = [g["group"] for g in report if not g["used"]]
+    if dropped:
         chosen.summary["warnings"].append(
             "Outside signals ("
-            + ", ".join(names)
+            + ", ".join(dropped)
             + ") did not improve the backtest, so they were left out."
         )
     return chosen

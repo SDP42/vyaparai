@@ -2,6 +2,17 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (late) · Phase 12: owner digest
+
+Researched what a daily summary should hold ([DIGEST.md](research/DIGEST.md)), then built it: three numbers
+(sales, orders, margin or average bill) against the same weekday or week before, one prioritised action
+(lapsed regulars, rising or falling products from the forecast, sales drop, missing costs), the forecast
+outlook, and honest notes about stale data. Text for a phone, HTML for email, SMTP delivery that stays off
+until configured, a once-per-local-day runner (`python -m app.digest_runner`), history, and a Digest page.
+Tests used a shop computed by hand (daily +40.0 %, margin 37.9 %; weekly +22.9 %, margin 39.7 %). Found by
+tests: dates are not JSON-storable, and one margin change used banker's rounding (39.65 became 39.6).
+No customer names or IDs appear in a digest.
+
 ## 2026-11-09 (night) · Campaigns C1
 
 Researched win-back practice and consent rules, then built the campaign planner: eight segment plays,

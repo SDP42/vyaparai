@@ -76,6 +76,15 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | POST | `/workspaces/{id}/forecasts/run?tune=&peak_uplift_pct=` | analyst | Start a forecast; `tune` also searches for better model settings, `peak_uplift_pct` (0–50) adds demand near the festive season (labelled as the owner's assumption) |
 | GET | `/workspaces/{id}/forecasts/runs` | viewer | Every version: status (`active`, `superseded`, `rejected`), accuracy, ship-gate result, methods used, options, tuning, note |
 | POST | `/workspaces/{id}/forecasts/runs/{run_id}/activate` | admin | Make a version the one the app shows (rollback); audited |
+| GET | `/workspaces/{id}/inventory/overview` | viewer | Per product: stock today, days of cover, run-out date, status, order quantity and cost, cash tied up; summary. `service` (0–1) and `review_days` shape the advice |
+| POST | `/workspaces/{id}/inventory/import` | analyst | Upload a stock CSV (SKU, stock, optional date, lead time, pack size); reports unmatched and rejected rows |
+| PUT | `/workspaces/{id}/inventory/items/{sku}` | analyst | Set stock, delivery days, pack size, safety days |
+| GET | `/workspaces/{id}/inventory/template.csv` \| `order-list.csv` | viewer \| analyst | Starter file with your products; the suggested purchase list (audited) |
+| GET | `/workspaces/{id}/events/upcoming` | viewer | Events in the next N days for the shop's region, with matching products, stock cover and risk, and what the event did last time |
+| GET | `/workspaces/{id}/events/calendar` | viewer | Events in a date range (`tier_max`, `include_cricket`), each marked `core` or `zone` |
+| GET | `/workspaces/{id}/events/effects` | viewer | Observed lift of past events on this shop's sales |
+| GET | `/workspaces/{id}/events/regions` \| PUT `/events/region` | viewer \| admin | States and zones; set the shop's state |
+| GET | `/workspaces/{id}/events/coverage` | viewer | How far the dated table reaches and its confidence mix |
 
 ### Analytics query parameters
 

@@ -6,6 +6,7 @@ from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.forecast import ForecastRun, ForecastSeries
+from app.models.inventory import InventorySetting, StockSnapshot
 from app.models.user import User
 from app.models.weather import WeatherDaily
 from app.models.workspace import Membership, Workspace, WorkspaceRole
@@ -20,6 +21,7 @@ __all__ = [
     "DigestSettings",
     "ForecastRun",
     "ForecastSeries",
+    "InventorySetting",
     "Job",
     "JobStatus",
     "JobType",
@@ -28,6 +30,7 @@ __all__ = [
     "OrderItem",
     "OrderStatus",
     "Product",
+    "StockSnapshot",
     "User",
     "WeatherDaily",
     "Workspace",

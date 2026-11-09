@@ -68,6 +68,11 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET / PUT | `/workspaces/{id}/digests/settings` | viewer / admin | Delivery: enabled, frequency, local hour, weekday, up to 5 recipients; reports whether email is configured |
 | POST | `/workspaces/{id}/digests/send-now` | admin | Store and email the digest to the recipients; status is `sent`, `not_configured`, `failed` or `stored` |
 | GET | `/workspaces/{id}/digests/history` | viewer | Digests already generated |
+| GET | `/workspaces/{id}/costs/overview` | viewer | Per product: cost and price now vs the window before, margin, status (`margin_leak`, `passed_on`, `cost_down`, `stable`, `no_cost`, `new`, `too_few`), margin lost and the price that restores it; summary |
+| GET | `/workspaces/{id}/costs/{sku}/history` | viewer | Weekly cost and net price per unit for one product |
+| GET | `/workspaces/{id}/alerts` | viewer | Recompute and list alerts (`status=open\|dismissed\|resolved\|all`, optional `as_of`) with counts by severity |
+| GET | `/workspaces/{id}/alerts/summary` | viewer | Open alert counts by severity, without recomputing (used by the sidebar badge) |
+| POST | `/workspaces/{id}/alerts/{alert_id}/dismiss` \| `/reopen` | analyst | Hide or bring back one alert |
 
 ### Analytics query parameters
 

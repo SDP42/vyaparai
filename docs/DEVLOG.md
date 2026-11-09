@@ -2,6 +2,21 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (night) · Phases 15B and 14: cost history and alerts; packaging plan
+
+**Costs.** Every sale line already stores the cost at the time, so cost history needs no new data entry. The cost
+engine compares the last 28 days with the 28 before on lines that have a cost, flags a **margin leak** when cost
+rose 3 % or more and the margin fell more than a point, and suggests the price that restores the old margin
+(cost / (1 - old margin)). On the 40-product sample it finds the planted rises (eggs, sugar, toor dal, ₹1,561 lost).
+**Alerts.** Fixed rules: a day against the same weekday over 8 weeks (median and MAD), week drop, margin leak,
+discount creep, product stopped, lapsed regulars, data nudges. Alerts open, resolve and stay dismissed
+correctly; a high alert becomes the digest's action; the sidebar shows a badge. Both were checked by hand:
+sales drop -64.9 % (z -8.97), discount +10 pts, leak ₹200 with a ₹180 suggestion. One test of mine used the wrong
+window (a product needed 8 selling days inside the window).
+**Also.** A workspace switcher (needed to view the new sample; also groundwork for multi-store) and
+[PRODUCT-PACKAGING.md](research/PRODUCT-PACKAGING.md): market prices, draft tiers, meters for the costly features,
+the entitlements service to build, and the next features ranked by willingness to pay.
+
 ## 2026-11-09 (late) · Phase 12: owner digest
 
 Researched what a daily summary should hold ([DIGEST.md](research/DIGEST.md)), then built it: three numbers

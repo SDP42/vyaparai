@@ -1,0 +1,12 @@
+# conda-forge environment used for the Phase 4 experiments (PyPI was too slow on the dev network).
+# Create:  conda create -n vyapar-ml --override-channels -c conda-forge python=3.12 \
+#            numpy pandas scikit-learn statsforecast lightgbm optuna pytorch-cpu transformers accelerate einops
+#          pip install --no-deps chronos-forecasting
+# Run from apps/api:
+#   python experiments/forecasting/dataset.py
+#   python -m experiments.forecasting.benchmark
+#   python -m experiments.forecasting.pretrained amazon/chronos-bolt-small
+#   python -m experiments.forecasting.analyze
+name: vyapar-ml
+channels: [conda-forge]
+dependencies: [python=3.12, numpy, pandas, scikit-learn, statsforecast, lightgbm, optuna]

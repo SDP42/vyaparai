@@ -29,6 +29,22 @@ Treat every claim as a hypothesis the backtest must confirm._
 | Duty, export-policy changes | Government notifications | Curated events list, entered by us, with effective dates |
 | Festive and local events | Own dated table | Moves every year; maintained by us |
 
+## Licensing status (read before launch)
+
+Nothing below is called by the product yet. "From memory" means I have not re-checked the licence text
+in this session; confirm each one before shipping.
+
+| Item | Status | Commercial use |
+|---|---|---|
+| Open-Meteo weather API | Checked in search: free tier is **non-commercial only**; data CC BY 4.0 (attribution) | **Not allowed on the free tier.** Needs a paid plan or self-hosting; verify price and terms |
+| MoSPI CPI, data.gov.in, Agmarknet | Government open data; the usual licence is the Government Open Data Licence – India (from memory, to verify); data.gov.in API needs a free key and has its own terms | Likely allowed with attribution; confirm per dataset |
+| IMD weather | Not researched yet | Unknown; check terms |
+| Libraries we use: numpy, scipy (BSD), LightGBM (MIT), Optuna (MIT), statsforecast (Apache-2.0) | From memory | Allowed |
+| Chronos-Bolt weights and library (Amazon) | Apache-2.0 from memory; benchmark only, not in the product | Verify before using in the product |
+| Our own festive and events table | We author it | Ours |
+
+Rule: no external feed goes into a shipped build until its licence row here says "confirmed".
+
 ## How we will include them (layered)
 
 1. **Now (Phase 4c): optional covariates in the engine.** The engine accepts daily covariates known for the forecast period (temperature, rain). It runs the backtest **with and without** them and keeps them only if the pooled error improves by at least 2 % (relative). The decision and both errors are stored in the model card.

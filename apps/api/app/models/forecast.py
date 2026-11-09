@@ -8,7 +8,7 @@ import uuid
 from datetime import date
 from typing import Any
 
-from sqlalchemy import JSON, Date, Float, ForeignKey, Index, Integer, String, Uuid
+from sqlalchemy import JSON, Date, Float, ForeignKey, Index, Integer, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, CreatedAtMixin, UUIDPrimaryKeyMixin, WorkspaceScopedMixin
@@ -25,6 +25,12 @@ class ForecastRun(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, CreatedAtMixin, Bas
     history_days: Mapped[int] = mapped_column(Integer)
     n_series: Mapped[int] = mapped_column(Integer)
     seconds: Mapped[float] = mapped_column(Float)
+    # Registry: runs are numbered per workspace; one is active (what the app shows).
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(
+        String(12), default="active"
+    )  # active | superseded | rejected
+    note: Mapped[str | None] = mapped_column(Text)
     # model card, accuracy (WAPE, bias, FVA, coverage), totals series and warnings
     summary: Mapped[dict[str, Any]] = mapped_column(JSON)
     created_by_id: Mapped[uuid.UUID | None] = mapped_column(

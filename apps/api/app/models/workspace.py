@@ -2,7 +2,7 @@ import uuid
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, ForeignKey, String, UniqueConstraint, Uuid
+from sqlalchemy import Enum, Float, ForeignKey, String, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin, WorkspaceScopedMixin
@@ -42,6 +42,10 @@ class Workspace(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     slug: Mapped[str] = mapped_column(String(140), unique=True, index=True)
     currency: Mapped[str] = mapped_column(String(3), default="INR")
     timezone: Mapped[str] = mapped_column(String(64), default="Asia/Kolkata")
+    # Shop location, used only to look up local weather (never customer data).
+    city: Mapped[str | None] = mapped_column(String(80))
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
     created_by_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL")
     )

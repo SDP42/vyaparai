@@ -5,6 +5,7 @@ from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.user import User
+from app.models.weather import WeatherDaily
 from app.models.workspace import Membership, Workspace, WorkspaceRole
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "OrderStatus",
     "Product",
     "User",
+    "WeatherDaily",
     "Workspace",
     "WorkspaceRole",
 ]

@@ -25,7 +25,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |
 | 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
-| 12 | Daily and weekly digest (push) | ⬜ | Three numbers and one action, by WhatsApp or email |
+| 12 | Daily and weekly digest (push) | ✅ | Three numbers and one action, by WhatsApp or email |
 | 13 | Cash and credit (udhaar) intelligence | ⬜ | Dues, ageing, who to remind, expected collection |
 | 14 | Alerts and anomalies | ⬜ | Sales drop, margin leak, stock-out risk |
 | 15 | Connectors and scheduled imports | ⬜ | Billing-app and POS exports kept fresh automatically |

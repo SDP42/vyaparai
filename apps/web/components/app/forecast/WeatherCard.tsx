@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { ApiError, api } from "@/lib/api";
 import { useApi } from "@/lib/analytics";
-import type { Accuracy, City, WeatherSignal, WeatherStatus } from "@/lib/forecast";
+import type { Accuracy, City, EventsSignal, WeatherSignal, WeatherStatus } from "@/lib/forecast";
+import Link from "next/link";
 import { Card } from "../analytics/parts";
 
 const pct = (v: number | null | undefined) => (v == null ? "–" : `${(v * 100).toFixed(1)}%`);
 
 /** Outside signals: whether weather was tried, whether it helped, and where the shop is. */
-export function WeatherCard({ wsId, signal, accuracy, canEdit, onSaved }: { wsId: string; signal?: WeatherSignal; accuracy: Accuracy; canEdit: boolean; onSaved: () => void }) {
+export function WeatherCard({ wsId, signal, events, accuracy, canEdit, onSaved }: { wsId: string; signal?: WeatherSignal; events?: EventsSignal; accuracy: Accuracy; canEdit: boolean; onSaved: () => void }) {
   const base = `/workspaces/${wsId}/weather`;
   const status = useApi<WeatherStatus>(`${base}/status`, []);
   const cities = useApi<City[]>(`${base}/cities`, []);
@@ -17,6 +18,7 @@ export function WeatherCard({ wsId, signal, accuracy, canEdit, onSaved }: { wsId
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const cov = accuracy.covariates;
+  const wGroup = cov?.groups?.find((g) => g.group === "weather");
 
   const save = async () => {
     if (!pick) return;
@@ -39,11 +41,11 @@ export function WeatherCard({ wsId, signal, accuracy, canEdit, onSaved }: { wsId
   if (signal?.status === "ok" && cov) {
     if (signal.used) {
       headline = "Weather is helping";
-      body = `Temperature and rain cut the typical error from ${pct(cov.wape_without)} to ${pct(cov.wape_with)} in past tests, so this forecast uses them.`;
+      body = `Temperature and rain cut the typical error from ${pct(wGroup?.wape_before)} to ${pct(wGroup?.wape_after)} in past tests, so this forecast uses them.`;
       tone = "good";
     } else {
       headline = "Weather tried, left out";
-      body = `We tested weather for ${signal.city ?? "your city"}. It did not improve accuracy enough (${pct(cov.wape_without)} without, ${pct(cov.wape_with)} with), so it is not used. That is common for everyday staples.`;
+      body = `We tested weather for ${signal.city ?? "your city"}. It did not improve accuracy enough (${pct(wGroup?.wape_before)} without, ${pct(wGroup?.wape_after)} with), so it is not used. That is common for everyday staples.`;
     }
   } else if (signal?.status === "unavailable") {
     headline = "Weather unavailable";
@@ -60,6 +62,23 @@ export function WeatherCard({ wsId, signal, accuracy, canEdit, onSaved }: { wsId
         <p className="font-semibold">{headline}</p>
         <p className="mt-1 text-xs text-muted">{body}</p>
       </div>
+      {events && (
+        <div className="mt-3 rounded-xl border border-line bg-canvas p-3 text-sm">
+          <p className="font-semibold">{events.used ? "Festivals and cricket are helping" : "Festivals and cricket tried, left out"}</p>
+          <p className="mt-1 text-xs text-muted">
+            {events.status !== "ok"
+              ? "No festival dates cover this period."
+              : events.used
+                ? `Using festival and cricket dates${events.state ? ` for ${events.state}` : ""} cut the typical error from ${pct(events.wape_before)} to ${pct(events.wape_after)} in past tests.`
+                : `They did not improve accuracy enough in past tests (${pct(events.wape_before)} without, ${pct(events.wape_after)} with), usually because there is little history around past festivals yet. They help as months pass.`}
+          </p>
+          {!events.region_known && (
+            <p className="mt-1 text-xs">
+              Regional festivals need your state: <Link href="/app/festivals" className="underline underline-offset-4">set it here</Link>.
+            </p>
+          )}
+        </div>
+      )}
       {canEdit && status.data?.enabled !== false && (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <select aria-label="Shop city" value={pick} onChange={(e) => setPick(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm">

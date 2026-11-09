@@ -216,7 +216,7 @@ function Overview({ data, base, stale, onRefresh, running, wsId, canEdit, onLoca
         <div className="space-y-5">
           <Movers title="Rising" tone="mor" items={data.risers} empty="No product is expected to grow by much." />
           <Movers title="Falling" tone="sindoor" items={data.fallers} empty="No product is expected to drop by much." />
-          <WeatherCard wsId={wsId} signal={data.signals?.weather} accuracy={data.accuracy} canEdit={canEdit} onSaved={onLocationSaved} />
+          <WeatherCard wsId={wsId} signal={data.signals?.weather} events={data.signals?.events} accuracy={data.accuracy} canEdit={canEdit} onSaved={onLocationSaved} />
         </div>
       </div>
 

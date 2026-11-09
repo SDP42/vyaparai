@@ -28,7 +28,7 @@ export type Accuracy = {
   interval_coverage_80?: number | null;
   interval_coverage_80_raw?: number | null;
   interval_scale?: number;
-  covariates?: { names: string[]; used: boolean; wape_without: number | null; wape_with: number | null; required_gain: number };
+  covariates?: { names: string[]; used: boolean; wape_without: number | null; wape_with: number | null; required_gain: number; groups?: { group: string; names: string[]; used: boolean; wape_before: number | null; wape_after: number | null }[] };
   candidates?: Record<string, number | null>;
   tuning?: { trials: number; used: boolean; default_wape: number | null; best_wape: number | null; note?: string };
   engine_version?: string;
@@ -54,8 +54,9 @@ export type ForecastOverview = {
   fallers: Mover[];
   confidence_counts: Record<"high" | "medium" | "low", number>;
   warnings: string[];
-  signals: { weather?: WeatherSignal };
+  signals: { weather?: WeatherSignal; events?: EventsSignal };
 };
+export type EventsSignal = { status: "ok" | "no_data"; state: string | null; zones: string[]; used: boolean; wape_before: number | null; wape_after: number | null; region_known: boolean };
 export type WeatherSignal = { status: "ok" | "off" | "no_location" | "unavailable"; city?: string | null; used?: boolean; note?: string | null; attribution?: string; forecast_days?: number };
 export type City = { name: string; state: string; latitude: number; longitude: number };
 export type WeatherStatus = { enabled: boolean; free_tier: boolean; city: string | null; latitude: number | null; longitude: number | null; attribution: string; note: string | null };

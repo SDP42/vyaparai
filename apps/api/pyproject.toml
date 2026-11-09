@@ -46,6 +46,8 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106"]
+# Research scripts (not product code): long table lines, pickled local results, seeded random.
+"experiments/**" = ["E501", "N803", "N806", "S301", "S311", "RUF059", "I001", "T201"]
 
 [tool.mypy]
 python_version = "3.12"

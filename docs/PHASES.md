@@ -183,11 +183,21 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [ ] Consistent empty / loading / error states; mobile layouts for every table
 - [ ] Accessibility pass (keyboard, focus, screen-reader labels, contrast) and Lighthouse check
 
-## Phase 5 — Inventory & decision support
+## Phase 5 — Inventory & decision support ✅ ([notes](research/INVENTORY.md))
 
-- [ ] Stock-on-hand, lead time, MOQ import; reorder point = demand over lead time + safety stock
-- [ ] Fast/slow movers, stock-out risk, excess stock; scenario sliders
-- [ ] Draft purchase orders only — a human must approve
+- [x] Stock counts by CSV or by hand (dated snapshots), delivery time and pack size per product; stock today = last count minus sales since
+- [x] Days of cover from the forecast, order now / order soon / too much / not selling, order quantity at a lean, balanced or cautious level, whole packs
+- [x] Cash tied up, excess cash and dead stock; downloadable order list (a suggestion a human approves; nothing is ordered automatically)
+- [x] Alerts for stock-out risk, products to order, dead stock; the digest's "Do this" picks up a stock-out
+- Not built: orders already on the way, supplier minimum order values, per-supplier lead times, scenario sliders (the three safety levels are the first step)
+
+## Phase 5B — Festivals, regions and cricket ✅ ([how it works](EVENTS.md))
+
+- [x] Agent-researched, cross-checked table of 320 events 2024-2028 with sources and confidence
+- [x] Region matching (core and zone), a state setting, multi-zone states
+- [x] Festivals page: upcoming events by region, matching products, stock risk, past effects measured on the shop's own sales
+- [x] Forecast: event and cricket signals tested as a group, festival distance feature, warnings that name the festival, owner festive boost
+- [x] Alerts for festivals about to start whose products may run out
 
 ## Phase 6 — NLP review intelligence
 

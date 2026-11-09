@@ -10,6 +10,7 @@ import { Card, EmptyNote, ErrorNote, Notices, Skeleton } from "./analytics/parts
 import { ConfidenceChip, MODEL_LABEL, RangeBar, Sparkline, useCountUp } from "./forecast/bits";
 import { ForecastChart } from "./forecast/ForecastChart";
 import { ProductDrawer } from "./forecast/ProductDrawer";
+import { ModelHistory } from "./forecast/ModelHistory";
 import { WeatherCard } from "./forecast/WeatherCard";
 
 const PAGE = 15;
@@ -22,6 +23,7 @@ export function ForecastsPage() {
   const latest = useApi<Latest>(`${base}/latest`, [dataVersion, version]);
   const [job, setJob] = useState<Job | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
+  const [opts, setOpts] = useState({ tune: false, uplift: 0 });
   const alive = useRef(true);
   useEffect(() => {
     alive.current = true; // set again on mount: React dev mode mounts, unmounts and remounts once
@@ -34,7 +36,8 @@ export function ForecastsPage() {
   const run = useCallback(async () => {
     setRunError(null);
     try {
-      let j = await api<Job>(`${base}/run`, { method: "POST" });
+      const qs = new URLSearchParams({ tune: String(opts.tune), peak_uplift_pct: String(opts.uplift) });
+      let j = await api<Job>(`${base}/run?${qs}`, { method: "POST" });
       setJob(j);
       for (let i = 0; i < 180 && alive.current && (j.status === "queued" || j.status === "running"); i++) {
         await new Promise((r) => setTimeout(r, 900));
@@ -48,7 +51,7 @@ export function ForecastsPage() {
     } catch (e) {
       setRunError(e instanceof ApiError ? e.message : "Something went wrong");
     }
-  }, [base, workspace.id]);
+  }, [base, workspace.id, opts]);
 
   const d = latest.data;
   const fc = d && hasForecast(d) ? d : null;
@@ -62,14 +65,38 @@ export function ForecastsPage() {
           <p className="mt-1 text-sm text-muted">What to expect over the next two weeks, how sure we are, and why you can trust it.</p>
         </div>
         {canImport && d && (hasForecast(d) || d.can_forecast) && (
-          <button
-            type="button"
-            onClick={run}
-            disabled={running}
-            className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas transition-colors hover:bg-sindoor disabled:opacity-60"
-          >
-            {running ? "Building forecast…" : fc ? "Refresh forecast" : "Build my forecast"}
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <details className="relative">
+              <summary className="cursor-pointer list-none rounded-full border border-line px-4 py-2.5 text-sm hover:bg-surface-2">Options</summary>
+              <div className="absolute right-0 z-20 mt-2 w-72 space-y-3 rounded-2xl border border-line bg-surface p-4 text-sm shadow-xl">
+                <label className="block text-xs text-muted">
+                  Festive-season boost
+                  <select value={opts.uplift} onChange={(e) => setOpts({ ...opts, uplift: Number(e.target.value) })} className="mt-1 w-full rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-sm text-fg">
+                    {[0, 10, 20, 30, 40, 50].map((u) => (
+                      <option key={u} value={u}>
+                        {u === 0 ? "None (what the model says)" : `Add ${u}% near the peak`}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1 block">Models often under-forecast festive peaks, mainly when there is under a year of history. This is your own adjustment and is labelled as such.</span>
+                </label>
+                <label className="flex items-start gap-2 text-xs text-muted">
+                  <input type="checkbox" checked={opts.tune} onChange={(e) => setOpts({ ...opts, tune: e.target.checked })} className="mt-0.5 accent-[var(--color-sindoor)]" />
+                  <span>
+                    <b className="text-fg">Also search for better settings</b> (slower). Tested on data before the checks, and only used if it helps. In our tests it rarely does.
+                  </span>
+                </label>
+              </div>
+            </details>
+            <button
+              type="button"
+              onClick={() => run()}
+              disabled={running}
+              className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas transition-colors hover:bg-sindoor disabled:opacity-60"
+            >
+              {running ? "Building forecast…" : fc ? "Refresh forecast" : "Build my forecast"}
+            </button>
+          </div>
         )}
       </header>
 
@@ -78,8 +105,8 @@ export function ForecastsPage() {
       {latest.error && <ErrorNote message={latest.error} />}
       {!d && latest.loading && <Skeleton className="h-96" />}
 
-      {d && !hasForecast(d) && !running && <FirstRun can={d.can_forecast} reason={d.reason} days={d.history_days} canRun={canImport} onRun={run} />}
-      {fc && <Overview key={fc.run.id} data={fc} base={base} stale={fc.stale} onRefresh={canImport ? run : undefined} running={running} wsId={workspace.id} canEdit={["owner", "admin"].includes(workspace.role)} onLocationSaved={() => setVersion((v) => v + 1)} />}
+      {d && !hasForecast(d) && !running && <FirstRun can={d.can_forecast} reason={d.reason} days={d.history_days} canRun={canImport} onRun={() => run()} />}
+      {fc && <Overview key={fc.run.id} data={fc} base={base} stale={fc.stale} onRefresh={canImport ? () => run() : undefined} running={running} wsId={workspace.id} canEdit={["owner", "admin"].includes(workspace.role)} onLocationSaved={() => setVersion((v) => v + 1)} />}
     </div>
   );
 }
@@ -195,6 +222,8 @@ function Overview({ data, base, stale, onRefresh, running, wsId, canEdit, onLoca
 
       <ProductTable base={base} horizon={data.run.horizon} />
 
+      <ModelHistory wsId={wsId} canEdit={canEdit} version={data.run.version ?? 1} onChanged={onLocationSaved} />
+
       <p className="text-xs text-muted">
         Built {new Date(data.run.created_at).toLocaleString("en-IN")} in {data.run.seconds}s from {data.run.history_days} days of sales across {data.run.n_series} products. Methods: {Object.entries(card.models).filter(([, n]) => n > 0).map(([m, n]) => `${MODEL_LABEL[m]} (${n})`).join(", ")}.
       </p>
@@ -255,6 +284,7 @@ function TrustPanel({ data }: { data: ForecastOverview }) {
             </li>
           )}
         </ul>
+        {a.candidates && <Candidates c={a.candidates} />}
         <details className="rounded-xl border border-line bg-canvas p-3">
           <summary className="cursor-pointer text-sm font-medium">How it works and what it assumes</summary>
           <div className="mt-2 space-y-2 text-xs text-muted">
@@ -392,5 +422,35 @@ function ProductTable({ base, horizon }: { base: string; horizon: number }) {
       )}
       {open && <ProductDrawer base={base} sku={open} onClose={() => setOpen(null)} />}
     </Card>
+  );
+}
+
+const CAND_LABEL: Record<string, string> = {
+  seasonal_naive: "Repeat last week (the bar to beat)",
+  lightgbm: "Machine learning",
+  theta: "Trend and weekday",
+  seasonal_average: "Recent average",
+  chosen_mix: "What we use (best per product)",
+};
+
+/** How each method did on the same past weeks. Shorter bar = smaller error. */
+function Candidates({ c }: { c: Record<string, number | null> }) {
+  const rows = Object.entries(c).filter(([, v]) => v != null) as [string, number][];
+  const max = Math.max(...rows.map(([, v]) => v), 0.01);
+  return (
+    <div>
+      <p className="mb-1.5 text-xs text-muted">How each method did on the same past weeks (shorter is better)</p>
+      <ul className="space-y-1.5">
+        {rows.map(([k, v]) => (
+          <li key={k} className="grid grid-cols-[1fr_auto] items-center gap-x-3 text-xs">
+            <span className={k === "chosen_mix" ? "font-semibold" : ""}>{CAND_LABEL[k] ?? k}</span>
+            <span className="font-mono">{(v * 100).toFixed(1)}%</span>
+            <span className="col-span-2 h-1.5 overflow-hidden rounded-full bg-surface-2">
+              <span className={`block h-full rounded-full ${k === "chosen_mix" ? "bg-mor" : k === "seasonal_naive" ? "bg-line" : "bg-haldi"}`} style={{ width: `${(v / max) * 100}%` }} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

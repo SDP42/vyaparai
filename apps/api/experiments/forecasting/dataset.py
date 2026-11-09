@@ -38,7 +38,7 @@ def poisson(rnd: random.Random, lam: float) -> int:
 
 def festive(d: date) -> float:
     return 1.0 + max(
-        (0.55 * math.exp(-((d - p).days / 9) ** 2) for p in FESTIVE_PEAKS), default=0.0
+        (0.55 * math.exp(-(((d - p).days / 9) ** 2)) for p in FESTIVE_PEAKS), default=0.0
     )
 
 

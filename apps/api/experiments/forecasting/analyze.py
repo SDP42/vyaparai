@@ -20,8 +20,13 @@ def main() -> None:
     res = blob["results"]
     for n in ("tiny", "small"):
         res.update(pickle.load((OUT / f"pretrained_chronos_{n}.pkl").open("rb")))
-    res["ens_lgbm_ets_chronos"] = {p: mean_of(res, ["lgbm_default", "auto_ets", "chronos_small"], p) for p in ("backtest", "holdout")}
-    res["ens_lgbm_chronos"] = {p: mean_of(res, ["lgbm_default", "chronos_small"], p) for p in ("backtest", "holdout")}
+    res["ens_lgbm_ets_chronos"] = {
+        p: mean_of(res, ["lgbm_default", "auto_ets", "chronos_small"], p)
+        for p in ("backtest", "holdout")
+    }
+    res["ens_lgbm_chronos"] = {
+        p: mean_of(res, ["lgbm_default", "chronos_small"], p) for p in ("backtest", "holdout")
+    }
 
     # routing: for each demand type pick the model with the best BACKTEST wape for that type
     kinds = sorted(set(panel.kind.values()))
@@ -43,9 +48,14 @@ def main() -> None:
         rows.append(
             {
                 "model": name,
-                "bt_wape": bt["wape_all"], "ho_wape": ho["wape_all"], "ho_bias": ho["bias_all"],
-                "ho_fast": ho.get("wape_fast"), "ho_mid": ho.get("wape_mid"), "ho_slow": ho.get("wape_slow"),
-                "fva_vs_snaive": 1 - ho["wape_all"] / score(res["seasonal_naive"]["holdout"], panel)["wape_all"],
+                "bt_wape": bt["wape_all"],
+                "ho_wape": ho["wape_all"],
+                "ho_bias": ho["bias_all"],
+                "ho_fast": ho.get("wape_fast"),
+                "ho_mid": ho.get("wape_mid"),
+                "ho_slow": ho.get("wape_slow"),
+                "fva_vs_snaive": 1
+                - ho["wape_all"] / score(res["seasonal_naive"]["holdout"], panel)["wape_all"],
                 "series_win_rate": float(np.mean([w[s] < ref[s] for s in w if s in ref])),
             }
         )
@@ -54,20 +64,28 @@ def main() -> None:
 
     log = pd.DataFrame(blob["tuning_log"])
     tuning = {
-        "trials": len(log), "inner_wape_best": float(log["wape"].min()), "inner_wape_worst": float(log["wape"].max()),
+        "trials": len(log),
+        "inner_wape_best": float(log["wape"].min()),
+        "inner_wape_worst": float(log["wape"].max()),
         "inner_wape_median": float(log["wape"].median()),
         "default_ho": float(df.set_index("model").loc["lgbm_default", "ho_wape"]),
         "tuned_ho": float(df.set_index("model").loc["lgbm_tuned", "ho_wape"]),
         "default_bt": float(df.set_index("model").loc["lgbm_default", "bt_wape"]),
         "tuned_bt": float(df.set_index("model").loc["lgbm_tuned", "bt_wape"]),
     }
-    json.dump({"routing": chosen, "tuning": tuning, "best_params": blob["best"]}, (OUT / "final.json").open("w"), indent=2)
+    json.dump(
+        {"routing": chosen, "tuning": tuning, "best_params": blob["best"]},
+        (OUT / "final.json").open("w"),
+        indent=2,
+    )
 
     # noise floor: Poisson noise puts a hard limit on slow-mover accuracy
     floors = {}
     for k in kinds:
         ys = np.concatenate([panel.y[s][~panel.so[s]] for s in panel.skus if panel.kind[s] == k])
-        floors[k] = float(np.mean(np.sqrt(ys.mean() * 2 / np.pi)) / ys.mean()) if ys.mean() else None
+        floors[k] = (
+            float(np.mean(np.sqrt(ys.mean() * 2 / np.pi)) / ys.mean()) if ys.mean() else None
+        )
     print("noise-floor WAPE (approx, Poisson):", {k: round(v, 3) for k, v in floors.items()})
     pd.set_option("display.width", 250)
     print(df.round(3).to_string(index=False))

@@ -46,7 +46,11 @@ def clean(y: np.ndarray, so: np.ndarray) -> np.ndarray:
     out = y.copy()
     for t in np.flatnonzero(so):
         prev = [out[t - 7 * k] for k in range(1, 5) if t - 7 * k >= 0 and not so[t - 7 * k]]
-        out[t] = float(np.mean(prev)) if prev else float(np.mean(y[max(0, t - 28) : t][~so[max(0, t - 28) : t]]) if t else 0.0)
+        out[t] = (
+            float(np.mean(prev))
+            if prev
+            else float(np.mean(y[max(0, t - 28) : t][~so[max(0, t - 28) : t]]) if t else 0.0)
+        )
     return out
 
 
@@ -67,7 +71,12 @@ def score(preds: pd.DataFrame, panel: Panel) -> dict[str, float | None]:
         keep = ~panel.so[s][t]
         rows.append(
             pd.DataFrame(
-                {"sku": s, "kind": panel.kind[s], "y": panel.y[s][t][keep], "yhat": np.clip(grp["yhat"].to_numpy(float)[keep], 0, None)}
+                {
+                    "sku": s,
+                    "kind": panel.kind[s],
+                    "y": panel.y[s][t][keep],
+                    "yhat": np.clip(grp["yhat"].to_numpy(float)[keep], 0, None),
+                }
             )
         )
     d = pd.concat(rows)

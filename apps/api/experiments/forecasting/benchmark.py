@@ -58,7 +58,9 @@ def run_stats(panel) -> dict[str, dict[str, pd.DataFrame]]:
         idx = {d: i for i, d in enumerate(panel.dates)}
         cv["t"] = cv["ds"].map(idx)
         for m in [c for c in cv.columns if c not in ("unique_id", "ds", "cutoff", "y", "t")]:
-            out.setdefault(m, {})[part] = cv.rename(columns={"unique_id": "sku", m: "yhat"})[["sku", "t", "yhat"]]
+            out.setdefault(m, {})[part] = cv.rename(columns={"unique_id": "sku", m: "yhat"})[
+                ["sku", "t", "yhat"]
+            ]
     return out
 
 
@@ -67,7 +69,10 @@ def gbm_windows(panel, params, label, seed=0, objective="regression") -> dict[st
     res = {}
     for part in ("backtest", "holdout"):
         res[part] = pd.concat(
-            [gbm.train_predict(panel, o, params, seed=seed, objective=objective) for o in origins[part]]
+            [
+                gbm.train_predict(panel, o, params, seed=seed, objective=objective)
+                for o in origins[part]
+            ]
         )
     return res
 
@@ -126,23 +131,57 @@ def summarise(panel, results, best, log) -> None:
     rows = []
     for name, parts in results.items():
         bt, ho = score(parts["backtest"], panel), score(parts["holdout"], panel)
-        rows.append({"model": name, **{f"bt_{k}": v for k, v in bt.items()}, **{f"ho_{k}": v for k, v in ho.items()}})
+        rows.append(
+            {
+                "model": name,
+                **{f"bt_{k}": v for k, v in bt.items()},
+                **{f"ho_{k}": v for k, v in ho.items()},
+            }
+        )
     df = pd.DataFrame(rows).sort_values("bt_wape_all")
     # simple ensembles chosen on the BACKTEST ranking only
     top3 = list(df["model"].head(3))
     ens = {"ensemble_top3_mean": {p: mean_of(results, top3, p) for p in ("backtest", "holdout")}}
     results.update(ens)
-    bt, ho = score(ens["ensemble_top3_mean"]["backtest"], panel), score(ens["ensemble_top3_mean"]["holdout"], panel)
-    df = pd.concat([df, pd.DataFrame([{"model": "ensemble_top3_mean", **{f"bt_{k}": v for k, v in bt.items()}, **{f"ho_{k}": v for k, v in ho.items()}}])])
+    bt, ho = (
+        score(ens["ensemble_top3_mean"]["backtest"], panel),
+        score(ens["ensemble_top3_mean"]["holdout"], panel),
+    )
+    df = pd.concat(
+        [
+            df,
+            pd.DataFrame(
+                [
+                    {
+                        "model": "ensemble_top3_mean",
+                        **{f"bt_{k}": v for k, v in bt.items()},
+                        **{f"ho_{k}": v for k, v in ho.items()},
+                    }
+                ]
+            ),
+        ]
+    )
     df.to_csv(OUT / "summary.csv", index=False)
     ref = per_series_wape(results["seasonal_naive"]["holdout"], panel)
     wins = {}
     for name, parts in results.items():
         w = per_series_wape(parts["holdout"], panel)
         wins[name] = float(np.mean([w[s] < ref[s] for s in w if s in ref]))
-    json.dump({"best_params": best, "top3_by_backtest": top3, "holdout_win_rate_vs_seasonal_naive": wins}, (OUT / "extra.json").open("w"), indent=2)
+    json.dump(
+        {"best_params": best, "top3_by_backtest": top3, "holdout_win_rate_vs_seasonal_naive": wins},
+        (OUT / "extra.json").open("w"),
+        indent=2,
+    )
     pd.set_option("display.width", 250, "display.max_columns", 30)
-    cols = ["model", "bt_wape_all", "ho_wape_all", "ho_bias_all", "ho_wape_fast", "ho_wape_mid", "ho_wape_slow"]
+    cols = [
+        "model",
+        "bt_wape_all",
+        "ho_wape_all",
+        "ho_bias_all",
+        "ho_wape_fast",
+        "ho_wape_mid",
+        "ho_wape_slow",
+    ]
     print(df[cols].round(3).to_string(index=False))
 
 

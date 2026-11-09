@@ -20,7 +20,9 @@ def festive_gap(d: pd.Timestamp) -> float:
     return float(min(abs((d.date() - p).days) for p in PEAKS))
 
 
-def build(panel: Panel, origins: list[int], cleaned: dict[str, np.ndarray], *, targets: bool, skus=None):
+def build(
+    panel: Panel, origins: list[int], cleaned: dict[str, np.ndarray], *, targets: bool, skus=None
+):
     rows, ys = [], []
     for si, s in enumerate(skus or panel.skus):
         y = cleaned[s]
@@ -55,7 +57,13 @@ def feature_cols(X: pd.DataFrame) -> list[str]:
 
 
 def train_predict(
-    panel: Panel, origin: int, params: dict, *, train_step: int = 3, seed: int = 0, objective: str = "regression"
+    panel: Panel,
+    origin: int,
+    params: dict,
+    *,
+    train_step: int = 3,
+    seed: int = 0,
+    objective: str = "regression",
 ) -> pd.DataFrame:
     """Train on windows whose targets all lie before ``origin``; forecast the next H days."""
     cleaned = {s: clean(panel.y[s], panel.so[s]) for s in panel.skus}
@@ -63,7 +71,9 @@ def train_predict(
     Xtr, ytr = build(panel, train_origins, cleaned, targets=True)
     keep = ~np.array([panel.so[n][t] for n, t in zip(Xtr["name"], Xtr["t"], strict=True)])
     cols = feature_cols(Xtr)
-    model = lgb.LGBMRegressor(objective=objective, random_state=seed, verbose=-1, n_jobs=4, **params)
+    model = lgb.LGBMRegressor(
+        objective=objective, random_state=seed, verbose=-1, n_jobs=4, **params
+    )
     model.fit(Xtr[cols][keep], ytr[keep], categorical_feature=["sku"])
     # forecast uses history strictly before origin (targets unused)
     pred_panel_y = {s: np.concatenate([cleaned[s][:origin], np.zeros(H)]) for s in panel.skus}

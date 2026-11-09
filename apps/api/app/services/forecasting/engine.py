@@ -34,6 +34,10 @@ LAGS = (1, 2, 3, 7, 14, 21, 28)
 FESTIVE_PEAKS = (date(2024, 11, 1), date(2025, 10, 20), date(2026, 11, 8), date(2027, 10, 29))
 PEAK_WARN_DAYS = 10
 TARGET_COVERAGE = 0.80
+ENGINE_VERSION = "1.2"
+TUNE_MAX_SECONDS = 60.0
+TUNE_MIN_GAIN = 0.01  # tuned parameters must cut the inner-validation error by 1 % to be used
+MAX_PEAK_UPLIFT = 50
 MAX_SCALE = 2.5
 
 GBM_PARAMS: dict[str, Any] = {
@@ -127,6 +131,7 @@ def _train(
     *,
     yearly: bool,
     exog: Arr | None = None,
+    gbm: dict[str, Any] | None = None,
 ) -> lgb.Booster | None:
     """Fit on windows whose targets all lie before ``origin``."""
     origins = list(range(28, origin - h + 1))
@@ -145,21 +150,22 @@ def _train(
     if len(y_all) < 200:
         return None
     sku_col = 12  # position of the series id in the feature matrix
+    g = {**GBM_PARAMS, **(gbm or {})}
     params = {
         "objective": "regression",
-        "learning_rate": GBM_PARAMS["learning_rate"],
-        "num_leaves": GBM_PARAMS["num_leaves"],
-        "min_data_in_leaf": GBM_PARAMS["min_child_samples"],
-        "feature_fraction": GBM_PARAMS["feature_fraction"],
-        "bagging_fraction": GBM_PARAMS["bagging_fraction"],
-        "bagging_freq": GBM_PARAMS["bagging_freq"],
-        "lambda_l2": GBM_PARAMS["lambda_l2"],
+        "learning_rate": g["learning_rate"],
+        "num_leaves": int(g["num_leaves"]),
+        "min_data_in_leaf": int(g["min_child_samples"]),
+        "feature_fraction": g["feature_fraction"],
+        "bagging_fraction": g["bagging_fraction"],
+        "bagging_freq": g["bagging_freq"],
+        "lambda_l2": g["lambda_l2"],
         "seed": 0,
         "verbosity": -1,
         "num_threads": 4,
     }
     data = lgb.Dataset(x_all, y_all, categorical_feature=[sku_col], free_raw_data=False)
-    model = lgb.train(params, data, num_boost_round=GBM_PARAMS["n_estimators"])
+    model = lgb.train(params, data, num_boost_round=int(g["n_estimators"]))
     return model
 
 
@@ -196,6 +202,108 @@ def seasonal_average(yc: Arr, cal: Calendar, origin: int, h: int) -> Arr:
     for k in range(h):
         out[:, k] = level * factor[:, int(cal.dow[origin + k])]
     return out
+
+
+def theta(yc: Arr, cal: Calendar, origin: int, h: int) -> Arr:
+    """Theta-style forecast: weekday-adjusted level plus half the trend.
+
+    Remove the weekday pattern, smooth the level with the alpha that fits the last 8 weeks best, add
+    half of the fitted straight-line slope (the theta = 2 drift), then put the weekday pattern back.
+    A compact, dependency-free stand-in for the ETS/Theta family that scored well in the benchmark.
+    """
+    hist = yc[:, max(0, origin - 112) : origin]
+    n = hist.shape[1]
+    dows = cal.dow[origin - n : origin].astype(int)
+    overall = np.maximum(hist.mean(axis=1), 1e-9)
+    idx = np.ones((hist.shape[0], 7))
+    for d in range(7):
+        sel = dows == d
+        if sel.sum() >= 3:
+            w = 0.85 if sel.sum() >= 8 else 0.5  # trust the weekday pattern once 8 weeks agree
+            idx[:, d] = w * (hist[:, sel].mean(axis=1) / overall) + (1 - w)
+    idx = np.maximum(idx, 0.2)
+    des = hist / idx[:, dows]
+    alphas = np.array([0.1, 0.2, 0.3, 0.5, 0.7, 0.9])
+    level = np.tile(des[:, :1], (1, len(alphas)))  # (series, alphas)
+    sse = np.zeros_like(level)
+    for t in range(1, n):
+        err = des[:, t : t + 1] - level
+        sse += err**2
+        level = level + alphas * err
+    best = np.argmin(sse, axis=1)
+    lvl = level[np.arange(level.shape[0]), best]
+    x = np.arange(n, dtype=float)
+    slope = ((x - x.mean()) * (des - des.mean(axis=1, keepdims=True))).sum(axis=1) / max(
+        float(((x - x.mean()) ** 2).sum()), 1e-9
+    )
+    out = np.zeros((hist.shape[0], h))
+    for k in range(h):
+        out[:, k] = np.maximum(0.0, lvl + 0.5 * slope * (k + 1)) * idx[:, int(cal.dow[origin + k])]
+    return out
+
+
+def _sample_params(rng: np.random.Generator) -> dict[str, Any]:
+    return {
+        "n_estimators": int(rng.integers(2, 13)) * 50,
+        "learning_rate": float(np.exp(rng.uniform(np.log(0.01), np.log(0.15)))),
+        "num_leaves": int(rng.integers(8, 97)),
+        "min_child_samples": int(rng.integers(5, 81)),
+        "feature_fraction": float(rng.uniform(0.5, 1.0)),
+        "bagging_fraction": float(rng.uniform(0.5, 1.0)),
+        "lambda_l2": float(np.exp(rng.uniform(np.log(1e-3), np.log(10.0)))),
+    }
+
+
+def tune_gbm(
+    yc: Arr, disc: Arr, stock: Mask, panel_y: Arr, cal: Calendar, first_window: int, h: int,
+    *, yearly: bool, exog: Arr | None, trials: int, seed: int = 7,
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:  # fmt: skip
+    """Random search over LightGBM settings, scored only on data before the first backtest window.
+
+    The search only sees data before the first backtest window, so it cannot leak. The defaults are
+    trial 0, and the tuned set is used only if it improves the inner error by ``TUNE_MIN_GAIN``.
+    """
+    inner = [first_window - 2 * h, first_window - h]
+    info: dict[str, Any] = {"trials": 0, "used": False, "default_wape": None, "best_wape": None}
+    if inner[0] < FIRST_BACKTEST_ORIGIN or trials < 1:
+        info["note"] = "Not enough history to tune safely."
+        return None, info
+    rng = np.random.default_rng(seed)
+    t0 = time.perf_counter()
+
+    def score(params: dict[str, Any] | None) -> float | None:
+        a_all, p_all = [], []
+        for o in inner:
+            model = _train(yc, disc, stock, cal, o, h, yearly=yearly, exog=exog, gbm=params)
+            if model is None:
+                return None
+            p_all.append(_predict_gbm(model, yc, disc, cal, o, h, yearly=yearly, exog=exog))
+            a_all.append(panel_y[:, o : o + h])
+        a, p = np.concatenate(a_all, axis=1), np.concatenate(p_all, axis=1)
+        return wape(a, p, np.ones_like(a, dtype=bool))
+
+    base = score(None)
+    info["default_wape"] = base
+    if base is None:
+        return None, info
+    best_p, best_w = None, base
+    for _ in range(trials):
+        if time.perf_counter() - t0 > TUNE_MAX_SECONDS:
+            info["note"] = "Stopped early at the time limit."
+            break
+        cand = _sample_params(rng)
+        w = score(cand)
+        info["trials"] += 1
+        if w is not None and w < best_w:
+            best_p, best_w = cand, w
+    info["best_wape"] = best_w
+    if best_p is not None and (base - best_w) / base >= TUNE_MIN_GAIN:
+        info["used"] = True
+        info["params"] = {
+            k: (round(v, 4) if isinstance(v, float) else v) for k, v in best_p.items()
+        }
+        return best_p, info
+    return None, info
 
 
 def seasonal_naive(yc: Arr, origin: int, h: int) -> Arr:
@@ -258,7 +366,14 @@ def _interval(pred: Arr, res: Arr | None) -> tuple[Arr, Arr]:
     return np.clip(pred - width, 0, None), pred + width
 
 
-def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> RunResult | None:
+def _run(
+    panel: Panel,
+    h: int,
+    exog_m: Arr | None,
+    exog_names: list[str],
+    tune_trials: int = 0,
+    peak_uplift_pct: int = 0,
+) -> RunResult | None:
     t0 = time.perf_counter()
     t_days = panel.n_days
     if t_days < MIN_DAYS_FORECAST:
@@ -273,6 +388,13 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
     # ---- backtests
     windows = [t_days - h * w for w in range(MAX_WINDOWS, 0, -1)]
     windows = [o for o in windows if o >= FIRST_BACKTEST_ORIGIN]
+    gbm_params: dict[str, Any] | None = None
+    tuning: dict[str, Any] | None = None
+    if tune_trials > 0 and can_gbm and windows:
+        gbm_params, tuning = tune_gbm(
+            yc, panel.disc, panel.stockout, panel.y, cal, windows[0], h,
+            yearly=yearly, exog=exog_m, trials=tune_trials,
+        )  # fmt: skip
     bt: list[dict[str, Any]] = []
     for o in windows:
         entry: dict[str, Any] = {
@@ -280,10 +402,21 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
             "actual": panel.y[:, o : o + h],
             "mask": ~panel.stockout[:, o : o + h],
             "avg": seasonal_average(yc, cal, o, h),
+            "theta": theta(yc, cal, o, h),
             "naive": seasonal_naive(yc, o, h),
         }
         if can_gbm:
-            model = _train(yc, panel.disc, panel.stockout, cal, o, h, yearly=yearly, exog=exog_m)
+            model = _train(
+                yc,
+                panel.disc,
+                panel.stockout,
+                cal,
+                o,
+                h,
+                yearly=yearly,
+                exog=exog_m,
+                gbm=gbm_params,
+            )
             if model is not None:
                 entry["gbm"] = _predict_gbm(
                     model, yc, panel.disc, cal, o, h, yearly=yearly, exog=exog_m
@@ -293,12 +426,23 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
     # ---- final model on all data
     final_gbm: Arr | None = None
     if can_gbm:
-        model = _train(yc, panel.disc, panel.stockout, cal, t_days, h, yearly=yearly, exog=exog_m)
+        model = _train(
+            yc,
+            panel.disc,
+            panel.stockout,
+            cal,
+            t_days,
+            h,
+            yearly=yearly,
+            exog=exog_m,
+            gbm=gbm_params,
+        )
         if model is not None:
             final_gbm = _predict_gbm(
                 model, yc, panel.disc, cal, t_days, h, yearly=yearly, exog=exog_m
             )
     final_avg = seasonal_average(yc, cal, t_days, h)
+    final_theta = theta(yc, cal, t_days, h)
     gbm_ok = final_gbm is not None and all("gbm" in e for e in bt) and bool(bt)
 
     # ---- per-series model choice, intervals
@@ -306,12 +450,13 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
     chosen_bt = np.zeros((s, len(bt), h))
     chosen_fc = np.zeros((s, h))
     chosen_res: list[Arr | None] = []
-    stats_model = {"lightgbm": 0, "seasonal_average": 0}
-    w_model: dict[str, list[float]] = {"gbm": [], "avg": [], "naive": []}
+    labels = {"gbm": "lightgbm", "theta": "theta", "avg": "seasonal_average"}
+    stats_model = {"lightgbm": 0, "theta": 0, "seasonal_average": 0}
+    w_model: dict[str, list[float]] = {"gbm": [], "theta": [], "avg": [], "naive": []}
     for i in range(s):
         pattern = str(classify(list(yc[i, -120:]))["pattern"])
         scores: dict[str, float | None] = {}
-        for name in ("gbm", "avg", "naive"):
+        for name in ("gbm", "theta", "avg", "naive"):
             if name == "gbm" and not gbm_ok:
                 continue
             if not bt:
@@ -320,17 +465,26 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
             p = np.concatenate([e[name][i] for e in bt])
             m = np.concatenate([e["mask"][i] for e in bt])
             scores[name] = wape(a, p, m)
-        use = "avg"
-        gw, aw = scores.get("gbm"), scores.get("avg")
+        # the best simple method first, then LightGBM only if it earns the place
+        simple: dict[str, float] = {}
+        for n in ("theta", "avg"):
+            v = scores.get(n)
+            if v is not None:
+                simple[n] = v
+        use = min(simple, key=lambda n: simple[n]) if simple else "avg"
+        best_simple = simple.get(use)
+        gw = scores.get("gbm")
         if gbm_ok and gw is not None:
             steady = pattern in ("smooth", "erratic", "insufficient")
-            if (steady and (aw is None or gw <= aw)) or (aw is not None and gw < aw * 0.9):
+            if best_simple is None or gw <= best_simple * (1.0 if steady else 0.9):
                 use = "gbm"
-        fc = final_gbm[i] if use == "gbm" and final_gbm is not None else final_avg[i]
+        finals = {"gbm": final_gbm, "theta": final_theta, "avg": final_avg}
+        fc_src = finals[use]
+        fc = fc_src[i] if fc_src is not None else final_avg[i]
         for k, e in enumerate(bt):
             chosen_bt[i, k] = e[use][i]
         chosen_fc[i] = fc
-        stats_model["lightgbm" if use == "gbm" else "seasonal_average"] += 1
+        stats_model[labels[use]] += 1
         res = (
             np.concatenate([(e["actual"][i] - e[use][i])[e["mask"][i]] for e in bt]) if bt else None
         )
@@ -343,7 +497,7 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
                 sku=panel.skus[i],
                 name=panel.names[i],
                 category=panel.categories[i],
-                model="lightgbm" if use == "gbm" else "seasonal_average",
+                model=labels[use],
                 pattern=pattern,
                 confidence="low",
                 backtest_wape=scores.get(use),
@@ -366,6 +520,15 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
         pred = chosen_bt.reshape(s, -1)
         naive = np.concatenate([e["naive"] for e in bt], axis=1)
         w_all, w_naive = wape(act, pred, msk), wape(act, naive, msk)
+        cand: dict[str, float | None] = {"seasonal_naive": w_naive}
+        for name, label in labels.items():
+            if all(name in e for e in bt):
+                cand[label] = wape(act, np.concatenate([e[name] for e in bt], axis=1), msk)
+        cand["chosen_mix"] = w_all
+        accuracy["candidates"] = cand
+        accuracy["engine_version"] = ENGINE_VERSION
+        if tuning is not None:
+            accuracy["tuning"] = tuning
         accuracy.update(
             wape=w_all,
             bias=bias(act, pred, msk),
@@ -418,12 +581,18 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
     p50_all = np.zeros((s, h))
     p10_all = np.zeros((s, h))
     p90_all = np.zeros((s, h))
+    peak_u = max(0, min(MAX_PEAK_UPLIFT, int(peak_uplift_pct)))
+    peak_days = np.array(
+        [min(abs((d - p).days) for p in FESTIVE_PEAKS) <= PEAK_WARN_DAYS for d in fdays]
+    )
+    mult = np.where(peak_days, 1 + peak_u / 100, 1.0)  # the owner's festive-season adjustment
     for i, sr in enumerate(series):
         lo, hi = _interval(chosen_fc[i], chosen_res[i])
         lo = np.clip(chosen_fc[i] - interval_scale * (chosen_fc[i] - lo), 0, None)
         hi = chosen_fc[i] + interval_scale * (hi - chosen_fc[i])
-        p50_all[i], p10_all[i], p90_all[i] = chosen_fc[i], lo, hi
-        sr.units_next = float(chosen_fc[i].sum())
+        fc_i, lo, hi = chosen_fc[i] * mult, lo * mult, hi * mult
+        p50_all[i], p10_all[i], p90_all[i] = fc_i, lo, hi
+        sr.units_next = float(fc_i.sum())
         sr.units_next_low = float(lo.sum())
         sr.units_next_high = float(hi.sum())
         w = sr.backtest_wape
@@ -437,7 +606,7 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
             "hist": [round(float(v), 2) for v in panel.y[i, -n_hist:]],
             "fc_start": fdays[0].isoformat(),
             "p10": [round(float(v), 2) for v in lo],
-            "p50": [round(float(v), 2) for v in chosen_fc[i]],
+            "p50": [round(float(v), 2) for v in fc_i],
             "p90": [round(float(v), 2) for v in hi],
             "backtest": [
                 {
@@ -510,6 +679,11 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
             "A festive season falls inside this forecast. With under a year of history the model "
             "has not seen one, so demand is likely to run above the forecast."
         )
+    if near_peak and peak_u > 0:
+        warnings.append(
+            f"You added {peak_u}% to the days near the festive season. That is your adjustment, "
+            "not something the model learned."
+        )
     if accuracy.get("gate_passed") is False:
         warnings.append(
             "The model did not beat repeating last week in the backtest; treat it as a guide only."
@@ -536,12 +710,18 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
             "assumptions": [
                 "No new promotions or price changes during the forecast period",
                 "Suspected stock-out days are not counted as zero demand",
+                *(
+                    [f"Festive-season days are {peak_u}% higher than the model says (set by you)"]
+                    if peak_u > 0 and near_peak
+                    else []
+                ),
             ],
             "limits": [
                 "Intervals come from past forecast errors and can be too narrow in unusual periods",
                 "Forecasts are demand estimates, not stock-aware",
             ],
         },
+        "options": {"tune_trials": tune_trials, "peak_uplift_pct": peak_u},
         "accuracy": accuracy,
         "totals": totals,
         "warnings": warnings,
@@ -560,18 +740,25 @@ def _run(panel: Panel, h: int, exog_m: Arr | None, exog_names: list[str]) -> Run
 MIN_EXOG_GAIN = 0.02  # a covariate must cut the pooled backtest error by 2 % (relative) to be kept
 
 
-def run(panel: Panel, h: int = H, exog: dict[str, Arr] | None = None) -> RunResult | None:
+def run(
+    panel: Panel,
+    h: int = H,
+    exog: dict[str, Arr] | None = None,
+    *,
+    tune_trials: int = 0,
+    peak_uplift_pct: int = 0,
+) -> RunResult | None:
     """Forecast every product. ``exog`` maps a name to daily values covering the history *and* the
     forecast period (length ``panel.n_days + h``). Covariates are used only if they beat the
     no-covariate model in the backtest; both errors are recorded in the model card."""
-    base = _run(panel, h, None, [])
+    base = _run(panel, h, None, [], tune_trials, peak_uplift_pct)
     if base is None or not exog:
         return base
     names = sorted(exog)
     mat = np.vstack([np.asarray(exog[n], dtype=float) for n in names])
     if mat.shape[1] != panel.n_days + h:
         raise ValueError("each covariate needs one value per history day plus one per forecast day")
-    with_x = _run(panel, h, mat, names)
+    with_x = _run(panel, h, mat, names, tune_trials, peak_uplift_pct)
     w0 = base.summary["accuracy"].get("wape")
     w1 = with_x.summary["accuracy"].get("wape") if with_x else None
     use = bool(with_x and w0 and w1 is not None and (w0 - w1) / w0 >= MIN_EXOG_GAIN)

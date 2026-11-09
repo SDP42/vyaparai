@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from app.models.alert import Alert
 from app.models.commerce import Order, OrderItem, Product
 from app.models.workspace import Workspace
-from app.services import costs
+from app.services import costs, inventory
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.queries import LINE_NET, _lines
@@ -243,6 +243,45 @@ def rule_stopped(db: Session, ws: uuid.UUID, end: date) -> list[dict[str, Any]]:
     ]  # fmt: skip
 
 
+def rule_inventory(db: Session, workspace: Workspace) -> list[dict[str, Any]]:
+    ov = inventory.overview(db, workspace)
+    items = ov["items"]
+    if not items:
+        return []
+    out: list[dict[str, Any]] = []
+    for i in [x for x in items if x["status"] == "urgent"][:8]:
+        out.append(
+            {
+                "key": f"stockout_risk|{i['sku']}", "rule": "stockout_risk", "severity": "high",
+                "title": f"{i['name']} will run out in about {float(i['cover_days']):.0f} days",
+                "detail": f"{float(i['on_hand']):.0f} left against about {float(i['daily_rate']):.1f} sold a day, and an order takes {i['lead_time_days']} days to arrive. Order about {float(i['order_qty']):.0f} now.",
+                "evidence": {"on_hand": float(i["on_hand"]), "cover_days": float(i["cover_days"]), "lead_time_days": i["lead_time_days"], "order_qty": float(i["order_qty"])},
+                "link": "/app/inventory",
+            }
+        )  # fmt: skip
+    soon = [x for x in items if x["status"] == "reorder"]
+    if soon:
+        out.append(
+            {
+                "key": "reorder_soon", "rule": "reorder_soon", "severity": "medium",
+                "title": f"{len(soon)} products need ordering this week",
+                "detail": "They will run low before your next delivery window. The inventory page has a ready order list.",
+                "evidence": {"products": len(soon)}, "link": "/app/inventory",
+            }
+        )  # fmt: skip
+    dead_cash = ov["summary"]["dead_cash"]
+    if ov["summary"]["dead"] and dead_cash > 0:
+        out.append(
+            {
+                "key": "dead_stock", "rule": "dead_stock", "severity": "info",
+                "title": f"{inr(dead_cash)} is tied up in {ov['summary']['dead']} products that have stopped selling",
+                "detail": "Nothing sold in the last 30 days while stock sits on the shelf. Consider a clearance offer or returning it to the supplier.",
+                "evidence": {"cash": float(dead_cash), "products": ov["summary"]["dead"]}, "link": "/app/inventory",
+            }
+        )  # fmt: skip
+    return out
+
+
 def rule_customers(db: Session, workspace: Workspace, end: date) -> list[dict[str, Any]]:
     _, rows = intelligence.scored(db, workspace, end, 365, 30, 30, 45)
     n = sum(1 for r in rows if r.orders >= 2 and r.recency_days >= 45)
@@ -273,6 +312,7 @@ def compute(
         + rule_discount(db, workspace.id, end)
         + rule_stopped(db, workspace.id, end)
         + rule_customers(db, workspace, end)
+        + rule_inventory(db, workspace)
     )
     if coverage is not None and coverage < 60:
         out.append(

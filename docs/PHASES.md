@@ -16,7 +16,7 @@ each phase contains and its exit criteria.
 | 2 | Metric layer & sales analytics (command center) | 5 | P0 | ✅ |
 | 3 | Customer & product intelligence | 6 | P0 | ✅ |
 | 3B | Campaigns & retention automation (**C1 done**: audiences, margin-guarded offers, messages, holdout, CSV; C2–C4 consent, sending, measurement still to do; [plan](research/CAMPAIGNS-PLAN.md)) | 9 | P1 | 🟡 |
-| 4 | Forecasting & predictive MVP | 7 | P0 | ⬜ |
+| 4 | Forecasting & predictive MVP | 7 | P0 | ✅ |
 | F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
 | — | **MVP release (end-to-end journey works)** | — | — | — |
 | 5 | Inventory & decision support | 8 | P1 | ⬜ |
@@ -138,40 +138,41 @@ Design is justified in [research/PHASE-2-RESEARCH.md](research/PHASE-2-RESEARCH.
 
 **Exit: met.** Scores, segments, cohort counts, margins, ABC and basket statistics match hand-computed fixtures; on the 8,188-row sample segments, statuses, the R×F grid, cohorts, product and category sums all reconcile (170 tests).
 
-## Phase 4 — Forecasting & the ML platform ⬜
+## Phase 4 — Forecasting & the ML platform ✅
 
-Full plan and justification: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Catalogue: [MODELS.md](MODELS.md).
+Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark and choices: [research/PHASE-4-BENCHMARK.md](research/PHASE-4-BENCHMARK.md), [research/PHASE-4-DECISIONS.md](research/PHASE-4-DECISIONS.md). Catalogue: [MODELS.md](MODELS.md).
 
-**4a · Foundations** (2 d) — ✅ metrics, baselines, backtester, demand classes (12 tests); synthetic 730-day dataset and a 21-model benchmark done ([results](research/PHASE-4-BENCHMARK.md)); product modelling panel moves to 4b
-- [ ] Generator `--days 730` mode with a known weekly cycle, trend, month-end and festive effects, promotions, stock-outs, intermittent SKUs
-- [ ] Modelling panel (SKU × day, zero-filled, stock-out suspicion flags) and demand-pattern classification (ADI/CV²)
-- [ ] Metrics module (MAE, RMSE, WAPE, sMAPE, MASE, bias, pinball, coverage, forecast value added), unit-tested on known series
-- [ ] Rolling-origin backtester with a single-use holdout; baselines (naive, seasonal naive, moving average, drift)
+**4a · Foundations** ✅
+- [x] 730-day synthetic dataset with known weekly, yearly and festive structure, promotions, stock-outs and intermittent products
+- [x] Modelling panel (product × day, zero-filled, stock-out suspicion) and demand-pattern classes (ADI/CV²)
+- [x] Metrics (MAE, RMSE, WAPE, sMAPE, MASE, bias, pinball, coverage, forecast value added) tested on known series
+- [x] Rolling-origin backtester with a single-use holdout; baselines
 
-**4b · Statistical and intermittent models** (2–3 d)
-- [ ] AutoETS, AutoARIMA, Theta, MSTL, Holt-Winters (statsforecast)
-- [ ] Croston, Croston-SBA, TSB, ADIDA/IMAPA for sparse demand
-- [ ] Per-series model selection from backtest error; leaderboard report
+**4b · Statistical and intermittent models** ✅ (benchmarked; Theta shipped)
+- [x] AutoETS, AutoARIMA, Theta, MSTL, Croston, SBA, TSB, ADIDA, IMAPA all benchmarked on the same windows
+- [x] **Theta** (weekday-adjusted level plus half the trend) built into the product as a dependency-free candidate
+- [x] Per-series model choice from backtest error; per-shop method comparison shown in the app
+- Decision: ETS, ARIMA and the Croston family are not shipped. The benchmark showed no gain over Theta and the average, and statsforecast needs heavy dependencies (see decisions doc)
 
-**4c · Global machine-learning models** (2–3 d)
-- [ ] Feature builder (lags, rolling stats, calendar, festive-season table, price/discount, category context), leak-free
-- [ ] LightGBM recursive and direct, ridge on lags, random forest reference
-- [ ] LightGBM quantile models (p10/p50/p90)
+**4c · Global machine-learning models** ✅
+- [x] Leak-free feature builder (lags, rolling stats, calendar, festive table, discount, optional weather)
+- [x] LightGBM direct multi-horizon model; intervals by conformal calibration instead of quantile models (measured coverage about 80 %)
 
-**4d · Tuning, ensembles, intervals** (3 d)
-- [ ] Optuna (TPE + median pruning) inside rolling-origin folds, seeded, configurable trial budget, every trial logged
-- [ ] Mean/median, weighted and stacked ensembles
-- [ ] Split-conformal intervals with measured coverage
-- [ ] Holdout evaluation and the **ship gate** (must beat seasonal naive)
-- [ ] Optional: Prophet and N-HiTS as candidates (kept only if they win)
+**4d · Tuning, ensembles, intervals, ship gate** ✅
+- [x] Hyperparameter search (random search, seeded) inside the training period only, defaults as trial 0, used only if it improves by 1 %; optional per run; every trial counted and reported
+- [x] Conformal intervals with measured leave-one-window-out coverage, widened until coverage reaches 80 %
+- [x] **Ship gate:** a new version that fails to beat "repeat last week" while the active one passed is kept as *not used*
+- [x] Festive-peak handling: warning plus an owner-set uplift, labelled as the owner's assumption
+- Decision: no ensembles (they did not beat LightGBM in the benchmark); Optuna replaced by dependency-free random search; Prophet and N-HiTS not added
 
-**4e · Registry, API and UI** (3 d)
-- [ ] Tables: `model_runs`, `model_versions`, `forecasts`; model card generation
-- [ ] `forecast_training` background job with progress by fold and trial; `POST /forecasts`, `GET /forecasts/{id}`, `GET /models`
-- [ ] Forecast UI: horizon picker (7/14/30), interval band, leaderboard, per-series model, low-confidence flags, model card view
-- [ ] Anomaly detection on daily sales and a demand-pattern view
+**4e · Registry, API and UI** ✅
+- [x] Versioned runs per workspace with status (in use, older, not used), notes, options and accuracy; rollback to any version; migration backfills history
+- [x] Background job with progress; `POST /forecasts/run` (options `tune`, `peak_uplift_pct`), `GET /forecasts/runs`, `POST /forecasts/runs/{id}/activate`
+- [x] Scheduled rebuild: `python -m app.forecast_runner` refreshes workspaces whose sales moved past the active forecast, at most every 20 hours, keeping the owner's festive adjustment
+- [x] Forecast UI: fan chart, per-product table with ranges and confidence, trust panel with method comparison, version history with rollback, run options, product drawer, CSV
+- Not built: pretrained model (Chronos) in the product; see decisions
 
-**Exit:** a reproducible tuned run with a model card; the shipped model beats seasonal naive on the holdout (or the product shows the baseline); interval coverage near nominal; forecast visible in the app.
+**Exit: met.** A reproducible run with a model card, accuracy and coverage; shipped models beat repeating last week (28 % on the benchmark data, with the gate enforced); intervals near nominal coverage; forecasts visible in the app. 268 backend tests.
 
 ## Phase F2 — App shell hardening
 

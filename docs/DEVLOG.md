@@ -2,6 +2,18 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (night) · Phase 5 inventory and the festival, region and cricket system
+
+**Festivals first, in depth.** One research agent produced a sourced, cross-checked table (320 events, 2024-2028: festivals,
+holidays, season windows, cricket) and notes on why something is on almost every day, which dates really move retail, regional
+differences and cricket's effect. I validated it before use: no duplicate ids or impossible dates, and anchors I know independently
+all matched (Diwali, Holi, Eid, Raksha Bandhan, Onam, IPL and World Cup finals). It also had to be extended backwards to 2024,
+because the model needs past events to learn from. The tests exposed a modelling flaw: "national" events limited to some zones
+and Kerala-centric Onam showing for Tamil Nadu. Fixed with core versus zone relevance (weight 0.5), a state setting, and tests for six
+states. Events feed the forecast as a signal group that is kept only if the backtest improves; warnings name the festival.
+**Phase 5.** Stock counts, cover from the forecast, order advice, dead stock and cash tied up, with alerts and a Stock page.
+An alert fires when a festival is close and products it touches may run out. 300+ backend tests.
+
 ## 2026-11-09 (late night) · Phase 4 completed
 
 Finished what was left of the forecasting phase, following the benchmark: a dependency-free **Theta** model joins

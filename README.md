@@ -37,6 +37,8 @@ calculation, and the AI never invents figures.
 | **Phase 3 · customer and product intelligence**: RFM segments, cohorts, ABC, portfolio quadrants, basket pairs, CSV export | ✅ |
 | **Phase 4** · forecasting platform: LightGBM + Theta + average, conformal ranges, ship gate, versions and rollback, tuning option, weather signal, scheduled rebuild | ✅ |
 | **Phases 12, 14, 15B** · owner digest, alerts, cost history and margin leaks | ✅ |
+| **Phase 5** · stock cover, order advice, dead stock, cash tied up | ✅ |
+| **Phase 5B** · festivals, regions and cricket: dated table, region matching, forecast signals, alerts | ✅ |
 | **Phase 3B C1** · campaign planner (margin-safe offers, holdout, messages; nothing is sent) | ✅ |
 | Inventory, credit, connectors, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) and the [packaging plan](docs/research/PRODUCT-PACKAGING.md) |
 

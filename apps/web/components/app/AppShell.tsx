@@ -12,6 +12,7 @@ const NAV = [
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
   { href: "/app/products", label: "Products", icon: "◈", exact: false },
   { href: "/app/forecasts", label: "Forecasts", icon: "◬", exact: false },
+  { href: "/app/costs", label: "Costs", icon: "₹", exact: false },
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
@@ -20,7 +21,7 @@ const SOON = ["Inventory", "Copilot"];
 
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();
-  const { workspace } = useWorkspace();
+  const { workspace, workspaces, switchTo } = useWorkspace();
   const active = (n: (typeof NAV)[number]) => (n.exact ? path === n.href : path.startsWith(n.href));
 
   return (
@@ -31,7 +32,17 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
         </Link>
         <div className="mt-7 rounded-xl border border-line bg-canvas p-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">Workspace</p>
-          <p className="mt-1 truncate text-sm font-semibold">{workspace.name}</p>
+          {workspaces.length > 1 ? (
+            <select aria-label="Switch workspace" value={workspace.id} onChange={(e) => switchTo(e.target.value)} className="mt-1 w-full truncate rounded-md border border-line bg-surface px-1.5 py-1 text-sm font-semibold">
+              {workspaces.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <p className="mt-1 truncate text-sm font-semibold">{workspace.name}</p>
+          )}
           <p className="font-mono text-[10px] text-muted">
             {workspace.role} · {workspace.currency}
           </p>

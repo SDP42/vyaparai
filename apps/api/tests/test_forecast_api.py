@@ -148,3 +148,30 @@ def test_running_twice_keeps_only_recent_runs(client: TestClient, shop) -> None:
         run_forecast(client, shop)
     r = client.get(url(shop, "/latest"), headers=shop[0]).json()
     assert r["run"]["n_series"] == 3
+
+
+def test_a_lost_job_does_not_block_new_runs(client: TestClient, shop, db_session_factory) -> None:
+    import uuid
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import select
+
+    from app.models.dataset import Job, JobStatus, JobType
+
+    with db_session_factory() as db:
+        db.add(
+            Job(
+                workspace_id=uuid.UUID(shop[1]),
+                job_type=JobType.FORECAST_TRAINING,
+                status=JobStatus.RUNNING,
+                created_at=datetime.now(UTC) - timedelta(minutes=30),
+            )
+        )
+        db.commit()
+    done = run_forecast(client, shop)  # would return the stuck job if it were not recovered
+    assert done["status"] == "succeeded"
+    with db_session_factory() as db:
+        statuses = db.scalars(
+            select(Job.status).where(Job.job_type == JobType.FORECAST_TRAINING)
+        ).all()
+    assert JobStatus.FAILED in statuses

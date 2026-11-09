@@ -175,3 +175,174 @@ def test_a_lost_job_does_not_block_new_runs(client: TestClient, shop, db_session
             select(Job.status).where(Job.job_type == JobType.FORECAST_TRAINING)
         ).all()
     assert JobStatus.FAILED in statuses
+
+
+# ---------------------------------------------------------------- registry, options, scheduling
+
+
+def runs(client: TestClient, shop) -> list[dict]:
+    return client.get(url(shop, "/runs"), headers=shop[0]).json()
+
+
+def test_runs_are_numbered_and_the_newest_is_active(client: TestClient, shop) -> None:
+    run_forecast(client, shop)
+    run_forecast(client, shop)
+    r = runs(client, shop)
+    assert [x["version"] for x in r] == [2, 1]
+    assert [x["status"] for x in r] == ["active", "superseded"]
+    assert r[0]["models"]
+    assert r[0]["wape"] is not None
+    assert client.get(url(shop, "/latest"), headers=shop[0]).json()["run"]["version"] == 2
+
+
+def test_rolling_back_to_an_older_version(client: TestClient, shop, make_user) -> None:
+    run_forecast(client, shop)
+    run_forecast(client, shop)
+    v1 = runs(client, shop)[1]
+    r = client.post(url(shop, f"/runs/{v1['id']}/activate"), headers=shop[0]).json()
+    assert r["status"] == "active"
+    assert "by hand" in r["note"]
+    assert [x["status"] for x in runs(client, shop)] == ["superseded", "active"]
+    assert client.get(url(shop, "/latest"), headers=shop[0]).json()["run"]["version"] == 1
+    stranger = make_user("rb@x.in", "R")
+    assert client.post(url(shop, f"/runs/{v1['id']}/activate"), headers=stranger).status_code == 404
+    assert (
+        client.post(
+            url(shop, f"/runs/{'0' * 8}-0000-0000-0000-{'0' * 12}/activate"), headers=shop[0]
+        ).status_code
+        == 404
+    )
+
+
+def test_run_options_are_validated_and_recorded(client: TestClient, shop) -> None:
+    assert (
+        client.post(url(shop, "/run"), params={"peak_uplift_pct": 80}, headers=shop[0]).status_code
+        == 422
+    )
+    job = client.post(
+        url(shop, "/run"), params={"peak_uplift_pct": 20, "tune": "true"}, headers=shop[0]
+    ).json()
+    done = client.get(f"/api/v1/workspaces/{shop[1]}/jobs/{job['id']}", headers=shop[0]).json()
+    assert done["status"] == "succeeded"
+    assert done["result"]["options"] == {"tune": True, "peak_uplift_pct": 20}
+    assert done["result"]["version"] == 1
+    assert runs(client, shop)[0]["options"] == {"tune_trials": 12, "peak_uplift_pct": 20}
+
+
+def seed_run(db, ws, version: int, gate: bool | None, status: str):
+    import uuid
+    from datetime import date as _d
+
+    from app.models.forecast import ForecastRun
+
+    db.add(
+        ForecastRun(
+            workspace_id=uuid.UUID(ws),
+            version=version,
+            status=status,
+            as_of=_d(2026, 10, 25),
+            horizon=14,
+            history_days=84,
+            n_series=1,
+            seconds=1.0,
+            summary={"accuracy": {"gate_passed": gate}},
+        )
+    )
+    db.commit()
+
+
+def test_ship_gate_keeps_the_good_version_when_a_worse_one_arrives(
+    shop, db_session_factory
+) -> None:
+    import uuid
+
+    from app.models.forecast import ForecastRun
+    from app.services.forecasting import service
+
+    ws = uuid.UUID(shop[1])
+    with db_session_factory() as db:
+        assert service._registry_decision(db, ws, {"accuracy": {"gate_passed": True}}) == (
+            1,
+            "active",
+            None,
+        )
+        seed_run(db, shop[1], 1, True, "active")
+        version, status, note = service._registry_decision(
+            db, ws, {"accuracy": {"gate_passed": False}}
+        )
+        assert (version, status) == (2, "rejected")
+        assert "version 1 stays active" in note
+        assert db.get(ForecastRun, db.query(ForecastRun).one().id).status == "active"  # untouched
+        # a new run that also passes replaces it
+        version, status, note = service._registry_decision(
+            db, ws, {"accuracy": {"gate_passed": True}}
+        )
+        assert (version, status, note) == (2, "active", None)
+        assert db.query(ForecastRun).one().status == "superseded"
+
+
+def test_a_failing_run_is_not_active_when_the_active_one_passed(shop, db_session_factory) -> None:
+    from app.services.forecasting import service
+
+    with db_session_factory() as db:
+        seed_run(db, shop[1], 1, True, "active")
+        import uuid
+
+        v, st, _ = service._registry_decision(
+            db, uuid.UUID(shop[1]), {"accuracy": {"gate_passed": False}}
+        )
+        assert st == "rejected"
+        assert v == 2
+
+
+def test_scheduled_run_only_rebuilds_when_sales_moved_on(
+    client: TestClient, shop, db_session_factory
+) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    from app.services.forecasting import service
+    from tests.test_ingestion import full_flow
+
+    with db_session_factory() as db:
+        first = service.run_stale(db)  # no forecast yet: builds one
+        assert len(first) == 1
+        assert first[0]["status"] == "succeeded"
+        assert service.run_stale(db) == []  # nothing new since
+    assert [x["version"] for x in runs(client, shop)] == [1]
+
+    h, ws_id = shop
+    _, base, _ = full_flow(
+        client, h, ws_id, shop_csv(86).replace("A0,", "ZZ0,").encode(), "more.csv"
+    )
+    job = client.post(f"{base}/import", headers=h).json()
+    assert (
+        client.get(f"/api/v1/workspaces/{ws_id}/jobs/{job['id']}", headers=h).json()["status"]
+        == "succeeded"
+    )
+
+    with db_session_factory() as db:
+        too_soon = service.run_stale(db, datetime.now(UTC) + timedelta(hours=1))
+        assert too_soon == []  # new sales, but the last run was minutes ago
+        later = service.run_stale(db, datetime.now(UTC) + timedelta(hours=25))
+        assert len(later) == 1
+    assert [x["version"] for x in runs(client, shop)] == [2, 1]
+    assert client.get(url(shop, "/latest"), headers=h).json()["stale"] is False
+
+
+def test_scheduled_run_keeps_the_owners_festive_adjustment(
+    client: TestClient, shop, db_session_factory
+) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    from app.services.forecasting import service
+    from tests.test_ingestion import full_flow
+
+    client.post(url(shop, "/run"), params={"peak_uplift_pct": 15}, headers=shop[0])
+    h, ws_id = shop
+    _, base, _ = full_flow(
+        client, h, ws_id, shop_csv(86).replace("A0,", "ZZ0,").encode(), "more.csv"
+    )
+    client.post(f"{base}/import", headers=h)
+    with db_session_factory() as db:
+        service.run_stale(db, datetime.now(UTC) + timedelta(hours=25))
+    assert runs(client, shop)[0]["options"]["peak_uplift_pct"] == 15

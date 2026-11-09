@@ -53,6 +53,14 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/analytics/products` | viewer | Per product: net, share, ABC, margin, discount rate, change vs comparison, quadrant, flags; category table; portfolio summary |
 | GET | `/workspaces/{id}/analytics/products/export.csv` | viewer | Product table as CSV |
 | GET | `/workspaces/{id}/analytics/basket` | viewer | Product pairs with orders, support, confidence both ways and lift; `min_orders` (default 5), `limit` |
+| GET | `/workspaces/{id}/forecasts/latest` | viewer | Totals with range, accuracy, model card, movers, confidence counts, warnings, `signals` (weather status and whether it helped) |
+| POST | `/workspaces/{id}/forecasts/run` | analyst | Start a forecast job (202); a job older than 15 minutes that never finished is replaced |
+| GET | `/workspaces/{id}/forecasts/products` | viewer | Per-product forecasts; filters `search`, `confidence`, `model`, `pattern`; `sort` = `units_next\|change\|wape\|name` |
+| GET | `/workspaces/{id}/forecasts/products/{sku}` | viewer | History, forecast with p10/p50/p90 and backtest for one product |
+| GET | `/workspaces/{id}/forecasts/export.csv` | viewer | Every product and day as CSV |
+| GET | `/workspaces/{id}/weather/cities` | viewer | Cities with coordinates (static list, no external call) |
+| GET | `/workspaces/{id}/weather/status` | viewer | Whether weather is allowed, free tier or paid, shop location, attribution |
+| PUT | `/workspaces/{id}/weather/location` | admin | Set the shop's city (from the list) or latitude/longitude |
 
 ### Analytics query parameters
 

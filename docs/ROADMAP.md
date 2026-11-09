@@ -15,7 +15,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 1 | Data ingestion & quality | ✅ | Upload → inspect → map → validate → import; wizard UI |
 | 2 | Metric layer & sales analytics | ✅ | Versioned metric registry, comparisons, price-volume-mix drivers, command center, sales explorer |
 | 3 | Customer & product intelligence | ✅ | RFM, cohorts, margin and discount analysis, ABC, portfolio quadrants, basket pairs |
-| **4** | **Forecasting & ML platform** | ⬜ **next** | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
+| **4** | **Forecasting & ML platform** | ✅ | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
 | 3B | Campaigns & retention automation | 🟡 C1 done | Segment audiences, margin-guarded offers, messages, consent, holdout-measured uplift ([plan](research/CAMPAIGNS-PLAN.md)) |
 | F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
 | 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |

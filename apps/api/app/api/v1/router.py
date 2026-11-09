@@ -4,6 +4,7 @@ from app.api.v1.endpoints import (
     analytics,
     auth,
     campaigns,
+    costs,
     datasets,
     digests,
     forecasts,
@@ -22,5 +23,6 @@ api_router.include_router(analytics.router)
 api_router.include_router(intelligence.router)
 api_router.include_router(forecasts.router)
 api_router.include_router(campaigns.router)
+api_router.include_router(costs.router)
 api_router.include_router(digests.router)
 api_router.include_router(weather.router)

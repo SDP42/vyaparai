@@ -29,6 +29,26 @@ Treat every claim as a hypothesis the backtest must confirm._
 | Duty, export-policy changes | Government notifications | Curated events list, entered by us, with effective dates |
 | Festive and local events | Own dated table | Moves every year; maintained by us |
 
+## Situations that move demand, and how each is handled
+
+Evidence is from industry blogs and news, so treat the sizes as indicative. Sources:
+[festive uplift](https://www.theweek.in/news/biz-tech/2024/01/08/fmcg-sales-likely-to-have-remained-slow-in-december-quarter-festive-season-fails-to-add-much-cheer.html),
+[monsoon and rural demand](https://socialsamosa.com/experts-speak/steady-monsoon-lifts-rural-demand-brings-festive-optimism-fmcg-6906778),
+[seasonality in FMCG](https://bizom.com/blog/seasonality-in-fmcg-consumption-trends-in-india),
+[IPL vs festive](https://bizom.com/blog/is-ipl-bigger-than-diwali-for-fmcg/).
+
+| Situation | What we found | How it is handled | Status |
+|---|---|---|---|
+| Festive season | The main peak, roughly Sept to Dec; about 30 % uplift in sweets, biscuits, juices, dry fruits (industry claim) | Dated peak table, day-of-year and distance-to-peak features once a year of history exists; warning when a peak is in the horizon and history is short | Done |
+| Weekday and payday | Weekday pattern is strong in our data; payday timing not confirmed by any source found | Weekday and day-of-month features | Done |
+| Weather (heat, rain) | Matters for seasonal and weather-sensitive goods, little for staples | Free Open-Meteo feed, kept only if the backtest improves | Done (dev only; licence rule below) |
+| Monsoon strength | Rural demand follows rainfall through crop incomes; a weak monsoon hurts the second half | Rain covariate captures local rainfall; regional monsoon deficit is a slow regime signal | Partly: local rain done, regime flag later |
+| Weddings | A concentrated window (about three weeks, late Nov to early Dec); mostly jewellery and apparel | The model learns it from two years of data; no hard-coded dates because they move | Learned, not coded |
+| Cricket (IPL) and events | Some FMCG claims it rivals festivals for snacks and drinks | Needs a dated events table maintained by us; tested with the same backtest gate | Later |
+| School holidays, regional holidays | No open, machine-readable national list found; states publish their own; national lists differ in counts | Do not use until a licensed source is chosen | Later |
+| Inflation, fuel, rupee, duty changes | Hit cost and price more than demand | Cost-shock and margin alerts (phases 14/15B), scenarios (phase 16) | Later |
+| Supply shocks and stock-outs | Zero sales are not zero demand | Stock-out days are treated as missing demand | Done |
+
 ## Licensing status (read before launch)
 
 Nothing below is called by the product yet. "From memory" means I have not re-checked the licence text

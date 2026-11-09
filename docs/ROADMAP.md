@@ -27,9 +27,9 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
 | 12 | Daily and weekly digest (push) | ✅ | Three numbers and one action, by WhatsApp or email |
 | 13 | Cash and credit (udhaar) intelligence | ⬜ | Dues, ageing, who to remind, expected collection |
-| 14 | Alerts and anomalies | ⬜ | Sales drop, margin leak, stock-out risk |
+| 14 | Alerts and anomalies | ✅ | Sales drop, margin leak, stock-out risk |
 | 15 | Connectors and scheduled imports | ⬜ | Billing-app and POS exports kept fresh automatically |
-| 15B | Cost history and margin-leak tracking | ⬜ | Purchase bills as the source of truth, dated costs, price-rise flags ([plan](research/COST-TRACKING.md)) |
+| 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill import still to do ([plan](research/COST-TRACKING.md)) |
 | 16 | Pricing and promotion advisor | ⬜ | Which discounts paid off, safe price moves |
 | 17 | Multi-store and staff | ⬜ | Compare shops, targets, staff roles |
 | 18 | Mobile-first and Hinglish/Hindi | ⬜ | Installable PWA, language, offline read |

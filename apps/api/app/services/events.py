@@ -36,6 +36,12 @@ STATE_ZONES: dict[str, frozenset[str]] = {
     "Telangana": frozenset({"south"}), "Andhra Pradesh": frozenset({"south"}),
     "West Bengal": frozenset({"east"}), "Odisha": frozenset({"east"}), "Bihar": frozenset({"east"}),
     "Jharkhand": frozenset({"east"}), "Assam": frozenset({"east", "northeast"}),
+    "Puducherry": frozenset({"south"}), "Ladakh": frozenset({"north"}), "Lakshadweep": frozenset({"south"}),
+    "Tripura": frozenset({"east", "northeast"}), "Meghalaya": frozenset({"northeast"}),
+    "Manipur": frozenset({"northeast"}), "Mizoram": frozenset({"northeast"}),
+    "Nagaland": frozenset({"northeast"}), "Arunachal Pradesh": frozenset({"northeast"}),
+    "Sikkim": frozenset({"east", "northeast"}), "Andaman and Nicobar Islands": frozenset({"east"}),
+    "Dadra and Nagar Haveli and Daman and Diu": frozenset({"west"}),
 }  # fmt: skip
 
 # What a product is, in the table's demand categories, from its category and name.
@@ -58,6 +64,10 @@ KEYWORDS = {
 }  # fmt: skip
 
 
+STATE_NAMES = {n.lower() for n in STATE_ZONES}
+ZONE_STRENGTH = 0.5  # an event observed in the shop's zone but not named for its state
+
+
 @dataclass(frozen=True, slots=True)
 class Event:
     id: str
@@ -76,18 +86,28 @@ class Event:
     confidence: str
     sources: tuple[str, ...]
 
-    def applies(self, zones: frozenset[str], state: str | None) -> bool:
-        """True when the event matters where the shop is. The listed regions decide, not the scope.
+    def relevance(self, zones: frozenset[str], state: str | None) -> str | None:
+        """How much this event matters where the shop is: ``core``, ``zone`` or None.
 
-        With no known location, national events are kept (even if some zones celebrate them more),
-        and regional or community ones are left out.
+        ``core``: the shop's state is named, or the event lists only zones and the shop is in one.
+        ``zone``: the event names other states but also lists a zone the shop is in (observed
+        there, less strongly). With no known location, national events count as core.
         """
         if "all" in self.regions:
-            return True
-        keys = {z.lower() for z in zones} | ({state.lower()} if state else set())
-        if not keys:
-            return self.scope == "national"
-        return bool(keys & {r.lower() for r in self.regions})
+            return "core"
+        keys = {z.lower() for z in zones}
+        listed = {r.lower() for r in self.regions}
+        states_listed = {r for r in listed if r in STATE_NAMES}
+        if state is None and not zones:
+            return "core" if self.scope == "national" else None
+        if state and state.lower() in listed:
+            return "core"
+        if keys & listed:
+            return "zone" if states_listed else "core"
+        return None
+
+    def applies(self, zones: frozenset[str], state: str | None) -> bool:
+        return self.relevance(zones, state) is not None
 
     @property
     def weight(self) -> float:
@@ -149,9 +169,10 @@ def intensity(
 ) -> Arr:
     """Strongest festival, holiday or season effect on each day, 0 to 1. Overlaps do not stack."""
     ev = [e for e in relevant(zones, state) if e.category != "cricket"]
+    strength = {e.id: (ZONE_STRENGTH if e.relevance(zones, state) == "zone" else 1.0) for e in ev}
     out = np.zeros(len(dates))
     for i, d in enumerate(dates):
-        out[i] = max((e.weight * e.phase(d) for e in ev), default=0.0)
+        out[i] = max((strength[e.id] * e.weight * e.phase(d) for e in ev), default=0.0)
     return out
 
 

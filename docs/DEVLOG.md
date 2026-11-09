@@ -2,6 +2,18 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-09 (late night) · Phase 4 completed
+
+Finished what was left of the forecasting phase, following the benchmark: a dependency-free **Theta** model joins
+LightGBM and the recent average (best per product by backtest); a per-shop **method comparison**; optional
+**tuning** by seeded random search inside the training period (it found nothing better than the defaults on the
+2-year data, as the benchmark predicted, so it is off by default); an owner-set **festive uplift**, labelled as an
+assumption; a **registry** with numbered versions, a **ship gate** and rollback; and a scheduled rebuild command
+(`python -m app.forecast_runner`). Decisions and evidence for what was not shipped (ETS/ARIMA, Croston, ensembles,
+Chronos, MLflow) are in [PHASE-4-DECISIONS.md](research/PHASE-4-DECISIONS.md). Bugs the tests caught: the finished job
+overwrote its own options. Theta's weekday shrinkage was halving the pattern for steady shops; it now trusts the
+pattern after 8 weeks. 268 backend tests.
+
 ## 2026-11-09 (night) · Phases 15B and 14: cost history and alerts; packaging plan
 
 **Costs.** Every sale line already stores the cost at the time, so cost history needs no new data entry. The cost

@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     open_meteo_api_key: str | None = None
     weather_timeout_seconds: float = 8.0
 
+    # Owner digest email. Disabled until an SMTP host is configured; the text can always be copied.
+    app_url: str = "http://localhost:3000"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_from: str = "Vyapar AI <no-reply@localhost>"
+    smtp_starttls: bool = True
+
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"

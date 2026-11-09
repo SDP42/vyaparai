@@ -35,11 +35,12 @@ calculation, and the AI never invents figures.
 | **Phase 2 · metric layer, sales analytics, command center, sales explorer** | ✅ |
 | **Phase 4 · forecasting and ML platform** (many models, Optuna tuning, backtests, intervals): plan written | 📝 [ML plan](docs/research/PHASE-4-ML-PLAN.md) · [model catalogue](docs/MODELS.md) |
 | **Phase 3 · customer and product intelligence**: RFM segments, cohorts, ABC, portfolio quadrants, basket pairs, CSV export | ✅ |
-| **Phases 4, 12, 14, 15B** · forecasts (with weather signal), owner digest, alerts, cost history and margin leaks | ✅ |
+| **Phase 4** · forecasting platform: LightGBM + Theta + average, conformal ranges, ship gate, versions and rollback, tuning option, weather signal, scheduled rebuild | ✅ |
+| **Phases 12, 14, 15B** · owner digest, alerts, cost history and margin leaks | ✅ |
 | **Phase 3B C1** · campaign planner (margin-safe offers, holdout, messages; nothing is sent) | ✅ |
 | Inventory, credit, connectors, reviews, RAG, Copilot, agents, recommendations | ⬜ see the [roadmap](docs/ROADMAP.md) and the [packaging plan](docs/research/PRODUCT-PACKAGING.md) |
 
-**Numbers:** 254 backend tests · strict mypy · ruff clean · sample file (40 products, about 8,100 lines) imports with
+**Numbers:** 268 backend tests · strict mypy · ruff clean · sample file (40 products, about 8,100 lines) imports with
 reconciled counts.
 
 ## Repository layout

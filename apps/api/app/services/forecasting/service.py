@@ -21,7 +21,8 @@ from app.services.analytics import queries as q
 from app.services.forecasting import engine
 from app.services.forecasting.panel import load_panel
 
-KEEP_RUNS = 5
+KEEP_RUNS = 10
+TUNE_TRIALS = 12  # when the owner asks for tuning
 STALE_JOB_MINUTES = 15  # a job that never finished (server restarted) must not block new runs
 SORTS = {
     "units_next": lambda r: r.units_next,
@@ -56,7 +57,14 @@ def status_for(db: Session, ws: uuid.UUID) -> dict[str, Any]:
     }
 
 
-def start_forecast(db: Session, workspace: Workspace, user: User) -> Job:
+def start_forecast(
+    db: Session,
+    workspace: Workspace,
+    user: User | None,
+    *,
+    tune: bool = False,
+    peak_uplift_pct: int = 0,
+) -> Job:
     st = status_for(db, workspace.id)
     if not st["can_forecast"]:
         raise NotEnoughDataError(st["reason"])
@@ -80,13 +88,14 @@ def start_forecast(db: Session, workspace: Workspace, user: User) -> Job:
         workspace_id=workspace.id,
         job_type=JobType.FORECAST_TRAINING,
         status=JobStatus.QUEUED,
-        created_by_id=user.id,
+        created_by_id=user.id if user else None,
+        result={"options": {"tune": tune, "peak_uplift_pct": peak_uplift_pct}},
     )
     db.add(job)
     audit.record(
         db,
         action="forecast.started",
-        actor_user_id=user.id,
+        actor_user_id=user.id if user else None,
         workspace_id=workspace.id,
         entity_type="job",
         entity_id=job.id,
@@ -130,7 +139,13 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
             job.progress = 30
             db.commit()
             exog, winfo = _weather_signal(db, db.get(Workspace, job.workspace_id), panel)
-            result = engine.run(panel, exog=exog)
+            opts = (job.result or {}).get("options", {})
+            result = engine.run(
+                panel,
+                exog=exog,
+                tune_trials=TUNE_TRIALS if opts.get("tune") else 0,
+                peak_uplift_pct=int(opts.get("peak_uplift_pct", 0)),
+            )
             if result is None:
                 raise NotEnoughDataError("Not enough days of sales to forecast")
             cov = result.summary["accuracy"].get("covariates")
@@ -142,8 +157,12 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
             result.summary["signals"] = {"weather": winfo}
             job.progress = 85
             db.commit()
+            version, status, note = _registry_decision(db, job.workspace_id, result.summary)
             run = ForecastRun(
                 workspace_id=job.workspace_id,
+                version=version,
+                status=status,
+                note=note,
                 job_id=job.id,
                 as_of=result.as_of,
                 horizon=result.horizon,
@@ -181,6 +200,9 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
             job.progress = 100
             job.result = {
                 "run_id": str(run.id),
+                "version": version,
+                "status": status,
+                "options": opts,
                 "series": result.n_series,
                 "seconds": result.seconds,
                 "wape": result.summary["accuracy"].get("wape"),
@@ -198,9 +220,10 @@ def run_forecast_job(engine_: Engine, job_id: uuid.UUID) -> None:
 
 
 def _prune(db: Session, ws: uuid.UUID) -> None:
+    """Keep the most recent runs, and never delete the active one."""
     old = db.scalars(
         select(ForecastRun.id)
-        .where(ForecastRun.workspace_id == ws)
+        .where(ForecastRun.workspace_id == ws, ForecastRun.status != "active")
         .order_by(ForecastRun.created_at.desc())
         .offset(KEEP_RUNS)
     ).all()
@@ -209,13 +232,108 @@ def _prune(db: Session, ws: uuid.UUID) -> None:
         db.execute(delete(ForecastRun).where(ForecastRun.id.in_(old)))
 
 
-def latest_run(db: Session, ws: uuid.UUID) -> ForecastRun | None:
+def active_run(db: Session, ws: uuid.UUID) -> ForecastRun | None:
     return db.scalars(
+        select(ForecastRun).where(ForecastRun.workspace_id == ws, ForecastRun.status == "active")
+    ).first()
+
+
+def latest_run(db: Session, ws: uuid.UUID) -> ForecastRun | None:
+    """The run the app shows: the active one (falls back to the newest if none is marked)."""
+    return (
+        active_run(db, ws)
+        or db.scalars(
+            select(ForecastRun)
+            .where(ForecastRun.workspace_id == ws)
+            .order_by(ForecastRun.created_at.desc())
+            .limit(1)
+        ).first()
+    )
+
+
+def _registry_decision(
+    db: Session, ws: uuid.UUID, summary: dict[str, Any]
+) -> tuple[int, str, str | None]:
+    """Number the new run and apply the ship gate.
+
+    A new run replaces the active one unless it failed to beat "repeat last week" in its own
+    tests while the active one passed: it is then kept as ``rejected`` and the active run stays.
+    """
+    top = (
+        db.scalar(select(func.max(ForecastRun.version)).where(ForecastRun.workspace_id == ws)) or 0
+    )
+    version = top + 1
+    prev = active_run(db, ws)
+    if prev is None:
+        return version, "active", None
+    new_ok = summary["accuracy"].get("gate_passed")
+    prev_ok = prev.summary["accuracy"].get("gate_passed")
+    if new_ok is False and prev_ok is True:
+        return (
+            version,
+            "rejected",
+            f"Did not beat repeating last week in its tests; version {prev.version} stays active.",
+        )
+    prev.status = "superseded"
+    return version, "active", None
+
+
+def runs_history(db: Session, ws: uuid.UUID) -> list[dict[str, Any]]:
+    rows = db.scalars(
         select(ForecastRun)
         .where(ForecastRun.workspace_id == ws)
-        .order_by(ForecastRun.created_at.desc())
-        .limit(1)
-    ).first()
+        .order_by(ForecastRun.version.desc())
+    ).all()
+    out = []
+    for r in rows:
+        acc = r.summary.get("accuracy", {})
+        out.append(
+            {
+                "id": r.id,
+                "version": r.version,
+                "status": r.status,
+                "created_at": r.created_at,
+                "as_of": r.as_of,
+                "history_days": r.history_days,
+                "n_series": r.n_series,
+                "seconds": r.seconds,
+                "wape": acc.get("wape"),
+                "fva": acc.get("fva"),
+                "gate_passed": acc.get("gate_passed"),
+                "interval_coverage": acc.get("interval_coverage_80"),
+                "models": r.summary.get("model_card", {}).get("models", {}),
+                "options": r.summary.get("options", {}),
+                "tuning": acc.get("tuning"),
+                "covariates": acc.get("covariates"),
+                "note": r.note,
+            }
+        )
+    return out
+
+
+def activate(db: Session, ws: uuid.UUID, run_id: uuid.UUID, user: User) -> ForecastRun:
+    run = db.get(ForecastRun, run_id)
+    if run is None or run.workspace_id != ws:
+        raise NotFoundError("Forecast version not found")
+    if run.status != "active":
+        for other in db.scalars(
+            select(ForecastRun).where(
+                ForecastRun.workspace_id == ws, ForecastRun.status == "active"
+            )
+        ):
+            other.status = "superseded"
+        run.status, run.note = "active", f"Made active by hand (was {run.status})."
+        audit.record(
+            db,
+            action="forecast.activated",
+            actor_user_id=user.id,
+            workspace_id=ws,
+            entity_type="forecast_run",
+            entity_id=run.id,
+            details={"version": run.version},
+        )
+        db.commit()
+    return run
 
 
 def _mover(r: ForecastSeries) -> dict[str, Any]:
@@ -355,3 +473,37 @@ def export_csv(db: Session, run: ForecastRun) -> Iterator[str]:
             w.writerow([r.sku, r.name, r.category or "", (start + timedelta(days=k)).isoformat(),
                         d["p10"][k], d["p50"][k], d["p90"][k], r.model, r.confidence])  # fmt: skip
             yield buf.getvalue()
+
+
+MIN_HOURS_BETWEEN_AUTO_RUNS = 20
+
+
+def run_stale(db: Session, now: datetime | None = None) -> list[dict[str, Any]]:
+    """Rebuild the forecast for every workspace whose sales moved past its active forecast.
+
+    Used by ``python -m app.forecast_runner`` on a schedule. A workspace is refreshed at most once
+    every ``MIN_HOURS_BETWEEN_AUTO_RUNS`` hours, and keeps the festive adjustment its owner chose.
+    """
+    now = now or datetime.now(UTC)
+    results: list[dict[str, Any]] = []
+    for ws in db.scalars(select(Workspace)).all():
+        _, last = q.workspace_bounds(db, ws.id)
+        if last is None or not status_for(db, ws.id)["can_forecast"]:
+            continue
+        run = active_run(db, ws.id)
+        if run is not None:
+            if last <= run.as_of:
+                continue
+            created = (
+                run.created_at if run.created_at.tzinfo else run.created_at.replace(tzinfo=UTC)
+            )
+            if now - created < timedelta(hours=MIN_HOURS_BETWEEN_AUTO_RUNS):
+                continue
+        uplift = int((run.summary.get("options", {}) if run else {}).get("peak_uplift_pct", 0))
+        job = start_forecast(db, ws, None, peak_uplift_pct=uplift)
+        if job.status != JobStatus.QUEUED:
+            continue  # one is already running
+        run_forecast_job(db.get_bind(), job.id)  # type: ignore[arg-type]
+        db.refresh(job)
+        results.append({"workspace": str(ws.id), "status": job.status.value, "job": str(job.id)})
+    return results

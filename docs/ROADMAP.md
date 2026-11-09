@@ -18,7 +18,8 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | **4** | **Forecasting & ML platform** | ✅ | Many models (statistical, intermittent, LightGBM, ensembles), Optuna tuning, backtests, conformal intervals, registry, UI |
 | 3B | Campaigns & retention automation | 🟡 C1 done | Segment audiences, margin-guarded offers, messages, consent, holdout-measured uplift ([plan](research/CAMPAIGNS-PLAN.md)) |
 | F2 | App shell polish | ⬜ | Cookie sessions, generated API types, empty/error states |
-| 5 | Inventory & decision support | ⬜ | Stock cover, reorder simulation (P1) |
+| 5 | Inventory & decision support | ✅ | Stock cover, order advice, dead stock, cash tied up |
+| 5B | Festivals, regions and cricket | ✅ | 320 dated events, region matching, forecast signals, alerts, Festivals page |
 | 6 | NLP review intelligence | ⬜ | Sentiment and themes, Hinglish (P1) |
 | 7 | Document intelligence (RAG) | ⬜ | Cited answers over documents (P1) |
 | 8 | Vyapar Copilot | ⬜ | Plain-language questions over the metric layer (P1) |

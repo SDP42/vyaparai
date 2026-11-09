@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from app.models.alert import Alert
 from app.models.commerce import Order, OrderItem, Product
 from app.models.workspace import Workspace
-from app.services import costs, inventory
+from app.services import costs, events_insight, inventory
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.queries import LINE_NET, _lines
@@ -282,6 +282,43 @@ def rule_inventory(db: Session, workspace: Workspace) -> list[dict[str, Any]]:
     return out
 
 
+def rule_events(db: Session, workspace: Workspace, today: date) -> list[dict[str, Any]]:
+    """Big festivals about to start that touch the shop's products, with stock that may not last."""
+    out: list[dict[str, Any]] = []
+    rows = events_insight.upcoming(db, workspace, days=21, include_cricket=False, today=today)
+    for r in rows:
+        e = r["event"]
+        if (
+            e.category != "festival"
+            or e.tier > 2
+            or r["matching_products"] == 0
+            or r["status"] == "fading"
+        ):
+            continue
+        risky = [p for p in r["products"] if p["at_risk"]]
+        when = (
+            "is on now"
+            if r["status"] == "on"
+            else f"starts in {max(r['days_until'], 0)} days"
+            if r["days_until"] > 0
+            else "starts today"
+        )
+        names = ", ".join(p["name"] for p in risky[:3])
+        out.append(
+            {
+                "key": f"event_ahead|{e.id}", "rule": "event_ahead",
+                "severity": "high" if risky else "medium",
+                "title": f"{e.name} {when}" + (f": {len(risky)} of your products may run out" if risky else ""),
+                "detail": (f"{names} may not last through it. Order more now." if risky else f"{r['matching_products']} of your products fit this event. Check your stock before demand builds.") + f" {e.notes}",
+                "evidence": {"days_until": r["days_until"], "matching_products": r["matching_products"], "at_risk": len(risky)},
+                "link": "/app/festivals",
+            }
+        )  # fmt: skip
+        if len(out) >= 3:
+            break
+    return out
+
+
 def rule_customers(db: Session, workspace: Workspace, end: date) -> list[dict[str, Any]]:
     _, rows = intelligence.scored(db, workspace, end, 365, 30, 30, 45)
     n = sum(1 for r in rows if r.orders >= 2 and r.recency_days >= 45)
@@ -313,6 +350,7 @@ def compute(
         + rule_stopped(db, workspace.id, end)
         + rule_customers(db, workspace, end)
         + rule_inventory(db, workspace)
+        + rule_events(db, workspace, today)
     )
     if coverage is not None and coverage < 60:
         out.append(

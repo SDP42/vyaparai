@@ -28,6 +28,7 @@ export type Accuracy = {
   interval_coverage_80?: number | null;
   interval_coverage_80_raw?: number | null;
   interval_scale?: number;
+  covariates?: { names: string[]; used: boolean; wape_without: number | null; wape_with: number | null; required_gain: number };
 };
 export type ModelCard = {
   models: Record<string, number>;
@@ -50,7 +51,11 @@ export type ForecastOverview = {
   fallers: Mover[];
   confidence_counts: Record<"high" | "medium" | "low", number>;
   warnings: string[];
+  signals: { weather?: WeatherSignal };
 };
+export type WeatherSignal = { status: "ok" | "off" | "no_location" | "unavailable"; city?: string | null; used?: boolean; note?: string | null; attribution?: string; forecast_days?: number };
+export type City = { name: string; state: string; latitude: number; longitude: number };
+export type WeatherStatus = { enabled: boolean; free_tier: boolean; city: string | null; latitude: number | null; longitude: number | null; attribution: string; note: string | null };
 export type NoForecast = { has_forecast: false; can_forecast: boolean; reason: string | null; latest_data_date: string | null; history_days: number };
 export type Latest = ForecastOverview | NoForecast;
 export const hasForecast = (x: Latest): x is ForecastOverview => !("has_forecast" in x);

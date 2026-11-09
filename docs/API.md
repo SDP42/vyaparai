@@ -73,6 +73,9 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/alerts` | viewer | Recompute and list alerts (`status=open\|dismissed\|resolved\|all`, optional `as_of`) with counts by severity |
 | GET | `/workspaces/{id}/alerts/summary` | viewer | Open alert counts by severity, without recomputing (used by the sidebar badge) |
 | POST | `/workspaces/{id}/alerts/{alert_id}/dismiss` \| `/reopen` | analyst | Hide or bring back one alert |
+| POST | `/workspaces/{id}/forecasts/run?tune=&peak_uplift_pct=` | analyst | Start a forecast; `tune` also searches for better model settings, `peak_uplift_pct` (0–50) adds demand near the festive season (labelled as the owner's assumption) |
+| GET | `/workspaces/{id}/forecasts/runs` | viewer | Every version: status (`active`, `superseded`, `rejected`), accuracy, ship-gate result, methods used, options, tuning, note |
+| POST | `/workspaces/{id}/forecasts/runs/{run_id}/activate` | admin | Make a version the one the app shows (rollback); audited |
 
 ### Analytics query parameters
 

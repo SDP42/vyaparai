@@ -96,9 +96,9 @@ export function InvestigatePage() {
   const [version, setVersion] = useState(0);
   const runs = useApi<Run[]>(`${base}/runs`, [version]);
 
-  const go = async () => {
+  const go = async (workflow = "investigate_sales") => {
     setBusy(true); setErr(null);
-    try { setRun(await api<Run>(`${base}/runs`, { method: "POST", body: JSON.stringify({ workflow: "investigate_sales", date_from: from, date_to: to }) })); setVersion((v) => v + 1); }
+    try { setRun(await api<Run>(`${base}/runs`, { method: "POST", body: JSON.stringify(workflow === "weekly_review" ? { workflow } : { workflow, date_from: from, date_to: to }) })); setVersion((v) => v + 1); }
     catch (e) { setErr(e instanceof ApiError ? e.message : "Could not run it"); }
     finally { setBusy(false); }
   };
@@ -119,7 +119,8 @@ export function InvestigatePage() {
           <div className="flex flex-wrap items-end gap-3">
             <label className="text-xs text-muted">From<input type="date" className={`block ${f}`} value={from} onChange={(e) => setFrom(e.target.value)} /></label>
             <label className="text-xs text-muted">To<input type="date" className={`block ${f}`} value={to} onChange={(e) => setTo(e.target.value)} /></label>
-            <button type="button" disabled={busy || !from || !to || from > to} onClick={go} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "Investigating…" : "Investigate"}</button>
+            <button type="button" disabled={busy || !from || !to || from > to} onClick={() => go()} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "Working…" : "Investigate"}</button>
+            <button type="button" disabled={busy} onClick={() => go("weekly_review")} className="rounded-full border border-line px-5 py-2.5 text-sm hover:bg-surface-2 disabled:opacity-50">What should I do this week?</button>
           </div>
         </Card>
       ) : <EmptyNote>Viewers can read past investigations. Analysts and above can run them.</EmptyNote>}

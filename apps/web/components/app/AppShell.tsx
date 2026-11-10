@@ -11,6 +11,7 @@ import { useWorkspace } from "./AppContext";
 const NAV = [
   { href: "/app", label: "Command center", icon: "◧", exact: true },
   { href: "/app/ask", label: "Ask", icon: "✦", exact: false },
+  { href: "/app/recommendations", label: "Next steps", icon: "✓", exact: false },
   { href: "/app/alerts", label: "Alerts", icon: "!", exact: false },
   { href: "/app/investigate", label: "Investigate", icon: "◇", exact: false },
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
@@ -27,6 +28,7 @@ const NAV = [
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
+  { href: "/app/reports", label: "Reports", icon: "▣", exact: false },
   { href: "/app/team", label: "Team", icon: "☺", exact: false },
 ];
 const SOON: string[] = [];

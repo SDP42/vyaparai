@@ -23,6 +23,7 @@ from app.api.v1.endpoints import (
     reports,
     reviews,
     sources,
+    stores,
     udhaar,
     weather,
     workspaces,
@@ -38,6 +39,7 @@ api_router.include_router(recommendations.router)
 api_router.include_router(pricing.router)
 api_router.include_router(reports.router)
 api_router.include_router(reviews.router)
+api_router.include_router(stores.router)
 api_router.include_router(udhaar.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(workspaces.join_router)

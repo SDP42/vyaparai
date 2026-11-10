@@ -13,6 +13,7 @@
 | **Weak production config** | App refuses to start in production with the dev JWT secret or SQLite ✅ |
 | **Secrets in Git** | `.env` ignored; `.env.example` only ✅ |
 | **Malicious uploads** | 25 MB / 200k-row limits, extension + file-signature checks, streamed size cap, `.xlsx` opened read-only with `data_only` (no macros/formulas run), stored outside the web root under `STORAGE_DIR/{workspace}/`, analyst role required ✅; antivirus scan and upload fuzzing ⬜ (Phase 11) |
+| **SSRF via connected links** | https only, host allow-list, one DNS resolution with every address required to be public, connection pinned to that address, redirects re-checked per hop (max 3), size and time caps, HTML refused, internal addresses never shown in errors; tested with loopback, private, metadata, multicast and IPv4-mapped addresses and against live DNS ✅; network egress isolation for production ⬜ (Phase 11) |
 | **SQL injection** | ORM/parameterised queries only ✅; agents get no raw SQL; allow-listed metric API ⬜ (Phase 8) |
 | **Prompt injection via documents** | Retrieved text treated as data; permission filter before retrieval; adversarial test docs ⬜ (Phase 7) |
 | **Unsafe agent actions** | Read-only tools; human approval for any write; no purchases ⬜ (Phase 9) |

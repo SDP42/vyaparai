@@ -35,7 +35,7 @@ each phase contains and its exit criteria.
 | 16 | Pricing and promotion advisor ([notes](PRICING.md)) | - | P2 | ✅ |
 | 17 | Multi-store and staff ([notes](STORES.md)) | - | P2 | ✅ stores compared; ⬜ staff attribution |
 | 18 | Mobile-first (PWA) and Hinglish/Hindi ([notes](MOBILE.md)) | - | P1 | ✅ app; 🟡 translation covers 4 areas |
-| 19 | Benchmarks and goals | - | P2 | ⬜ |
+| 19 | Benchmarks and goals ([notes](GOALS.md)) | - | P2 | ✅ goals; own-history benchmarks only, no peer data |
 
 **MVP journey (blueprint §03):** create workspace → upload retail dataset → map columns →
 review validation → command center → sales investigation → forecast → grounded question.

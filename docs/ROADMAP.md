@@ -34,7 +34,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 16 | Pricing and promotion advisor | ✅ | Which discounts paid off (vs the same weekday, profit after discount), small safe price trials ([PRICING](PRICING.md)) |
 | 17 | Multi-store and staff | ✅ stores | Side-by-side comparison, needs-attention flags, add a shop; per-staff attribution not possible without a cashier column ([STORES](STORES.md)) |
 | 18 | Mobile-first and Hinglish/Hindi | ✅ app · 🟡 language | Installable PWA with offline reading and Hinglish/Hindi for navigation, Ask, Next steps and Udhaar; other pages English ([MOBILE](MOBILE.md)) |
-| 19 | Benchmarks and goals | ⬜ | Targets and peer ranges |
+| 19 | Benchmarks and goals | ✅ goals | Targets with pace and a likely-finish range, benchmarks from your own history; no peer data exists ([GOALS](GOALS.md)) |
 
 **MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app).
 Phases 5–10 are P1/P2 and follow the MVP.

@@ -13,6 +13,7 @@ const NAV = [
   { href: "/app", label: "Command center", key: "nav.command", icon: "◧", exact: true },
   { href: "/app/ask", label: "Ask", key: "nav.ask", icon: "✦", exact: false },
   { href: "/app/recommendations", label: "Next steps", key: "nav.steps", icon: "✓", exact: false },
+  { href: "/app/goals", label: "Goals", key: "nav.goals", icon: "◎", exact: false },
   { href: "/app/alerts", label: "Alerts", key: "nav.alerts", icon: "!", exact: false },
   { href: "/app/investigate", label: "Investigate", key: "nav.investigate", icon: "◇", exact: false },
   { href: "/app/sales", label: "Sales", key: "nav.sales", icon: "◨", exact: false },

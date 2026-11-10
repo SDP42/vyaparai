@@ -224,15 +224,18 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ## Phase 9 — Agent workflows
 
-- [ ] LangGraph analyst workflow: plan → call approved tools → inspect → summarise
-- [ ] Typed state, bounded retries, timeouts, full run trace
-- [ ] No arbitrary SQL, secrets, permission changes or purchases
+- [x] LangGraph analyst workflows: two built (`investigate_sales`, `weekly_review`). The graph is fixed (scope, compare, drivers, checks, conclude), not planned by a model
+- [x] Typed state, bounded retries (one retry), step budget, full run trace stored and viewable
+- [ ] Hard timeouts: only a total 20 s budget checked *between* steps; a single slow step is not interrupted
+- [x] No arbitrary SQL, secrets, permission changes or purchases (read-only; a test enforces it)
 
 ## Phase 10 — Recommendations & reporting
 
-- [ ] Recommendation objects: rationale, evidence refs, impact range, confidence, assumptions
-- [ ] Status lifecycle: proposed → approved/dismissed → completed → outcome-measured
-- [ ] PDF/CSV reports with metric definitions; saved analyses
+- [x] Recommendation objects: rationale, evidence refs, impact range, confidence, assumptions
+- [x] Status lifecycle: proposed → approved/dismissed → done (audited)
+- [ ] Outcome measured: nothing yet compares what happened after an item was marked done
+- [x] PDF/CSV reports; saved reports (snapshots) and saved investigation runs
+- [ ] Metric definitions inside the PDF (the metric registry has them; the report does not print them)
 
 ## Phase 11 — Hardening, deployment & launch
 

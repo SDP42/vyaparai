@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 
 from app.models.alert import Alert
 from app.models.commerce import Order, OrderItem, Product
+from app.models.source import ImportSource
 from app.models.workspace import Workspace
 from app.services import costs, events_insight, inventory
 from app.services.analytics import intelligence
@@ -319,6 +320,23 @@ def rule_events(db: Session, workspace: Workspace, today: date) -> list[dict[str
     return out
 
 
+def rule_sources(db: Session, ws: uuid.UUID) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for src in db.scalars(select(ImportSource).where(ImportSource.workspace_id == ws)).all():
+        if src.last_status == "failed" and (src.failures >= 2 or not src.enabled):
+            out.append(
+                {
+                    "key": f"source_failing|{src.id}", "rule": "source_failing",
+                    "severity": "medium" if not src.enabled else "info",
+                    "title": f"The link \"{src.name}\" could not be fetched" + (" and is paused" if not src.enabled else ""),
+                    "detail": (src.last_message or "The last checks failed.") + " Fix the link or upload the file by hand so your numbers stay current.",
+                    "evidence": {"failures": src.failures, "paused": not src.enabled},
+                    "link": "/app/data",
+                }
+            )  # fmt: skip
+    return out
+
+
 def rule_customers(db: Session, workspace: Workspace, end: date) -> list[dict[str, Any]]:
     _, rows = intelligence.scored(db, workspace, end, 365, 30, 30, 45)
     n = sum(1 for r in rows if r.orders >= 2 and r.recency_days >= 45)
@@ -351,6 +369,7 @@ def compute(
         + rule_customers(db, workspace, end)
         + rule_inventory(db, workspace)
         + rule_events(db, workspace, today)
+        + rule_sources(db, workspace.id)
     )
     if coverage is not None and coverage < 60:
         out.append(

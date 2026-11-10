@@ -22,8 +22,8 @@ each phase contains and its exit criteria.
 | 5 | Inventory & decision support | 8 | P1 | ✅ |
 | 5B | Festivals, regions and cricket | - | P1 | ✅ |
 | 6 | NLP review intelligence | 9 | P1 | ✅ |
-| 7 | Document intelligence & RAG | 10 | P1 | ⬜ |
-| 8 | Vyapar Copilot & safe tool use | 11 | P1 | ⬜ |
+| 7 | Document intelligence & RAG | 5 | P1 | ✅ |
+| 8 | Vyapar Copilot (plain-language questions) | 4 | P1 | 🟡 rules-based first version |
 | 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
 | 10 | Recommendations & reporting | 13 | P2 | ⬜ |
 | 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
@@ -208,14 +208,14 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] Reviews page, per-product view, try-it box, alert when a complaint theme is common and rising
 - Changed from plan: no multilingual transformer (CPU-only, free-only, and no permissively licensed Hinglish training data was found); accuracy is reported honestly on small self-written sets
 
-## Phase 7 — Document intelligence & RAG
+## Phase 7 — Document intelligence & RAG ✅ ([how it works](DOCUMENTS.md))
 
 - [ ] PDF/DOCX/TXT ingestion with page/section metadata
 - [ ] Versioned Sentence-Transformers embeddings + FAISS; permission filter *before* retrieval
 - [ ] Citations to document/page/section; abstain when evidence is insufficient
 - [ ] Evaluation set: Recall@K, MRR, citation correctness; prompt-injection test documents
 
-## Phase 8 — Vyapar Copilot
+## Phase 8 — Vyapar Copilot 🟡 first version ([how it works](ASSISTANT.md))
 
 - [ ] Intent routing: metric, comparison, forecast, customer, inventory, document, unsupported
 - [ ] Typed tools (`get_sales_summary`, `compare_periods`, `top_products`, `forecast_demand`, `search_documents`)

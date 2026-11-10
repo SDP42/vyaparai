@@ -21,8 +21,8 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 5 | Inventory & decision support | ✅ | Stock cover, order advice, dead stock, cash tied up |
 | 5B | Festivals, regions and cricket | ✅ | 320 dated events, region matching, forecast signals, alerts, Festivals page |
 | 6 | NLP review intelligence | ✅ | Sentiment and themes in English, Hindi and Hinglish, with evidence |
-| 7 | Document intelligence (RAG) | ⬜ | Cited answers over documents (P1) |
-| 8 | Vyapar Copilot | ⬜ | Plain-language questions over the metric layer (P1) |
+| 7 | Document intelligence (RAG) | ✅ | Multilingual search over your own documents with citations ([DOCUMENTS](DOCUMENTS.md)) |
+| 8 | Vyapar Copilot | 🟡 | Ask page: English, Hindi, Hinglish questions answered from the metric layer ([ASSISTANT](ASSISTANT.md)) |
 | 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |
 | 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |

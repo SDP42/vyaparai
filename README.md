@@ -39,6 +39,8 @@ Hinglish text, WhatsApp-style messages, and tools that run on a laptop for free.
 | **Alerts and digest** | Fixed-rule alerts (sales drop, margin leak, stock-out risk, falling-away regulars, rising complaints); a daily or weekly three-numbers-and-one-action digest by email |
 | **Campaigns** | Segment audiences, margin-guarded offers, message drafts, holdout design (nothing is sent automatically) |
 | **Festivals** | 320 dated events with region matching, forecast signals and "stock before" warnings |
+| **Ask and documents** | Ask in English, Hindi or Hinglish and get answers from your own numbers; search your own policies and supplier terms with cited passages ([ASSISTANT](docs/ASSISTANT.md), [DOCUMENTS](docs/DOCUMENTS.md)) |
+| **Purchase bills** | Photo or PDF of a supplier bill read by OCR, checked by a person, then costs and supplier price rises tracked ([BILLS](docs/BILLS.md)) |
 | **Reviews** | Import reviews; language, sentiment and themes for English, Hindi and Hinglish with the phrase behind each claim |
 | **Teams and security** | Workspaces with owner, admin, analyst and viewer roles; invitation links; HttpOnly cookie sessions with rotation and reuse detection; throttled sign-in; audit log |
 
@@ -132,8 +134,7 @@ disallowed licence enters the dependency tree. A project licence has not been ch
 
 ## Roadmap
 
-Next: purchase-bill capture (photo or PDF to cost history), a WhatsApp-first Hindi and Hinglish assistant that
-answers only from the metric layer, and credit (udhaar) and supplier-price intelligence. Later phases are in the
+Next: credit (udhaar) and receivables intelligence, WhatsApp delivery for the assistant, and the agent workflows. Later phases are in the
 [roadmap](docs/ROADMAP.md).
 
 ## Engineering principles

@@ -2,6 +2,14 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · Ask, documents (RAG) and a layout pass
+
+**Assistant.** A rules-based router sends English, Hindi and Hinglish questions to read-only tools over the existing services; the answer is written from the tool's numbers, with the period it used and a link to check it. A 66-question set routes 100% but only after I added keywords for the misses (it began at 91%), so treat that as a development figure ([ASSISTANT.md](ASSISTANT.md)).
+
+**Documents.** Compared keyword search, two pretrained embedding models and two fusion methods on 57 labelled questions, then chose a multilingual MiniLM with a 0.3 keyword weight; keywords alone score 1.00 on questions that reuse a document's words but 0.50 on paraphrases, embeddings alone the reverse. The corpus is 12 passages we wrote and the weight was tuned on the same questions, so real performance is unmeasured ([DOCUMENTS.md](DOCUMENTS.md)). Tests caught a title line being returned as the answer and Hinglish questions falling below the confidence floor; both fixed. Restricted documents are filtered before ranking.
+
+**Layout.** Measured every grid at 1100px: odd numbers of cards (3 category cards, 5 metric tiles, 7 review themes) left an empty slot in the last row. Added a wrapping `fluid` row whose last cards grow to fill it, removed double padding on the newer pages, and split Team into two columns.
+
 ## 2026-11-10 · Purchase bills
 
 Research said the biggest weakness is data access, so bills now come in by photo or PDF ([BILLS.md](BILLS.md)). Pretrained OCR was allowed, so RapidOCR (PaddleOCR models, CPU) is used when installed, with Tesseract as the fallback and the PDF text layer first. A drafted bill is checked by a person before it changes any cost. Real OCR on a rendered bill read every line, total, GSTIN and date correctly, but that is one clean image: accuracy on real, crumpled bills is unmeasured. Confirmed bills feed a supplier price history and an alert when a price rises 5% or more.

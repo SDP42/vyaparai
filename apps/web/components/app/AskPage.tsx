@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ApiError, api } from "@/lib/api";
+import { ApiError, streamAnswer } from "@/lib/api";
 import { useWorkspace } from "./AppContext";
 
 type Answer = {
   intent: string; language: "en" | "hinglish" | "hi"; question: string; answer: string;
   rows: Record<string, string | number | null>[]; link: string | null; note: string | null;
-  grounded: boolean; suggestions: string[]; period: { label: string } | null;
+  grounded: boolean; suggestions: string[]; period: { label: string } | null; follow_up?: boolean;
+  context?: Record<string, unknown>; evidence: Evidence[]; steps: Step[];
 };
-type Turn = { q: string; a?: Answer; error?: string };
+type Step = { step: string; detail?: string; tool?: string; ms?: number; empty?: boolean };
+type Evidence = { label: string; value: string; source: string };
+type Turn = { q: string; a?: Answer; error?: string; steps: Step[]; text?: string; evidence?: Evidence[]; follow?: boolean };
 type SR = { start: () => void; stop: () => void; lang: string; interimResults: boolean; onresult: ((e: { results: { 0: { 0: { transcript: string } } } }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null };
 
 const START = ["Sales last week", "Why did sales drop?", "What should I order?", "Any alerts?", "Top 5 products", "Next week forecast"];
@@ -25,6 +28,7 @@ export function AskPage() {
   const [listening, setListening] = useState(false);
   const [voice, setVoice] = useState(false);
   const end = useRef<HTMLDivElement>(null);
+  const ctxRef = useRef<Record<string, unknown> | null>(null);
   const rec = useRef<SR | null>(null);
 
   useEffect(() => { // voice input uses the browser's own speech recognition when it exists; nothing is uploaded by us
@@ -33,16 +37,21 @@ export function AskPage() {
   }, []);
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [turns]);
 
+  const patch = (fn: (t: Turn) => Turn) => setTurns((ts) => ts.map((x, i) => (i === ts.length - 1 ? fn(x) : x)));
   const ask = async (q: string) => {
     const question = q.trim();
     if (!question || busy) return;
     setBusy(true); setText("");
-    setTurns((t) => [...t, { q: question }]);
+    setTurns((t) => [...t, { q: question, steps: [] }]);
     try {
-      const a = await api<Answer>(`/workspaces/${workspace.id}/assistant/ask`, { method: "POST", body: JSON.stringify({ question }) });
-      setTurns((t) => t.map((x, i) => (i === t.length - 1 ? { ...x, a } : x)));
+      await streamAnswer(`/workspaces/${workspace.id}/assistant/stream`, { question, context: ctxRef.current }, (event, data) => {
+        if (event === "step") patch((t) => ({ ...t, steps: [...t.steps, data as Step] }));
+        else if (event === "answer") patch((t) => ({ ...t, text: (data as { text: string }).text }));
+        else if (event === "evidence") patch((t) => ({ ...t, evidence: data as Evidence[] }));
+        else if (event === "done") { const a = data as Answer; ctxRef.current = a.context ?? null; patch((t) => ({ ...t, a, follow: a.follow_up })); }
+      });
     } catch (e) {
-      setTurns((t) => t.map((x, i) => (i === t.length - 1 ? { ...x, error: e instanceof ApiError ? e.message : "Could not get an answer" } : x)));
+      patch((t) => ({ ...t, error: e instanceof ApiError ? e.message : "Could not get an answer" }));
     } finally { setBusy(false); }
   };
   const submit = (e: FormEvent) => { e.preventDefault(); void ask(text); };
@@ -83,6 +92,11 @@ export function AskPage() {
           <div key={i} className="space-y-2">
             <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-fg px-4 py-2 text-sm text-canvas">{t.q}</p>
             {!t.a && !t.error && <p className="text-sm text-muted">Looking at your numbers…</p>}
+            {t.steps.length > 0 && (
+              <ol aria-label="What the assistant did" className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                {t.steps.map((s, k) => <li key={k} className="inline-flex items-center gap-1.5"><span className="rounded-full border border-line px-2 py-0.5">{s.step === "tool" ? `ran ${s.tool}${s.ms != null ? ` · ${s.ms} ms` : ""}` : s.step === "done" ? `done · ${s.ms} ms` : `understood · ${s.detail}`}</span>{k < t.steps.length - 1 && <span aria-hidden>→</span>}</li>)}
+              </ol>
+            )}
             {t.error && <p role="alert" className="rounded-2xl border border-sindoor/30 bg-sindoor/5 px-4 py-3 text-sm text-sindoor">{t.error}</p>}
             {t.a && (
               <div className="max-w-[92%] rounded-2xl rounded-bl-sm border border-line bg-surface px-4 py-3">
@@ -97,7 +111,20 @@ export function AskPage() {
                     ))}
                   </ul>
                 )}
+                {t.a.evidence.length > 0 && (
+                  <details className="mt-3 rounded-xl border border-line bg-canvas text-sm">
+                    <summary className="cursor-pointer px-3 py-2 font-medium">Evidence: where these numbers come from</summary>
+                    <dl className="divide-y divide-line border-t border-line">
+                      {t.a.evidence.map((e, j) => (
+                        <div key={j} className="grid gap-x-3 px-3 py-1.5 sm:grid-cols-[1fr_auto_1fr]">
+                          <dt className="text-muted">{e.label}</dt><dd className="font-medium tabular-nums">{e.value}</dd><dd className="font-mono text-[11px] text-muted sm:text-right">{e.source}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                )}
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+                  {t.follow && <span className="rounded-full border border-line px-2 py-0.5">Follow-up</span>}
                   <span className="rounded-full border border-line px-2 py-0.5">{LANGS[t.a.language]}</span>
                   {t.a.period && <span className="rounded-full border border-line px-2 py-0.5">{t.a.period.label}</span>}
                   {t.a.grounded && <span className="rounded-full bg-mor/12 px-2 py-0.5 text-mor">From your data</span>}

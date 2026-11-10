@@ -69,6 +69,42 @@ export async function download(path: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/** POST and read a server-sent-event stream, calling `on(event, data)` for each event. */
+export async function streamAnswer(path: string, body: unknown, on: (event: string, data: unknown) => void): Promise<void> {
+  const send = async (token: string | null) =>
+    fetch(`${API_URL}${path}`, { method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
+  let res: Response;
+  try {
+    res = await send(await token());
+    if (res.status === 401) {
+      const t = await refreshAccessToken();
+      if (!t) expired();
+      res = await send(t);
+    }
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
+    throw new ApiError(0, "network", "Could not reach the Vyapar API. Is it running on port 8000?");
+  }
+  if (!res.ok || !res.body) {
+    const b = await res.json().catch(() => null);
+    throw new ApiError(res.status, b?.error?.code ?? "http_error", b?.error?.message ?? `Request failed (${res.status})`);
+  }
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i: number;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      const ev = /^event: (.*)$/m.exec(block)?.[1]; const data = /^data: (.*)$/m.exec(block)?.[1];
+      if (ev && data) on(ev, JSON.parse(data));
+    }
+  }
+}
+
 // ---------- types mirrored from the API (apps/api/app/schemas) ----------
 
 export type Workspace = { id: string; name: string; slug: string; currency: string; timezone: string; role: string; city?: string | null; state?: string | null };

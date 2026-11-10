@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import api_router
+from app.core import hardening
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
@@ -40,6 +41,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
         expose_headers=[REQUEST_ID_HEADER],
     )
+    app.middleware("http")(hardening.make_middleware(settings))
     app.middleware("http")(request_context_middleware)
     register_exception_handlers(app)
     app.include_router(api_router, prefix=settings.api_v1_prefix)

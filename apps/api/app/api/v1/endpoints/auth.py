@@ -15,7 +15,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.api.deps import AppSettings, CurrentUser, DbSession
 from app.core.config import Settings
 from app.core.errors import AppError, AuthenticationError, PermissionDeniedError
-from app.core.ratelimit import RateLimitedError, SlidingWindow
+from app.core.ratelimit import Limiter, RateLimitedError, make_limiter
 from app.core.security import create_access_token
 from app.models.user import User
 from app.schemas.auth import Token, UserCreate, UserRead
@@ -37,16 +37,16 @@ class TooManyAttemptsError(AppError):
         self.retry_after = retry_after
 
 
-_limiters: dict[str, SlidingWindow] = {}
+_limiters: dict[str, Limiter] = {}
 
 
-def limiter(name: str, settings: Settings) -> SlidingWindow:
+def limiter(name: str, settings: Settings) -> Limiter:
     if name not in _limiters:
         per = {
             "login": (settings.login_failures_per_window, settings.login_window_seconds),
             "register": (settings.register_per_hour_per_ip, 3600),
         }[name]
-        _limiters[name] = SlidingWindow(*per)
+        _limiters[name] = make_limiter(name, per[0], per[1], settings.redis_url)
     return _limiters[name]
 
 

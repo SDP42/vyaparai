@@ -26,10 +26,13 @@ PASSWORD = "correct-horse-battery"
 @pytest.fixture(autouse=True)
 def _fresh_rate_limits() -> Iterator[None]:
     from app.api.v1.endpoints.auth import reset_limiters
+    from app.core import hardening
 
     reset_limiters()
+    hardening.reset()
     yield
     reset_limiters()
+    hardening.reset()
 
 
 @pytest.fixture

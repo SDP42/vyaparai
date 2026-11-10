@@ -23,6 +23,18 @@ class Settings(BaseSettings):
     jwt_secret_key: str = DEV_JWT_SECRET
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
+    # Hardening (Phase 11)
+    redis_url: str | None = None  # shared rate-limit store; without it limits are per process
+    trust_proxy: bool = (
+        False  # read the client address from X-Forwarded-For (only behind a proxy you control)
+    )
+    rate_limit_per_minute: int = 600  # all requests per address
+    heavy_rate_limit_per_minute: int = 60  # uploads, search, questions, investigations, reports
+    max_json_body_kb: int = 1024
+    max_upload_body_mb: int = 20
+    db_statement_timeout_ms: int = 15000  # PostgreSQL only: the hard stop for a slow query
+    db_pool_size: int = 10
+    db_max_overflow: int = 10
     campaign_daily_cap: int = (
         100  # messages a person may send from one workspace in a day, to keep it polite
     )
@@ -82,6 +94,10 @@ class Settings(BaseSettings):
                 raise ValueError("JWT_SECRET_KEY must be set to a random value of 32+ chars")
             if self.database_url.startswith("sqlite"):
                 raise ValueError("Production must use PostgreSQL, not SQLite")
+            if any(not o.startswith("https://") for o in self.cors_origins):
+                raise ValueError("Production CORS_ORIGINS must all be https:// addresses")
+            if not self.app_url.startswith("https://"):
+                raise ValueError("Production APP_URL must be an https:// address")
         return self
 
 

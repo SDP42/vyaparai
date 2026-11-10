@@ -23,7 +23,10 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/health/live` | — | Liveness |
 | GET | `/health/ready` | — | Readiness (DB check, 503 if down) |
 | POST | `/auth/register` | — | Create account (`email`, `full_name`, `password` ≥ 10 chars) |
-| POST | `/auth/login` | — | OAuth2 form (`username`=email, `password`) → `{access_token, expires_in}` |
+| POST | `/auth/login` | — | OAuth2 form (`username`=email, `password`) → `{access_token, expires_in}` and sets the HttpOnly `vyapar_refresh` cookie; 429 `too_many_attempts` after repeated failures |
+| POST | `/auth/refresh` | cookie + `X-Requested-With: vyapar` | Rotate the refresh cookie, return a new `{access_token, expires_in}` |
+| POST | `/auth/logout` | cookie + header | Revoke this sign-in; clears the cookie (204) |
+| POST | `/auth/logout-all` | user + header | Revoke every sign-in of this user (204) |
 | GET | `/auth/me` | user | Current user |
 | POST | `/workspaces` | user | Create workspace; caller becomes **owner** |
 | GET | `/workspaces` | user | Workspaces the caller belongs to, with role |

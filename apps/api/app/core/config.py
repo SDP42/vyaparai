@@ -22,7 +22,13 @@ class Settings(BaseSettings):
 
     jwt_secret_key: str = DEV_JWT_SECRET
     jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    access_token_expire_minutes: int = 15
+    refresh_token_days: int = 14  # idle timeout: each refresh extends it
+    session_max_days: int = 30  # absolute timeout for one sign-in, however active
+    refresh_cookie_name: str = "vyapar_refresh"
+    login_failures_per_window: int = 5
+    login_window_seconds: int = 900
+    register_per_hour_per_ip: int = 10
 
     cors_origins: list[str] = ["http://localhost:3000"]
 

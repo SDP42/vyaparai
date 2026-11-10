@@ -23,6 +23,15 @@ from app.main import create_app
 PASSWORD = "correct-horse-battery"
 
 
+@pytest.fixture(autouse=True)
+def _fresh_rate_limits() -> Iterator[None]:
+    from app.api.v1.endpoints.auth import reset_limiters
+
+    reset_limiters()
+    yield
+    reset_limiters()
+
+
 @pytest.fixture
 def db_session_factory() -> Iterator[sessionmaker[Session]]:
     engine = build_engine("sqlite+pysqlite:///:memory:", poolclass=StaticPool)

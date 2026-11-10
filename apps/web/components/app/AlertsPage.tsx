@@ -37,6 +37,8 @@ function chips(a: AlertItem): [string, string][] {
       return [["Now", `${e.now_pct?.toFixed(1)}%`], ["Before", `${e.before_pct?.toFixed(1)}%`]];
     case "product_stopped":
       return [["Selling days before", String(e.selling_days_before)], ["Units before", String(Math.round(e.units_before ?? 0))]];
+    case "supplier_price_up":
+      return [["Before", r(Number(e.previous))], ["Now", r(Number(e.latest))], ["Change", p(e.change_pct)]];
     case "lapsed_regulars":
       return [["Customers", String(e.customers)]];
     case "no_costs":

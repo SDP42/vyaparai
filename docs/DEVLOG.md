@@ -2,6 +2,17 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · Phase 15: connectors and scheduled imports
+
+Researched first ([CONNECTORS.md](research/CONNECTORS.md)). The searches could not confirm any billing app's export columns, so instead of guessing
+presets the product now **remembers a confirmed column mapping by the file's header fingerprint**, which works for any app from the
+second file on. Owners can connect a published Google Sheet, Drive or Dropbox link that is fetched hourly or daily; unchanged files are skipped
+and changed ones add only new orders. The fetch is the risky part, so it follows OWASP's SSRF guidance (allow-list, one DNS resolution, public addresses only, connection
+pinned to the address, per-hop redirect checks, caps). The tests caught a real gap: Python treats multicast addresses as "global", so they
+were being allowed; multicast, reserved, unspecified and IPv4-mapped internal addresses are now refused. Live checks: localhost, a metadata name and an
+unlisted host were refused, and a real HTTPS download from an allowed host worked. Also fixed an older bug: the API sends UTC times without a
+marker, so the browser showed them hours off ("Checked 6 h ago" right after a check, wrong "Built" time on forecasts).
+
 ## 2026-11-09 (night) · Phase 5 inventory and the festival, region and cricket system
 
 **Festivals first, in depth.** One research agent produced a sourced, cross-checked table (320 events, 2024-2028: festivals,

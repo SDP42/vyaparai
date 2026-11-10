@@ -107,3 +107,8 @@ def test_permissions_and_delete(client: TestClient, shop, make_user) -> None:
     assert client.get(f"{base}/{rid}", headers=stranger).status_code == 404
     assert client.delete(f"{base}/{rid}", headers=h).status_code == 204
     assert client.get(f"{base}/{rid}", headers=h).status_code == 404
+
+
+def test_a_report_period_is_trimmed_to_the_days_with_data(client: TestClient, shop) -> None:
+    r = _create(client, shop, date_from="2026-10-10", date_to="2026-12-31").json()
+    assert r["content"]["period"]["to"] == "2026-10-25"

@@ -62,13 +62,26 @@ def investigate_sales(
             raise ValueError("No sales have been imported yet")
         a = date.fromisoformat(params["from"]) if params.get("from") else None
         b = date.fromisoformat(params["to"]) if params.get("to") else None
+        note = None
+        if (
+            a and b
+        ):  # days after the last sale (or before the first) are not "no sales", they are no data
+            ca, cb = max(a, first), min(b, last)
+            if ca > cb:
+                note = f"There are no sales between {a} and {b}; the latest 30 days of data are used instead."
+                a = b = None
+            elif (ca, cb) != (a, b):
+                note = f"Your sales run from {first:%d %b %Y} to {last:%d %b %Y}, so the period was trimmed to {ca:%d %b} - {cb:%d %b}."
+                a, b = ca, cb
+        if note:
+            ctx["scope_note"] = note
         f = analytics.resolve_filters(db, ws, a, b)
         ctx["f"] = f
         from app.services.analytics.compare import resolve_compare
 
         rng = resolve_compare(f.date_from, f.date_to, "previous_period")
         ctx["compare"] = rng
-        return {
+        out: dict[str, Any] = {
             "facts": {
                 "from": f.date_from,
                 "to": f.date_to,
@@ -77,6 +90,9 @@ def investigate_sales(
                 "latest_sale": last,
             }
         }
+        if ctx.get("scope_note"):
+            out["notes"] = [ctx["scope_note"]]
+        return out
 
     def headline(s: State) -> dict[str, Any]:
         ov = analytics.overview(db, workspace, _f(ctx), "previous_period")

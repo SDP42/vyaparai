@@ -23,6 +23,9 @@ def build(
     first, last = q.workspace_bounds(db, ws)
     if first is None or last is None:
         raise ValueError("No sales have been imported yet")
+    if start and end:  # trim to the days that have data so empty days do not look like a collapse
+        ca, cb = max(start, first), min(end, last)
+        start, end = (ca, cb) if ca <= cb else (None, None)
     f = analytics.resolve_filters(db, ws, start, end)
     ov = analytics.overview(db, workspace, f, "previous_period")
     dr = analytics.drivers(db, workspace, f, "previous_period")

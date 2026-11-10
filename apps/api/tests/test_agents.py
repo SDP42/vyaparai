@@ -150,3 +150,17 @@ def test_the_workflow_is_read_only_and_offline() -> None:
             if "TRACING" in var
             else not os.environ.get(var)
         )
+
+
+def test_a_period_past_the_last_sale_is_trimmed_not_counted_as_zero(
+    client: TestClient, shop
+) -> None:
+    last = START + timedelta(days=59)
+    d = run(
+        client,
+        shop,
+        date_from=(last - timedelta(days=9)).isoformat(),
+        date_to=(last + timedelta(days=20)).isoformat(),
+    ).json()
+    assert d["result"]["facts"]["to"] == last.isoformat()
+    assert any("trimmed" in n for n in d["result"]["notes"])

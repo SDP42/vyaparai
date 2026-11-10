@@ -96,7 +96,7 @@ export default function LoginPage() {
             >
               {showForm ? "Hide email sign-in" : "Use your own data: sign in or create an account"}
             </button>
-            <AnimatePresence initial={false}>{showForm && <EmailForm onDone={() => router.push("/app")} />}</AnimatePresence>
+            <AnimatePresence initial={false}>{showForm && <EmailForm onDone={() => router.push(sessionStorage.getItem("vyapar.invite") ? "/join" : "/app")} />}</AnimatePresence>
           </div>
         </main>
       </div>

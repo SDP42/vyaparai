@@ -21,6 +21,7 @@ const NAV = [
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
+  { href: "/app/team", label: "Team", icon: "☺", exact: false },
 ];
 const SOON = ["Copilot"];
 

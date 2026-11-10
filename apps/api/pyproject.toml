@@ -23,6 +23,8 @@ dependencies = [
     "fastembed>=0.9.1",
     "langgraph>=1.2.20",
     "reportlab>=5.1.0",
+    "redis>=8.1.0",
+    "pg8000>=1.31.6",
 ]
 
 [dependency-groups]
@@ -33,6 +35,7 @@ dev = [
     "ruff>=0.6",
     "mypy>=1.11",
     "types-openpyxl>=3.1.5.20261017",
+    "fakeredis>=2.40.0",
 ]
 
 [tool.uv]
@@ -68,6 +71,9 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 "app/services/assistant/*.py" = ["E501"]
 "app/services/docs/*.py" = ["E501"]
 "app/services/credit.py" = ["E501"]
+"app/core/ratelimit.py" = ["E501"]
+"app/db/session.py" = ["E501"]
+"app/core/hardening.py" = ["E501"]
 "app/services/uplift.py" = ["E501"]
 "app/services/campaign_runs.py" = ["E501"]
 "app/api/v1/endpoints/campaign_runs.py" = ["E501"]
@@ -112,5 +118,5 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [[tool.mypy.overrides]]
-module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*", "langgraph", "langgraph.*", "reportlab", "reportlab.*"]
+module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*", "langgraph", "langgraph.*", "reportlab", "reportlab.*", "redis", "redis.*"]
 ignore_missing_imports = true

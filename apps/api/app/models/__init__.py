@@ -7,6 +7,7 @@ from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.inventory import InventorySetting, StockSnapshot
+from app.models.review import Review
 from app.models.session import Invitation, RefreshToken
 from app.models.source import ImportSource, MappingProfile, SourceRun
 from app.models.user import User
@@ -36,6 +37,7 @@ __all__ = [
     "OrderStatus",
     "Product",
     "RefreshToken",
+    "Review",
     "SourceRun",
     "StockSnapshot",
     "User",

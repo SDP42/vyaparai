@@ -25,6 +25,7 @@ from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.queries import LINE_NET, _lines
 from app.services.analytics.types import ZERO, Filters, dec, metric_values
+from app.services.reviews import service as review_service
 
 D = Decimal
 SEVERITY_RANK = {"high": 0, "medium": 1, "info": 2}
@@ -353,6 +354,30 @@ def rule_customers(db: Session, workspace: Workspace, end: date) -> list[dict[st
     ]  # fmt: skip
 
 
+def rule_reviews(db: Session, ws: uuid.UUID, today: date) -> list[dict[str, Any]]:
+    """A complaint theme that is both common and getting worse in the last 30 days."""
+    s = review_service.summary(db, ws, 30, today)
+    out: list[dict[str, Any]] = []
+    for t in s["themes"]:
+        n, pct, prior = t["mentions"], t["negative_pct"], t["prior_negative_pct"]
+        worse = prior is None or pct - prior >= 15
+        if n < 5 or pct < 40 or not worse:
+            continue
+        out.append(
+            {
+                "key": f"review_theme|{t['theme']}", "rule": "review_theme",
+                "severity": "medium" if pct >= 60 and n >= 10 else "info",
+                "title": f"Customers are unhappy about {t['label'].lower()}",
+                "detail": f"{t['negative']} of {n} reviews that mention it in the last 30 days are negative ({pct:.0f}%)"
+                + ("." if prior is None else f", up from {prior:.0f}% before.")
+                + " Read what they wrote, then fix the cause.",
+                "evidence": {"theme": t["theme"], "mentions": n, "negative_pct": pct, "prior_negative_pct": prior},
+                "link": f"/app/reviews?theme={t['theme']}&label=negative",
+            }
+        )  # fmt: skip
+    return out
+
+
 def compute(
     db: Session, workspace: Workspace, as_of: date | None, today: date
 ) -> tuple[date | None, list[dict[str, Any]]]:
@@ -370,6 +395,7 @@ def compute(
         + rule_inventory(db, workspace)
         + rule_events(db, workspace, today)
         + rule_sources(db, workspace.id)
+        + rule_reviews(db, workspace.id, today)
     )
     if coverage is not None and coverage < 60:
         out.append(

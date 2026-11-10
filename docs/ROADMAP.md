@@ -20,7 +20,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | F2 | App shell polish | 🟡 | Cookie sessions and team invites done; generated API types and accessibility pass open |
 | 5 | Inventory & decision support | ✅ | Stock cover, order advice, dead stock, cash tied up |
 | 5B | Festivals, regions and cricket | ✅ | 320 dated events, region matching, forecast signals, alerts, Festivals page |
-| 6 | NLP review intelligence | ⬜ | Sentiment and themes, Hinglish (P1) |
+| 6 | NLP review intelligence | ✅ | Sentiment and themes in English, Hindi and Hinglish, with evidence |
 | 7 | Document intelligence (RAG) | ⬜ | Cited answers over documents (P1) |
 | 8 | Vyapar Copilot | ⬜ | Plain-language questions over the metric layer (P1) |
 | 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |

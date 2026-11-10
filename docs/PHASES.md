@@ -21,7 +21,7 @@ each phase contains and its exit criteria.
 | — | **MVP release (end-to-end journey works)** ([checklist](MVP.md)) | — | — | ✅ |
 | 5 | Inventory & decision support | 8 | P1 | ✅ |
 | 5B | Festivals, regions and cricket | - | P1 | ✅ |
-| 6 | NLP review intelligence | 9 | P1 | ⬜ |
+| 6 | NLP review intelligence | 9 | P1 | ✅ |
 | 7 | Document intelligence & RAG | 10 | P1 | ⬜ |
 | 8 | Vyapar Copilot & safe tool use | 11 | P1 | ⬜ |
 | 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
@@ -200,11 +200,13 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] Forecast: event and cricket signals tested as a group, festival distance feature, warnings that name the festival, owner festive boost
 - [x] Alerts for festivals about to start whose products may run out
 
-## Phase 6 — NLP review intelligence
+## Phase 6 — NLP review intelligence ✅ ([how it works](REVIEWS.md), [research](research/REVIEWS-NLP.md))
 
-- [ ] Review schema + normalisation; language detection (English / Hindi / Hinglish)
-- [ ] TF-IDF + logistic regression baseline vs a multilingual transformer; macro-F1 reported
-- [ ] Aspect themes (delivery, quality, price, packaging, support) with evidence snippets
+- [x] Review import (CSV, header synonyms, dedupe by content), language detection (English / Hindi / Hinglish)
+- [x] Sentiment from our own word lists with negation, intensifiers and "but" handling; a per-shop model learned from star ratings (numpy, no downloads) used only when it beats guessing on held-out reviews
+- [x] Seven themes (delivery, quality, price, packaging, service, freshness, availability) with the phrase each came from
+- [x] Reviews page, per-product view, try-it box, alert when a complaint theme is common and rising
+- Changed from plan: no multilingual transformer (CPU-only, free-only, and no permissively licensed Hinglish training data was found); accuracy is reported honestly on small self-written sets
 
 ## Phase 7 — Document intelligence & RAG
 

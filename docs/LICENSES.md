@@ -32,6 +32,7 @@ Notable: Next.js, React (MIT), Recharts (MIT), three.js and React Three Fiber (M
 |---|---|
 | Festival, holiday and cricket table (`app/data/events.csv`) | Facts compiled by us from government holiday lists, almanacs and published schedules, described in our own words, each row with its sources and a confidence level. Dates are facts, not creative text |
 | Open-Meteo weather | Data CC BY 4.0 (attribution shown in the app). **The free endpoint is for non-commercial use only**; the app refuses it in production without a paid key (see EXTERNAL-FACTORS.md). Not used in a paid product until that is settled |
+| Review word lists, sentiment test sets, demo reviews (`data/sample/vyapar_demo_reviews.csv`) | Written for this project, CC0, no third-party text |
 | 3D opening scene assets | Poly Haven, CC0 (see `apps/web/public/assets/opening/LICENSES.md`) |
 | Opening sound effects | Synthesized in the browser; no third-party audio |
 | Fonts | Bricolage Grotesque, Instrument Serif, JetBrains Mono: SIL Open Font Licence, loaded through `next/font` |

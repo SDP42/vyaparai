@@ -2,6 +2,12 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · F2 sessions, team invites, MVP journey, Phase 6 reviews
+
+**Sessions.** Researched OWASP's session guidance, then moved sign-in off `localStorage`: a 15-minute access token lives only in page memory and a rotating refresh token sits in an HttpOnly cookie. Reusing an old refresh token revokes the whole sign-in; logout and "sign out everywhere" revoke server-side; cookie endpoints need a custom header and a known Origin; login and sign-up are throttled. The throttle counters are in memory, which is fine for one process and must move to Redis before several workers. **Team.** Roles can be changed, members removed (never the last owner), and one-time invitation links created (the token travels after `#`, is stored hashed, expires in 7 days). **MVP.** `test_mvp_journey.py` walks sign-up to stock advice to teammate to sign-out as one user; [MVP.md](MVP.md) lists what is ready and what is not.
+
+**Reviews (Phase 6).** Researched first ([REVIEWS-NLP.md](research/REVIEWS-NLP.md)): no permissively licensed Hinglish review dataset exists that we could confirm, so nothing third-party is bundled; the word lists and test sets are our own. The reading is a transparent lexicon plus a model learned from each shop's own star ratings. Honest numbers: on the first self-written set macro-F1 was 0.90 to 1.00, but that set was written next to the lexicon so it proves little. A second set written without the lexicon open scored about 65% correct, every miss being a review with no known opinion words (none flipped polarity). I then broadened the vocabulary generally, which makes that second set a development set whose score (now ~92%) is optimistic. True accuracy on unseen shop reviews is unknown and probably 0.6 to 0.75; the page says how many reviews had no recognised words.
+
 ## 2026-11-10 · Phase 15: connectors and scheduled imports
 
 Researched first ([CONNECTORS.md](research/CONNECTORS.md)). The searches could not confirm any billing app's export columns, so instead of guessing

@@ -18,6 +18,7 @@ const NAV = [
   { href: "/app/inventory", label: "Stock", icon: "▦", exact: false },
   { href: "/app/festivals", label: "Festivals", icon: "◎", exact: false },
   { href: "/app/costs", label: "Costs", icon: "₹", exact: false },
+  { href: "/app/reviews", label: "Reviews", icon: "❝", exact: false },
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },

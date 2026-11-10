@@ -451,3 +451,287 @@ WORKFLOWS: dict[str, dict[str, Any]] = {
         "run": investigate_sales,
     },
 }
+
+
+# ------------------------------------------------------------------ more workflows
+
+
+def _simple(
+    db: Session,
+    workspace: Workspace,
+    rec: Recorder,
+    params: dict[str, Any],
+    steps: list[tuple[str, Any]],
+    title_ok: str,
+) -> dict[str, Any]:
+    """Run a straight line of checks, then conclude. Each check returns findings and/or facts."""
+    names = [n for n, _ in steps] + ["conclude"]
+
+    def conclude(s: State) -> dict[str, Any]:
+        f = sorted(s.get("findings", []), key=lambda x: -x["weight"])
+        summary = (
+            title_ok
+            if not f
+            else f"{len(f)} things stand out: " + "; ".join(x["title"] for x in f[:3]) + "."
+        )
+        return {"result": {"summary": summary, "findings": f, "facts": s.get("facts", {}), "notes": s.get("notes", []),
+                           "caveat": "Rules and counts from your own data. They point at where to look; they do not prove causes."}}  # fmt: skip
+
+    g = StateGraph(State)
+    for name, fn in [*steps, ("conclude", conclude)]:
+        wrapped: Any = traced(
+            rec,
+            name,
+            fn,
+            lambda o: f"{len(o.get('findings', []))} findings" if "findings" in o else "",
+        )
+        g.add_node(name, wrapped)
+    g.set_entry_point(names[0])
+    for a, b in pairwise(names):
+        g.add_edge(a, b)
+    g.add_edge("conclude", END)
+    out = g.compile().invoke(
+        {"params": params, "facts": {}, "findings": [], "notes": []}, config={"recursion_limit": 30}
+    )
+    res: dict[str, Any] = out.get("result") or {
+        "summary": "The workflow stopped before it could conclude.",
+        "findings": [],
+        "notes": out.get("notes", []),
+    }
+    return res
+
+
+def customer_health(
+    db: Session, workspace: Workspace, rec: Recorder, params: dict[str, Any]
+) -> dict[str, Any]:
+    from app.services import credit
+    from app.services.analytics import intelligence
+
+    def overview(s: State) -> dict[str, Any]:
+        c = intelligence.customers_summary(db, workspace, None, 365, 30, 30, 45)
+        fs = []
+        st = c["status_counts"]
+        if c["lapsed_regulars"] >= 3:
+            fs.append(
+                _find(
+                    "measured",
+                    f"{c['lapsed_regulars']} regulars have gone quiet",
+                    "They bought at least twice and nothing in 45 days.",
+                    min(1.0, c["lapsed_regulars"] / 20),
+                    [
+                        (
+                            "Regulars gone quiet",
+                            str(c["lapsed_regulars"]),
+                            "customers:lapse 45 days",
+                        ),
+                        ("Cooling", str(st.get("Cooling", 0)), "customers:status"),
+                    ],
+                )
+            )
+        if float(c["repeat_rate"]) < 40:
+            fs.append(
+                _find(
+                    "measured",
+                    f"Only {float(c['repeat_rate']):.0f}% of customers came back",
+                    "Most customers buy once. Retention is the cheapest growth.",
+                    0.5,
+                    [("Repeat rate", f"{float(c['repeat_rate']):.0f}%", "customers:summary")],
+                )
+            )
+        if float(c["top_decile_share"]) > 40:
+            fs.append(
+                _find(
+                    "measured",
+                    f"The top 10% of customers bring {float(c['top_decile_share']):.0f}% of sales",
+                    "Losing a few of them would hurt.",
+                    0.4,
+                    [
+                        (
+                            "Top decile share",
+                            f"{float(c['top_decile_share']):.0f}%",
+                            "customers:summary",
+                        )
+                    ],
+                )
+            )
+        return {
+            "findings": fs,
+            "facts": {
+                "customers": c["customers"],
+                "repeat_rate": c["repeat_rate"],
+                "lapsed": c["lapsed_regulars"],
+            },
+        }
+
+    def reviews_check(s: State) -> dict[str, Any]:
+        sm = reviews.summary(db, workspace.id, 90)
+        bad = [t for t in sm["themes"] if t["mentions"] >= 5 and t["negative_pct"] >= 40]
+        if not bad:
+            return {}
+        return {
+            "findings": [
+                _find(
+                    "context",
+                    "Complaints may be pushing customers away",
+                    ", ".join(t["label"].lower() for t in bad[:2])
+                    + " draw the most negative reviews.",
+                    0.45,
+                    [
+                        (
+                            t["label"],
+                            f"{t['negative_pct']:.0f}% negative of {t['mentions']}",
+                            "reviews:themes",
+                        )
+                        for t in bad[:3]
+                    ],
+                )
+            ]
+        }
+
+    def credit_check(s: State) -> dict[str, Any]:
+        u = credit.summary(db, workspace.id, date.today())
+        if not u["has_data"] or u["stalled"] < 2:
+            return {}
+        return {
+            "findings": [
+                _find(
+                    "context",
+                    f"{u['stalled']} customers on credit have stopped paying",
+                    "Pressure on credit customers can end the relationship; a polite reminder first.",
+                    0.35,
+                    [
+                        ("Not paying", str(u["stalled"]), "udhaar:behaviour"),
+                        ("Overdue", inr(u["overdue"]), "udhaar:ageing"),
+                    ],
+                )
+            ]
+        }
+
+    return _simple(
+        db,
+        workspace,
+        rec,
+        params,
+        [("overview", overview), ("reviews_check", reviews_check), ("credit_check", credit_check)],
+        "Customer health looks steady: no regulars slipping away and no clear warning signs.",
+    )
+
+
+def stock_risk(
+    db: Session, workspace: Workspace, rec: Recorder, params: dict[str, Any]
+) -> dict[str, Any]:
+    from app.services.forecasting import service as forecasting
+
+    def stock(s: State) -> dict[str, Any]:
+        ov = inventory.overview(db, workspace)
+        sm = ov["summary"]
+        if sm["tracked"] == 0:
+            return {"notes": ["No stock counts yet, so stock cannot be checked."]}
+        fs = []
+        if sm["urgent"]:
+            fs.append(
+                _find(
+                    "measured",
+                    f"{sm['urgent']} products will run out before a new order can arrive",
+                    "Order today.",
+                    0.9,
+                    [
+                        (i["name"], f"{i['cover_days']} days left", "inventory:cover")
+                        for i in ov["items"]
+                        if i["status"] == "urgent"
+                    ][:4],
+                )
+            )
+        if sm["dead"]:
+            fs.append(
+                _find(
+                    "measured",
+                    f"{inr(sm['dead_cash'])} is stuck in {sm['dead']} products that have not sold",
+                    "A bundle or small offer above cost frees the cash.",
+                    0.5,
+                    [
+                        (i["name"], inr(i["cash_tied"]), "inventory:dead stock")
+                        for i in ov["items"]
+                        if i["status"] == "dead"
+                    ][:4],
+                )
+            )
+        if sm["missing_stock"]:
+            fs.append(
+                _find(
+                    "context",
+                    f"{sm['missing_stock']} products have no stock count",
+                    "Advice for them is missing.",
+                    0.2,
+                    [],
+                )
+            )
+        return {"findings": fs}
+
+    def festival(s: State) -> dict[str, Any]:
+        ev = events_insight.upcoming(
+            db, workspace, days=21, include_cricket=False, today=date.today()
+        )
+        risky = [(e, [p for p in e.get("products", []) if p.get("at_risk")]) for e in ev]
+        risky = [(e, p) for e, p in risky if p]
+        if not risky:
+            return {}
+        e, p = risky[0]
+        return {
+            "findings": [
+                _find(
+                    "measured",
+                    f"{e['event'].name} is in {e['days_until']} days and {len(p)} products may run short",
+                    "Order before the lead time passes.",
+                    0.7,
+                    [
+                        (x["name"], f"{x['daily_sales']:.0f} a day", "events:matching products")
+                        for x in p[:4]
+                    ],
+                )
+            ]
+        }
+
+    def forecast_check(s: State) -> dict[str, Any]:
+        run = forecasting.latest_run(db, workspace.id)
+        if run is None:
+            return {"notes": ["No forecast has been built, so cover uses recent sales only."]}
+        o = forecasting.overview(db, workspace, run)
+        return (
+            {
+                "findings": [
+                    _find(
+                        "context",
+                        "The forecast is out of date",
+                        "New sales came in after it was built, so cover may be off.",
+                        0.3,
+                        [("Built", str(run.as_of), "forecast run")],
+                    )
+                ]
+            }
+            if o["stale"]
+            else {}
+        )
+
+    return _simple(
+        db,
+        workspace,
+        rec,
+        params,
+        [("stock", stock), ("festival", festival), ("forecast_check", forecast_check)],
+        "Stock looks fine: nothing is about to run out and no festival is at risk.",
+    )
+
+
+WORKFLOWS["customer_health"] = {
+    "title": "Are my customers healthy?",
+    "about": "Regulars slipping away, repeat rate, concentration, complaints and credit that has stopped being paid.",
+    "params": [],
+    "run": customer_health,
+}
+WORKFLOWS["stock_risk"] = {
+    "title": "Where is stock at risk?",
+    "about": "Products that will run out, cash stuck in dead stock, festivals that may strain stock, and whether the forecast is current.",
+    "params": [],
+    "run": stock_risk,
+}

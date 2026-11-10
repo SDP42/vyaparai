@@ -262,6 +262,15 @@ def to_pdf(rep: dict[str, Any]) -> bytes:
                 ]
             )
         el += [Paragraph("Suggested actions", h2), _table(rows, [100 * mm, 22 * mm, 43 * mm])]
+    if rep.get("definitions"):
+        el.append(Paragraph("How the measures are defined", h2))
+        for dfn in rep["definitions"]:
+            el.append(
+                Paragraph(
+                    f"<b>{dfn['label']}</b> (v{dfn['version']}): {dfn['definition']} Includes {dfn['includes']}. Excludes {dfn['excludes']}.",
+                    small,
+                )
+            )
     el.append(Paragraph("Notes and limits", h2))
     for w in rep["warnings"] + rep["limits"]:
         el.append(Paragraph("- " + w, small))

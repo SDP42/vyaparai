@@ -34,6 +34,11 @@ class Recommendation(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, 
     note: Mapped[str | None] = mapped_column(String(300))
     first_seen: Mapped[date] = mapped_column(Date)
     last_seen: Mapped[date] = mapped_column(Date)
+    done_at: Mapped[date | None] = mapped_column(Date)
+    baseline: Mapped[dict[str, Any] | None] = mapped_column(
+        JSON
+    )  # the number this action should move, when it was done
+    outcome: Mapped[dict[str, Any] | None] = mapped_column(JSON)  # what that number did afterwards
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     decided_by_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL")

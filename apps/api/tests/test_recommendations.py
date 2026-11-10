@@ -182,3 +182,61 @@ def test_weekly_review_workflow_lists_the_top_suggestions(client: TestClient, ws
     assert [s["node"] for s in r["steps"]] == ["refresh", "alerts", "rank", "conclude"]
     assert "things to do this week" in r["result"]["summary"]
     assert "estimates" in r["result"]["caveat"]
+
+
+def test_a_done_item_is_measured_later_against_its_baseline(
+    client: TestClient, ws, monkeypatch
+) -> None:
+    h, wid = ws
+    _ledger(client, h, wid)
+    _refresh(client, h, wid)
+    rec = _list(client, h, wid)[0]
+    done = client.post(
+        f"/api/v1/workspaces/{wid}/recommendations/{rec['id']}/done", headers=h
+    ).json()
+    assert done["baseline"]["name"] == "Udhaar older than 30 days"
+    assert done["baseline"]["value"] == 13000
+    assert done["outcome"] is None  # too early to say
+    _refresh(client, h, wid)
+    assert _list(client, h, wid, "done")[0]["outcome"] is None
+    # two weeks later the dues are paid: the number moved the right way
+    monkeypatch.setattr(service, "OUTCOME_DAYS", 0)
+    settle = f"Date,Name,Type,Amount\n{d(1)},Big Debtor,Payment,9000\n{d(1)},Another,Payment,4000\n".encode()
+    _ledger(client, h, wid, settle)
+    _refresh(client, h, wid)
+    out = _list(client, h, wid, "done")[0]["outcome"]
+    assert out["verdict"] == "improved"
+    assert out["before"] == 13000
+    assert out["after"] == 0
+    assert "not that this action caused it" in out["caveat"]
+
+
+def test_an_item_with_no_honest_metric_says_so(client: TestClient, ws, monkeypatch) -> None:
+    h, wid = ws
+    monkeypatch.setattr(service, "OUTCOME_DAYS", 0)
+    from app.models.recommendation import Recommendation
+
+    db = next(
+        client.app.dependency_overrides[__import__("app.db.session", fromlist=["get_db"]).get_db]()
+    )
+    r = Recommendation(
+        workspace_id=__import__("uuid").UUID(wid),
+        key="festival|x",
+        kind="festival_stock",
+        title="t",
+        why="w",
+        evidence=[],
+        impact={},
+        effort="M",
+        confidence="medium",
+        link="/app",
+        status="done",
+        first_seen=TODAY,
+        last_seen=TODAY,
+        done_at=TODAY,
+        baseline=None,
+    )
+    db.add(r)
+    db.commit()
+    _refresh(client, h, wid)
+    assert _list(client, h, wid, "done")[0]["outcome"]["verdict"] == "not_measurable"

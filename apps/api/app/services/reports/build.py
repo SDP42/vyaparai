@@ -49,6 +49,7 @@ def build(
         "period": {"from": f.date_from, "to": f.date_to, "compare": ov["meta"].get("compare")},
         "generated_at": datetime.now(UTC), "data_through": last,
         "kpis": kpis,
+        "definitions": [{"label": m["label"], "definition": m["definition"], "includes": m["includes"], "excludes": m["excludes"], "version": m["version"]} for m in analytics.registry()["metrics"] if m["key"] in {k["key"] for k in kpis}],
         "trend": [t["net"] for t in ov["trend"]],
         "drivers": {"net_change": dr["net_change"], "effects": [{"label": e["label"], "amount": e["amount"]} for e in dr["effects"]],
                     "decliners": dr["biggest_decliners"][:5], "gainers": dr["biggest_gainers"][:5]},

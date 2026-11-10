@@ -123,6 +123,8 @@ def test_runs_are_listed_read_back_and_permissioned(client: TestClient, shop, ma
     assert {w["key"] for w in client.get(f"{base}/workflows", headers=h).json()} == {
         "investigate_sales",
         "weekly_review",
+        "customer_health",
+        "stock_risk",
     }
     viewer = make_user("viewer@shop.in")
     _join(client, ws, h, viewer, "viewer")
@@ -164,3 +166,27 @@ def test_a_period_past_the_last_sale_is_trimmed_not_counted_as_zero(
     ).json()
     assert d["result"]["facts"]["to"] == last.isoformat()
     assert any("trimmed" in n for n in d["result"]["notes"])
+
+
+def _wf(client, shop, name):
+    h, ws = shop
+    return client.post(
+        f"/api/v1/workspaces/{ws}/agents/runs", json={"workflow": name}, headers=h
+    ).json()
+
+
+def test_customer_health_and_stock_risk_run_and_are_traced(client: TestClient, shop) -> None:
+    for name, first in (("customer_health", "overview"), ("stock_risk", "stock")):
+        d = _wf(client, shop, name)
+        assert d["status"] == "done", d
+        assert d["steps"][0]["node"] == first
+        assert d["steps"][-1]["node"] == "conclude"
+        assert d["result"]["summary"]
+        assert d["result"]["caveat"]
+
+
+def test_a_slow_step_is_flagged_in_the_trace(client: TestClient, shop, monkeypatch) -> None:
+    monkeypatch.setattr(engine, "NODE_SECONDS", 0.0)
+    d = _wf(client, shop, "customer_health")
+    assert any("slow" in (s["summary"] or "") for s in d["steps"])
+    assert any("was slow" in n for n in d["result"]["notes"])

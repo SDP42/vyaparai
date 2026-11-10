@@ -112,3 +112,13 @@ def test_permissions_and_delete(client: TestClient, shop, make_user) -> None:
 def test_a_report_period_is_trimmed_to_the_days_with_data(client: TestClient, shop) -> None:
     r = _create(client, shop, date_from="2026-10-10", date_to="2026-12-31").json()
     assert r["content"]["period"]["to"] == "2026-10-25"
+
+
+def test_the_report_carries_and_prints_metric_definitions(client: TestClient, shop) -> None:
+    h, ws = shop
+    r = _create(client, shop).json()
+    defs = r["content"]["definitions"]
+    assert any(d["label"] == "Net sales" and d["definition"] for d in defs)
+    pdf = client.get(f"/api/v1/workspaces/{ws}/reports/{r['id']}/pdf", headers=h)
+    text = "".join(p.extract_text() for p in PdfReader(io.BytesIO(pdf.content)).pages)
+    assert "How the measures are defined" in text

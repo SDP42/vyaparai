@@ -20,6 +20,7 @@ from app.services.recommend import candidates
 
 CONF_W = {"high": 1.0, "medium": 0.7, "low": 0.4}
 EFFORT_W = {"S": 1.0, "M": 1.6, "L": 2.5}
+OUTCOME_DAYS = 14  # how long after "done" the result is read
 TRANSITIONS = {
     "approve": ({"proposed", "stale"}, "approved"),
     "dismiss": ({"proposed", "approved", "stale"}, "dismissed"),
@@ -82,6 +83,7 @@ def refresh(db: Session, workspace: Workspace, today: date | None = None) -> dic
             r.status = "stale"
             stale += 1
     db.commit()
+    measure_outcomes(db, workspace, today)
     return {"found": len(found), "new": new, "stale": stale, "errors": errors}
 
 
@@ -123,6 +125,12 @@ def decide(
     if r.status not in allowed:
         raise AppError(f"A {r.status} item cannot be {action}d")
     r.status = target
+    if action == "done":
+        ws_obj = db.get(Workspace, ws)
+        today = datetime.now(UTC).date()
+        r.done_at = today
+        r.outcome = None
+        r.baseline = candidates.metric_now(db, ws_obj, r.kind, today) if ws_obj else None
     r.note = (note or None) and note.strip()[:300]
     r.decided_at = datetime.now(UTC)
     r.decided_by_id = user_id
@@ -137,3 +145,46 @@ def decide(
     )
     db.commit()
     return r
+
+
+def measure_outcomes(db: Session, workspace: Workspace, today: date | None = None) -> int:
+    """Read the result of actions marked done at least OUTCOME_DAYS ago. Returns how many were read."""
+    today = today or datetime.now(UTC).date()
+    n = 0
+    rows = db.scalars(
+        select(Recommendation).where(
+            Recommendation.workspace_id == workspace.id, Recommendation.status == "done"
+        )
+    )
+    for r in rows:
+        if r.outcome is not None or r.done_at is None or (today - r.done_at).days < OUTCOME_DAYS:
+            continue
+        if not r.baseline:
+            r.outcome = {
+                "verdict": "not_measurable",
+                "note": "There is no single number that shows whether this worked.",
+            }
+            n += 1
+            continue
+        now = candidates.metric_now(db, workspace, r.kind, today)
+        if now is None:
+            continue
+        before, after = float(r.baseline["value"]), float(now["value"])
+        change = after - before
+        pct = None if before == 0 else round(change / before * 100, 1)
+        good_down = r.baseline.get("good", "down") == "down"
+        moved = -change if good_down else change
+        verdict = (
+            "improved"
+            if moved > 0
+            and (before == 0 or moved / max(abs(before), 1) >= 0.05 or abs(change) >= 1)
+            else "worse"
+            if moved < 0 and abs(change) >= 1
+            else "unchanged"
+        )
+        r.outcome = {"metric": r.baseline["name"], "before": before, "after": after, "change": round(change, 2), "change_pct": pct,
+                     "days": (today - r.done_at).days, "verdict": verdict, "money": r.baseline.get("money", False),
+                     "caveat": "Other things changed too. This shows the number moved, not that this action caused it."}  # fmt: skip
+        n += 1
+    db.commit()
+    return n

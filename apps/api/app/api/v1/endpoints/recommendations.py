@@ -22,7 +22,7 @@ def _r(r: Recommendation) -> dict[str, Any]:
         "id": str(r.id), "kind": r.kind, "title": r.title, "why": r.why, "evidence": r.evidence, "impact": r.impact,
         "effort": r.effort, "confidence": r.confidence, "score": round(r.score, 1), "link": r.link, "status": r.status,
         "note": r.note, "first_seen": r.first_seen.isoformat(), "last_seen": r.last_seen.isoformat(),
-        "decided_at": r.decided_at.isoformat() if r.decided_at else None,
+        "decided_at": r.decided_at.isoformat() if r.decided_at else None, "done_at": r.done_at.isoformat() if r.done_at else None, "baseline": r.baseline, "outcome": r.outcome,
     }  # fmt: skip
 
 

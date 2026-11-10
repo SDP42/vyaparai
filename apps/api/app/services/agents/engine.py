@@ -5,7 +5,8 @@ numbers. That keeps each step inspectable and makes the workflow immune to instr
 in data (reviews, documents), because no text is ever interpreted as a command.
 Guarantees:
 - only allow-listed read-only tools are reachable (``TOOLS`` in tools.py);
-- at most MAX_NODES node executions and MAX_SECONDS in total; a failing node is retried up to
+- at most MAX_NODES node executions and MAX_SECONDS in total (a step over NODE_SECONDS is flagged; steps cannot be
+  interrupted mid-query without corrupting the shared session, so the database statement timeout is the hard stop); a failing node is retried up to
   MAX_ATTEMPTS times, then recorded as failed and the workflow goes on with what it has;
 - every node is stored as an AgentStep with its input, output, attempts and time.
 """
@@ -25,6 +26,7 @@ from app.models.agent import AgentRun, AgentStep
 MAX_NODES = 16
 MAX_SECONDS = 20.0
 MAX_ATTEMPTS = 2
+NODE_SECONDS = 8.0  # a step slower than this is flagged and counts against the budget (see below)
 
 
 def jsonable(x: Any) -> Any:
@@ -92,8 +94,16 @@ def traced(
                 continue
             base.status, base.attempts = "ok", attempt
             base.output = jsonable(out)
-            base.summary = (describe(out) if describe else "")[:300]
             base.ms = round((time.perf_counter() - t0) * 1000)
+            base.summary = (describe(out) if describe else "")[:260]
+            if base.ms > NODE_SECONDS * 1000:
+                # Interrupting a step would leave the shared database session in an unknown state, so a slow step
+                # is flagged and the total time budget stops the run. Production sets a database statement timeout.
+                base.summary += f" (slow: {base.ms / 1000:.1f}s, limit {NODE_SECONDS:.0f}s)"
+                out = {
+                    **out,
+                    "notes": [*out.get("notes", []), f"{name} was slow ({base.ms / 1000:.1f}s)"],
+                }
             rec.add(base)
             return out
         base.status, base.attempts = "failed", MAX_ATTEMPTS

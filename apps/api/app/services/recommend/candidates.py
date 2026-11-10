@@ -184,3 +184,49 @@ def supplier_pass_through(db: Session, ws: Workspace, today: date) -> list[dict[
 
 
 GENERATORS = [reorder, margin_leaks, udhaar, dead_stock, winback, festival, supplier_pass_through]
+
+
+# ------------------------------------------------------------------ outcome metrics
+
+
+def metric_now(db: Session, ws: Workspace, kind: str, today: date) -> dict[str, Any] | None:
+    """The one number an action is meant to move, as it stands today. None when there is no honest metric."""
+    if kind == "collect_udhaar":
+        return {
+            "name": "Udhaar older than 30 days",
+            "value": float(credit.summary(db, ws.id, today)["overdue"]),
+            "good": "down",
+            "money": True,
+        }
+    if kind == "clear_stock":
+        return {
+            "name": "Cash in dead stock",
+            "value": float(inventory.overview(db, ws)["summary"]["dead_cash"] or 0),
+            "good": "down",
+            "money": True,
+        }
+    if kind == "winback":
+        return {
+            "name": "Regulars gone quiet",
+            "value": float(
+                intelligence.customers_summary(db, ws, None, 365, 30, 30, 45)["lapsed_regulars"]
+            ),
+            "good": "down",
+            "money": False,
+        }
+    if kind == "reorder":
+        return {
+            "name": "Products that will run out first",
+            "value": float(inventory.overview(db, ws)["summary"]["urgent"]),
+            "good": "down",
+            "money": False,
+        }
+    if kind == "price_fix":
+        leaks, _ = alert_service.rule_margin(db, ws.id, today)
+        return {
+            "name": "Products with a margin leak",
+            "value": float(len(leaks)),
+            "good": "down",
+            "money": False,
+        }
+    return None

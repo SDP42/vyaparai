@@ -85,6 +85,12 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | GET | `/workspaces/{id}/events/effects` | viewer | Observed lift of past events on this shop's sales |
 | GET | `/workspaces/{id}/events/regions` \| PUT `/events/region` | viewer \| admin | States and zones; set the shop's state |
 | GET | `/workspaces/{id}/events/coverage` | viewer | How far the dated table reaches and its confidence mix |
+| GET / POST | `/workspaces/{id}/sources` | viewer / analyst | Connected links (Google Sheet, Drive, Dropbox) with schedule (`manual`, `hourly`, `daily`), last result and failures; up to 5. Links are checked on creation (https, allow-listed host) |
+| PATCH / DELETE | `/workspaces/{id}/sources/{source_id}` | analyst | Rename, change schedule, pause or resume; remove (imported data stays) |
+| POST | `/workspaces/{id}/sources/{source_id}/run` | analyst | Check the link now (202); runs in the background and imports only new orders |
+| GET | `/workspaces/{id}/sources/{source_id}/runs` | viewer | Recent checks with what each added |
+
+Uploads now return `column_mapping.remembered: true` (and `profile_name`) when the file's layout matches a mapping confirmed before.
 
 ### Analytics query parameters
 

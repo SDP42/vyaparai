@@ -19,7 +19,8 @@ each phase contains and its exit criteria.
 | 4 | Forecasting & predictive MVP | 7 | P0 | ✅ |
 | F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
 | — | **MVP release (end-to-end journey works)** | — | — | — |
-| 5 | Inventory & decision support | 8 | P1 | ⬜ |
+| 5 | Inventory & decision support | 8 | P1 | ✅ |
+| 5B | Festivals, regions and cricket | - | P1 | ✅ |
 | 6 | NLP review intelligence | 9 | P1 | ⬜ |
 | 7 | Document intelligence & RAG | 10 | P1 | ⬜ |
 | 8 | Vyapar Copilot & safe tool use | 11 | P1 | ⬜ |

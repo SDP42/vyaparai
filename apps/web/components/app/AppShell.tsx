@@ -12,6 +12,7 @@ const NAV = [
   { href: "/app", label: "Command center", icon: "◧", exact: true },
   { href: "/app/ask", label: "Ask", icon: "✦", exact: false },
   { href: "/app/alerts", label: "Alerts", icon: "!", exact: false },
+  { href: "/app/investigate", label: "Investigate", icon: "◇", exact: false },
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
   { href: "/app/products", label: "Products", icon: "◈", exact: false },

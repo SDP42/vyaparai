@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnalyticsProvider, WorkspaceProvider } from "@/components/app/AppContext";
 import { AppShell } from "@/components/app/AppShell";
-import { clearSession, loadSession, type Session } from "@/lib/session";
+import { loadSession, signOut as endSession, type Session } from "@/lib/session";
 
 /**
  * Gate for everything under /app.
@@ -26,8 +26,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   if (session.kind === "persona") return <>{children}</>;
 
   const signOut = () => {
-    clearSession();
-    router.push("/login");
+    void endSession().finally(() => router.push("/login"));
   };
   return (
     <WorkspaceProvider>

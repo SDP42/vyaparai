@@ -1,6 +1,6 @@
 "use client";
 
-import { API_URL, clearSession, loadSession } from "./session";
+import { API_URL, clearSession, ensureToken, loadSession, refreshAccessToken } from "./session";
 
 /** Error shape returned by the API: {"error": {code, message, details, request_id}}. */
 export class ApiError extends Error {
@@ -15,14 +15,20 @@ export class ApiError extends Error {
   }
 }
 
-function token(): string | null {
+async function token(): Promise<string | null> {
   const s = loadSession();
-  return s && s.kind === "account" ? s.token : null;
+  return s && s.kind === "account" ? ensureToken() : null;
+}
+
+function expired(): never {
+  clearSession();
+  if (typeof window !== "undefined") window.location.href = "/login";
+  throw new ApiError(401, "unauthenticated", "Your session has expired. Please sign in again.");
 }
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
-  const t = token();
+  let t = await token();
   if (t) headers.set("Authorization", `Bearer ${t}`);
   if (init.body && !(init.body instanceof FormData) && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
@@ -30,14 +36,18 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${API_URL}${path}`, { ...init, headers });
-  } catch {
+    if (res.status === 401 && t) {
+      // The 15-minute access token ran out: renew it once from the cookie and retry.
+      t = await refreshAccessToken();
+      if (!t) expired();
+      headers.set("Authorization", `Bearer ${t}`);
+      res = await fetch(`${API_URL}${path}`, { ...init, headers });
+    }
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
     throw new ApiError(0, "network", "Could not reach the Vyapar API. Is it running on port 8000?");
   }
-  if (res.status === 401) {
-    clearSession();
-    if (typeof window !== "undefined") window.location.href = "/login";
-    throw new ApiError(401, "unauthenticated", "Your session has expired. Please sign in again.");
-  }
+  if (res.status === 401) expired();
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     const e = body?.error;
@@ -49,7 +59,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 /** Download an authenticated file (e.g. the validation error CSV). */
 export async function download(path: string, filename: string) {
-  const res = await fetch(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${token() ?? ""}` } });
+  const res = await fetch(`${API_URL}${path}`, { headers: { Authorization: `Bearer ${(await token()) ?? ""}` } });
   if (!res.ok) throw new ApiError(res.status, "download_failed", "Could not download the file");
   const url = URL.createObjectURL(await res.blob());
   const a = document.createElement("a");

@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Licence policy: only free, properly licensed dependencies (docs/LICENSES.md).
 
 Allowed: permissive licences (MIT, BSD, Apache-2.0, ISC, PSF, Zlib, 0BSD, Unlicense, CC-BY for data) and

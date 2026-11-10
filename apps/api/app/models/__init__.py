@@ -11,6 +11,7 @@ from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.document import Document, DocumentChunk
 from app.models.forecast import ForecastRun, ForecastSeries
+from app.models.goal import Goal
 from app.models.inventory import InventorySetting, StockSnapshot
 from app.models.recommendation import Recommendation
 from app.models.report import SavedReport
@@ -39,6 +40,7 @@ __all__ = [
     "DocumentChunk",
     "ForecastRun",
     "ForecastSeries",
+    "Goal",
     "ImportSource",
     "InventorySetting",
     "Invitation",

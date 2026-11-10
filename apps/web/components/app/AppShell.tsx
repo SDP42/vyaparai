@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { Logo } from "@/components/landing/Nav";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
@@ -53,9 +53,17 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
       </span>
     ) : null;
   const active = (n: (typeof NAV)[number]) => (n.exact ? path === n.href : path.startsWith(n.href));
+  const strip = useRef<HTMLElement>(null);
+  // Keep the current page's chip visible when the phone nav is scrolled.
+  useEffect(() => {
+    strip.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [path]);
 
   return (
     <div className="min-h-dvh bg-canvas md:grid md:grid-cols-[232px_1fr]">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-fg focus:px-4 focus:py-2 focus:text-sm focus:text-canvas">
+        Skip to content
+      </a>
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line bg-surface p-5 md:flex">
         <Link href="/" aria-label="Vyapar AI home">
           <Logo />
@@ -121,17 +129,24 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
             <Link href="/" aria-label="Vyapar AI home">
               <Logo />
             </Link>
+            {workspaces.length > 1 && (
+              <select aria-label="Switch workspace" value={workspace.id} onChange={(e) => switchTo(e.target.value)} className="mx-2 min-w-0 max-w-[40%] truncate rounded-full border border-line bg-surface px-2 py-1 text-xs font-semibold">
+                {workspaces.map((w) => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            )}
             <button type="button" onClick={onSignOut} className="rounded-full border border-line px-3 py-1 text-xs text-muted">
               Sign out
             </button>
           </div>
-          <nav aria-label="App" className="flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <nav ref={strip} aria-label="App" className="flex snap-x gap-2 overflow-x-auto px-4 pb-2 [mask-image:linear-gradient(to_right,#000_92%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {NAV.map((n) => (
               <Link
                 key={n.href}
                 href={n.href}
                 aria-current={active(n) ? "page" : undefined}
-                className={`whitespace-nowrap rounded-full border px-3 py-1.5 text-xs ${
+                className={`inline-flex shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs ${
                   active(n) ? "border-fg bg-fg text-canvas" : "border-line text-fg/60"
                 }`}
               >
@@ -141,7 +156,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
             ))}
           </nav>
         </header>
-        <main className="mx-auto max-w-[1200px] px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+        <main id="main" tabIndex={-1} className="mx-auto max-w-[1200px] px-4 py-6 outline-none sm:px-8 sm:py-8">{children}</main>
       </div>
     </div>
   );

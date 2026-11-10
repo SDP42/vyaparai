@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { download } from "@/lib/api";
 import { longDate, num, useApi } from "@/lib/analytics";
@@ -59,7 +60,7 @@ export function CampaignsPage() {
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
         <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Campaigns</h1>
-        <p className="mt-1 text-sm text-muted">Pick a customer group, get a safe offer and ready-to-send messages. Nothing is sent from here: you review, then send it yourself.</p>
+        <p className="mt-1 text-sm text-muted">Pick a customer group, get a safe offer and ready-to-send messages. Nothing is sent from here: you review, then send it yourself. <Link href="/app/campaigns/runs" className="underline underline-offset-4">Record consent, send and measure →</Link></p>
       </header>
 
       <div className="rounded-2xl border border-haldi/50 bg-haldi/15 px-4 py-3 text-sm" role="note">

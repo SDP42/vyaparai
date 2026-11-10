@@ -55,3 +55,26 @@ class MemberRead(BaseModel):
     full_name: str
     role: WorkspaceRole
     joined_at: datetime
+
+
+class MemberRoleUpdate(BaseModel):
+    role: WorkspaceRole
+
+
+class InvitationCreate(BaseModel):
+    role: WorkspaceRole = WorkspaceRole.VIEWER
+
+
+class InvitationRead(BaseModel):
+    id: uuid.UUID
+    role: WorkspaceRole
+    expires_at: datetime
+    status: str  # pending | used | revoked | expired
+
+
+class InvitationCreated(InvitationRead):
+    token: str  # shown once, never stored
+
+
+class InvitationAccept(BaseModel):
+    token: str = Field(min_length=20, max_length=200)

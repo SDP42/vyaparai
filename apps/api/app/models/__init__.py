@@ -7,6 +7,7 @@ from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.inventory import InventorySetting, StockSnapshot
+from app.models.session import Invitation, RefreshToken
 from app.models.source import ImportSource, MappingProfile, SourceRun
 from app.models.user import User
 from app.models.weather import WeatherDaily
@@ -24,6 +25,7 @@ __all__ = [
     "ForecastSeries",
     "ImportSource",
     "InventorySetting",
+    "Invitation",
     "Job",
     "JobStatus",
     "JobType",
@@ -33,6 +35,7 @@ __all__ = [
     "OrderItem",
     "OrderStatus",
     "Product",
+    "RefreshToken",
     "SourceRun",
     "StockSnapshot",
     "User",

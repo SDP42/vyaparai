@@ -1,5 +1,6 @@
 """Import every model here so Alembic autogenerate and ``Base.metadata`` see them."""
 
+from app.models.agent import AgentRun, AgentStep
 from app.models.alert import Alert
 from app.models.audit import AuditLog
 from app.models.bill import PurchaseBill, PurchaseBillLine
@@ -18,6 +19,8 @@ from app.models.weather import WeatherDaily
 from app.models.workspace import Membership, Workspace, WorkspaceRole
 
 __all__ = [
+    "AgentRun",
+    "AgentStep",
     "Alert",
     "AuditLog",
     "CreditEntry",

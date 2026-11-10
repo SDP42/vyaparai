@@ -21,6 +21,7 @@ dependencies = [
     "rapidocr-onnxruntime>=1.4.4",
     "pypdfium2>=5.15.2",
     "fastembed>=0.9.1",
+    "langgraph>=1.2.20",
 ]
 
 [dependency-groups]
@@ -66,6 +67,8 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 "app/services/assistant/*.py" = ["E501"]
 "app/services/docs/*.py" = ["E501"]
 "app/services/credit.py" = ["E501"]
+"app/services/agents/*.py" = ["E501"]
+"app/api/v1/endpoints/agents.py" = ["E501"]
 "app/api/v1/endpoints/udhaar.py" = ["E501"]
 "app/models/document.py" = ["E501"]
 "app/api/v1/endpoints/documents.py" = ["E501"]
@@ -99,5 +102,5 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [[tool.mypy.overrides]]
-module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*"]
+module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*", "langgraph", "langgraph.*"]
 ignore_missing_imports = true

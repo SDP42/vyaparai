@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    agents,
     alerts,
     analytics,
     assistant,
@@ -35,6 +36,7 @@ api_router.include_router(workspaces.router)
 api_router.include_router(workspaces.join_router)
 api_router.include_router(datasets.router)
 api_router.include_router(analytics.router)
+api_router.include_router(agents.router)
 api_router.include_router(alerts.router)
 api_router.include_router(intelligence.router)
 api_router.include_router(forecasts.router)

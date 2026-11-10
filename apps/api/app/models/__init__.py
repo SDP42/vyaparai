@@ -11,6 +11,7 @@ from app.models.digest import Digest, DigestSettings
 from app.models.document import Document, DocumentChunk
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.inventory import InventorySetting, StockSnapshot
+from app.models.recommendation import Recommendation
 from app.models.review import Review
 from app.models.session import Invitation, RefreshToken
 from app.models.source import ImportSource, MappingProfile, SourceRun
@@ -47,6 +48,7 @@ __all__ = [
     "Product",
     "PurchaseBill",
     "PurchaseBillLine",
+    "Recommendation",
     "RefreshToken",
     "Review",
     "SourceRun",

@@ -23,6 +23,7 @@ from app.services.analytics import service as analytics
 from app.services.analytics.types import Filters
 from app.services.assistant.tools import inr
 from app.services.bills import service as bills
+from app.services.recommend import service as recommend
 from app.services.reviews import service as reviews
 
 D = Decimal
@@ -353,7 +354,80 @@ def investigate_sales(
     return res
 
 
+def weekly_review(
+    db: Session, workspace: Workspace, rec: Recorder, params: dict[str, Any]
+) -> dict[str, Any]:
+    """What to do this week: refresh every signal, then list the top suggestions with their reasons."""
+
+    def refresh(s: State) -> dict[str, Any]:
+        r = recommend.refresh(db, workspace)
+        return {
+            "facts": {**s.get("facts", {}), "refresh": r},
+            "notes": [f"A signal could not be read: {e}" for e in r["errors"]],
+        }
+
+    def alerts(s: State) -> dict[str, Any]:
+        c = alert_service.counts(db, workspace.id)
+        return {"facts": {**s["facts"], "alerts": c}}
+
+    def rank(s: State) -> dict[str, Any]:
+        top = recommend.listing(db, workspace.id, "proposed")[:5]
+        fs = [_find("measured" if r.impact.get("measured") else "context", r.title, r.why, min(1.0, r.score / 10000) if r.score else 0.1,
+                    [(e["label"], e["value"], e["source"]) for e in r.evidence[:4]]) for r in top]  # fmt: skip
+        return {"findings": fs, "facts": {**s["facts"], "top": [r.title for r in top]}}
+
+    def conclude(s: State) -> dict[str, Any]:
+        facts, f = s["facts"], s.get("findings", [])
+        al = facts.get("alerts", {})
+        if not f:
+            summary = "Nothing needs your action this week."
+        else:
+            summary = (
+                f"{len(f)} things to do this week, most valuable first: "
+                + "; ".join(x["title"] for x in f[:3])
+                + "."
+            )
+        if al.get("high"):
+            summary += f" {al['high']} alerts need attention."
+        return {"result": {"summary": summary, "findings": f, "facts": facts, "notes": s.get("notes", []),
+                           "caveat": "Impact figures are estimates with stated assumptions, not promises. Approve what you will actually do on the Recommendations page."}}  # fmt: skip
+
+    g = StateGraph(State)
+    for name, fn in [
+        ("refresh", refresh),
+        ("alerts", alerts),
+        ("rank", rank),
+        ("conclude", conclude),
+    ]:
+        wrapped: Any = traced(
+            rec,
+            name,
+            fn,
+            lambda o: f"{len(o.get('findings', []))} findings" if "findings" in o else "",
+        )
+        g.add_node(name, wrapped)
+    g.set_entry_point("refresh")
+    for a, b in pairwise(["refresh", "alerts", "rank", "conclude"]):
+        g.add_edge(a, b)
+    g.add_edge("conclude", END)
+    out = g.compile().invoke(
+        {"params": params, "facts": {}, "findings": [], "notes": []}, config={"recursion_limit": 20}
+    )
+    res: dict[str, Any] = out.get("result") or {
+        "summary": "The workflow stopped before it could conclude.",
+        "findings": [],
+        "notes": out.get("notes", []),
+    }
+    return res
+
+
 WORKFLOWS: dict[str, dict[str, Any]] = {
+    "weekly_review": {
+        "title": "What should I do this week?",
+        "about": "Reads every signal (stock, margins, udhaar, festivals, customers, supplier prices), refreshes the recommendations and lists the top five with reasons.",
+        "params": [],
+        "run": weekly_review,
+    },
     "investigate_sales": {
         "title": "Why did sales change?",
         "about": "Compares a period with the one before, splits the change into effects, finds the products behind it, then checks stock, costs, discounts, festivals, reviews and customers.",

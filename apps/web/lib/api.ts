@@ -99,7 +99,7 @@ export type Dataset = {
   file_size_bytes: number | null;
   row_count: number | null;
   status: DatasetStatus;
-  column_mapping: { fields: Record<string, string>; date_order?: "dmy" | "mdy" | "ymd" } | null;
+  column_mapping: { fields: Record<string, string>; date_order?: "dmy" | "mdy" | "ymd"; remembered?: boolean; profile_name?: string } | null;
   created_at: string;
   inspection?: Inspection | null;
   validation?: ValidationSummary | null;

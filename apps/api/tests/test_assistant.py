@@ -41,6 +41,7 @@ QUESTIONS = [
     ("who owes me money", "udhaar"), ("udhaar kitna baaki hai", "udhaar"), ("outstanding dues from customers", "udhaar"), ("उधार कितना बाकी है", "udhaar"),
     ("what should I do this week", "recommend"), ("any suggestions for my shop", "recommend"), ("is hafte kya karna chahiye", "recommend"),
     ("did my discounts work", "pricing"), ("are discounts paying off", "pricing"), ("discount se fayda hua kya", "pricing"),
+    ("am I on track for my target", "goals"), ("will I reach my goal this month", "goals"), ("mera lakshya poora hoga", "goals"),
     ("hello", "help"), ("help", "help"), ("what can you do", "help"), ("namaste", "help"),
     ("asdf qwerty", "unknown"), ("what is the capital of France", "unknown"), ("tell me a joke", "unknown"),
 ]  # fmt: skip

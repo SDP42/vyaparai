@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.models.user import User
 from app.services import alerts as alert_service
-from app.services import credit, inventory
+from app.services import credit, goals, inventory
 from app.services import workspaces as workspace_service
 from app.services.analytics import queries as q
 from app.services.analytics import service as analytics
@@ -57,6 +57,7 @@ def _store(
         "margin_pct": _num(k["gross_margin"]["value"]), "discount_rate": _num(k["discount_rate"]["value"]), "active_customers": _num(k["active_customers"]["value"]),
         "urgent_stock": int(inv["urgent"]) if inv["tracked"] else None, "udhaar_overdue": float(ud["overdue"]) if ud["has_data"] else None,
         "high_alerts": alerts.get("high", 0),
+        "goals_behind": sum(1 for g in goals.listing(db, ws, today) if g["status"] in {"behind", "at_risk"}),
     }  # fmt: skip
     return out
 
@@ -91,6 +92,8 @@ def overview(
             )
         if s["udhaar_overdue"] and s["udhaar_overdue"] >= 20000:
             s["flags"].append(f"₹{int(s['udhaar_overdue']):,} of udhaar is over 30 days old")
+        if s.get("goals_behind"):
+            s["flags"].append(f"{s['goals_behind']} goals are behind or at risk")
         if s["high_alerts"]:
             s["flags"].append(f"{s['high_alerts']} alerts need attention")
     dates = {s["to"] for s in withdata}

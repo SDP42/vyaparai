@@ -54,6 +54,11 @@ def build(intent: str, r: tools.Result) -> list[dict[str, str]]:
         e = [("Period", _span(f), "date range used"), ("Gross margin", f"{float(f['margin_pct']):.1f}%", "metric:gross_margin@v1"), ("Margin leaks", str(f["leaks"]), "costs:leaks")]  # fmt: skip
     elif intent == "udhaar":
         e = [("Total owed", inr(f["outstanding"]), "udhaar:ledger"), ("Older than 30 days", inr(f["overdue"]), "udhaar:FIFO ageing"), ("People owing", str(f["parties"]), "udhaar:ledger")]  # fmt: skip
+    elif intent == "goals":
+        e = [("Goals", str(f["count"]), "goals")] + [
+            (x["goal"], f"{x['status']}, {x['progress']}", "goals:pace and projection")
+            for x in r.rows
+        ]
     elif intent == "pricing":
         e = [
             ("Products judged", str(f["judged"]), "pricing:discounts"),

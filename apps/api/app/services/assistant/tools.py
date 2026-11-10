@@ -290,6 +290,19 @@ def pricing_summary(db: Session, workspace: Workspace) -> Result:
     )  # fmt: skip
 
 
+def goals_summary(db: Session, workspace: Workspace) -> Result:
+    from app.services import goals as goal_service
+
+    gs = goal_service.listing(db, workspace, date.today())
+    if not gs:
+        return Result(empty=True, link="/app/goals", note="No goals set.")
+    return Result(
+        facts={"count": len(gs), "behind": sum(g["status"] in {"behind", "at_risk"} for g in gs), "ok": sum(g["status"] in {"on_track", "achieved", "met"} for g in gs)},
+        rows=[{"goal": g["name"], "status": g["status"].replace("_", " "), "progress": f"{g.get('progress_pct', 0):.0f}%" if g.get("progress_pct") is not None else "–"} for g in gs[:4]],
+        link="/app/goals",
+    )  # fmt: skip
+
+
 def find_product(db: Session, ws: uuid.UUID, text: str) -> Product | None:
     """A product named in the question (best fuzzy match above a safe threshold)."""
     from app.services.bills.service import match_score

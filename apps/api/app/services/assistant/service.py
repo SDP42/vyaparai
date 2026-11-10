@@ -52,6 +52,7 @@ def _run(
         "festival": lambda: tools.festivals(db, ws),
         "udhaar": lambda: tools.udhaar(db, ws),
         "recommend": lambda: tools.recommendations(db, ws),
+        "goals": lambda: tools.goals_summary(db, ws),
         "pricing": lambda: tools.pricing_summary(db, ws),
     }.get(i, lambda: None)()
 

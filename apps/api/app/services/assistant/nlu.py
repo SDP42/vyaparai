@@ -298,6 +298,8 @@ INTENTS["pricing"] = {
     "डिस्काउंट",
 }
 
+INTENTS["goals"] = {"goal", "goals", "target", "targets", "lakshya", "लक्ष्य", "tark"}
+
 # Hindi (Devanagari) forms added after the first evaluation run.
 INTENTS["stock"] |= {"मंगवाना", "मंगवाओ", "मंगाना", "मंगवाएं"}
 INTENTS["alerts"] |= {"अलर्ट", "अलर्ट्स"}
@@ -341,6 +343,12 @@ PHRASES.append(
     (
         r"did\s+(?:my\s+)?(?:discounts?|offers?)|discounts?\s+(?:work|pay|help)|worth\s+discount|raise\s+my\s+prices?|safe\s+to\s+(?:raise|increase)|discount\s+se\s+fayda|chhoot\s+se\s+fayda",
         "pricing",
+    )
+)
+PHRASES.append(
+    (
+        r"on\s+track|hit\s+my\s+(?:target|goal)|reach\s+my\s+(?:target|goal)|will\s+i\s+(?:reach|hit|make)|target\s+poora|goal\s+poora|lakshya\s+poora|लक्ष्य",
+        "goals",
     )
 )
 PHRASES.append(

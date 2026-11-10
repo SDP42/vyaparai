@@ -240,3 +240,24 @@ def test_an_item_with_no_honest_metric_says_so(client: TestClient, ws, monkeypat
     db.commit()
     _refresh(client, h, wid)
     assert _list(client, h, wid, "done")[0]["outcome"]["verdict"] == "not_measurable"
+
+
+def test_a_goal_that_is_behind_becomes_a_recommendation_without_an_invented_impact(
+    monkeypatch,
+) -> None:
+    from types import SimpleNamespace
+    from uuid import uuid4
+
+    fake = {"id": "g1", "name": "October sales", "status": "behind", "kind": "cumulative", "unit": "inr", "target": 100000.0, "value": 40000.0, "pace": 0.8, "needed_per_day": 4000.0,
+            "projection": {"low": 70000.0, "expected": 80000.0, "high": 90000.0, "recent_daily": 3000.0}}  # fmt: skip
+    monkeypatch.setattr(
+        candidates.goals,
+        "listing",
+        lambda *a, **k: [fake, {**fake, "id": "g2", "status": "on_track"}],
+    )
+    out = candidates.goal_gaps(None, SimpleNamespace(id=uuid4()), TODAY)  # type: ignore[arg-type]
+    assert len(out) == 1
+    assert out[0]["kind"] == "goal_gap"
+    assert out[0]["impact"]["expected"] is None  # no number is made up
+    assert "₹4,000 a day" in out[0]["why"]
+    assert "₹70,000 to ₹90,000" in out[0]["why"]

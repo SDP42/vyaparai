@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.models.commerce import Product
 from app.models.workspace import Workspace
 from app.services import alerts as alert_service
-from app.services import credit, events_insight, inventory, pricing
+from app.services import credit, events_insight, goals, inventory, pricing
 from app.services.analytics import intelligence
 from app.services.assistant.tools import inr
 from app.services.bills import service as bills
@@ -211,7 +211,24 @@ def price_tests(db: Session, ws: Workspace, today: date) -> list[dict[str, Any]]
     return out
 
 
+def goal_gaps(db: Session, ws: Workspace, today: date) -> list[dict[str, Any]]:
+    out = []
+    for g in goals.listing(db, ws, today)[:6]:
+        if g["status"] not in {"behind", "at_risk"} or g.get("kind") != "cumulative":
+            continue
+        proj = g["projection"]
+        money = g["unit"] == "inr"
+        fmt = inr if money else (lambda x: f"{float(x):,.0f}")
+        out.append(_cand(
+            f"goal|{g['id']}", "goal_gap", f"{'Behind' if g['status'] == 'behind' else 'At risk on'} your goal: {g['name']}",
+            f"You need {fmt(g['needed_per_day'])} a day for the rest of the period; the last four weeks averaged {fmt(proj['recent_daily'])}. Likely finish {fmt(proj['low'])} to {fmt(proj['high'])} against a target of {fmt(g['target'])}.",
+            [("So far", fmt(g["value"]), "goals:metric to date"), ("Target", fmt(g["target"]), "goals"), ("Pace", f"{g['pace']}x", "goals:progress / time gone")],
+            _impact(None, None, None, "Not estimated: it depends on which action you take", [], False), "M", "medium", "/app/goals"))  # fmt: skip
+    return out
+
+
 GENERATORS = [
+    goal_gaps,
     reorder,
     margin_leaks,
     udhaar,

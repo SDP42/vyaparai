@@ -279,6 +279,17 @@ def pricing(lang: str, r: tools.Result) -> str:
     )
 
 
+def goals(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    worst = r.rows[0]
+    return _pick(
+        lang,
+        f"You have {f['count']} goals: {f['ok']} on track or reached, {f['behind']} behind or at risk. Most in need of attention: {worst['goal']} ({worst['status']}, {worst['progress']} of target).",
+        f"Aapke {f['count']} goal hain: {f['ok']} sahi raste par ya poore, {f['behind']} peeche ya khatre mein. Sabse pehle dhyan: {worst['goal']} ({worst['status']}, target ka {worst['progress']}).",
+        f"आपके {f['count']} लक्ष्य हैं: {f['ok']} सही रास्ते पर या पूरे, {f['behind']} पीछे या खतरे में। सबसे पहले ध्यान: {worst['goal']} ({worst['status']}, लक्ष्य का {worst['progress']})।",
+    )
+
+
 HELP = {
     "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”, “who owes me money?”.",
     "hinglish": "Main sirf aapke apne numbers se jawab deta hoon. Poochiye: “pichle hafte ki bikri”, “sales kyun gir gayi”, “top 5 products”, “kya mangwana hai”, “dead stock”, “agle hafte ka forecast”, “koi alert?”, “margin”, “supplier ka price”, “reviews”, “aane wale tyohar”.",
@@ -294,6 +305,11 @@ EMPTY_HINT = {
         "Add a few months of sales with discounts.",
         "Kuch mahine ki bikri (chhoot ke saath) daalein.",
         "कुछ महीनों की बिक्री (छूट के साथ) डालें।",
+    ),
+    "goals": (
+        "Set a goal on the Goals page.",
+        "Goals page par goal set karein.",
+        "लक्ष्य पेज पर लक्ष्य तय करें।",
     ),
     "udhaar": (
         "Add your udhaar ledger on the Udhaar page.",
@@ -329,6 +345,6 @@ EMPTY = {
 BUILD = {
     "sales": sales, "why": why, "top_products": lambda lg, r: products(lg, r), "slow_products": lambda lg, r: products(lg, r),
     "customers": customers, "stock": stock, "dead_stock": dead_stock, "forecast": forecast, "alerts": alerts,
-    "margin": margin, "udhaar": udhaar, "pricing": pricing, "recommend": recommend,
+    "margin": margin, "udhaar": udhaar, "pricing": pricing, "goals": goals, "recommend": recommend,
     "product_sales": product_sales, "product_stock": product_stock, "product_forecast": product_forecast, "supplier": supplier, "reviews": reviews, "festival": festivals,
 }  # fmt: skip

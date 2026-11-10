@@ -269,3 +269,99 @@ def find_product(db: Session, ws: uuid.UUID, text: str) -> Product | None:
         if s > best:
             best, hit = s, p
     return hit if best >= 0.5 else None
+
+
+# ------------------------------------------------------------------ product-specific tools
+
+_NAME_STOP = {
+    "the",
+    "of",
+    "and",
+    "pack",
+    "for",
+    "with",
+    "in",
+    "a",
+    "kg",
+    "g",
+    "gm",
+    "ml",
+    "l",
+    "ltr",
+    "litre",
+}
+
+
+def _stem(t: str) -> str:
+    return t[:-1] if len(t) > 4 and t.endswith("s") else t
+
+
+def find_product_in_text(db: Session, ws: uuid.UUID, text: str) -> Product | None:
+    """A product named in the question: its distinctive words must all (or mostly) appear."""
+    import re
+
+    qt = {_stem(t) for t in re.findall(r"[a-z0-9]+", text.lower())}
+    best: tuple[float, int, Product] | None = None
+    for p in db.scalars(select(Product).where(Product.workspace_id == ws)):
+        if p.sku.lower() in text.lower().split():
+            return p
+        words = [
+            _stem(t)
+            for t in re.findall(r"[a-z0-9]+", p.name.lower())
+            if t not in _NAME_STOP and not t.isdigit()
+        ]
+        if not words:
+            continue
+        hit = [w for w in words if w in qt]
+        frac = len(hit) / len(words)
+        if not hit or max(len(w) for w in hit) < 4:
+            continue
+        need = 1.0 if len(words) <= 2 else 0.6
+        if frac >= need and (best is None or (frac, len(hit)) > best[:2]):
+            best = (frac, len(hit), p)
+    return best[2] if best else None
+
+
+def product_sales(db: Session, workspace: Workspace, period: Period | None, p: Product) -> Result:
+    import dataclasses
+
+    f, note = _filters(db, workspace.id, period)
+    if f is None:
+        return Result(empty=True, note=note, link="/app/data")
+    f = dataclasses.replace(f, skus=(p.sku,))
+    ov = analytics.overview(db, workspace, f, "previous_period")
+    k = {x["key"]: x for x in ov["headline"] + ov["secondary"]}
+    return Result(
+        facts={"name": p.name, "net_sales": k["net_sales"]["value"], "change_pct": k["net_sales"]["change_pct"],
+               "units": k["units"]["value"], "margin": k["gross_margin"]["value"],
+               "start": f.date_from, "end": f.date_to},
+        link="/app/products", note=note, period=(f.date_from, f.date_to),
+    )  # fmt: skip
+
+
+def product_stock(db: Session, workspace: Workspace, p: Product) -> Result:
+    ov = inventory.overview(db, workspace)
+    item = next((i for i in ov["items"] if i["sku"] == p.sku), None)
+    if item is None:
+        return Result(empty=True, link="/app/inventory", note="No stock count for this product.")
+    return Result(
+        facts={"name": p.name, "cover_days": item["cover_days"], "status": item["status"],
+               "order_qty": item["order_qty"], "lead_time": item["lead_time_days"], "reason": item["reason"]},
+        link="/app/inventory",
+    )  # fmt: skip
+
+
+def product_forecast(db: Session, workspace: Workspace, p: Product) -> Result:
+    run = forecasting.latest_run(db, workspace.id)
+    if run is None:
+        return Result(empty=True, link="/app/forecasts", note="No forecast has been built yet.")
+    try:
+        d = forecasting.product_detail(db, run, p.sku)
+    except Exception:
+        return Result(empty=True, link="/app/forecasts", note="No forecast for this product.")
+    return Result(
+        facts={"name": p.name, "units_next": d["units_next"], "low": d["units_next_low"], "high": d["units_next_high"],
+               "units_last": d["units_last"], "change_pct": d["change_pct"], "confidence": d["confidence"],
+               "wape": d["backtest_wape"], "horizon": run.horizon},
+        link="/app/forecasts",
+    )  # fmt: skip

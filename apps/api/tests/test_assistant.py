@@ -176,3 +176,86 @@ def test_unanswerable_by_numbers_falls_back_to_documents(client: TestClient, sho
     assert "3 days" in a["answer"]
     assert "return policy" in a["rows"][0]["source"].lower()
     assert ask(client, shop, "what is the capital of France")["intent"] in {"unknown", "documents"}
+
+
+# ------------------------------------------------------------------ copilot: products, follow-ups, evidence, streaming
+
+
+def test_product_questions_are_answered_for_that_product(client: TestClient, shop) -> None:
+    a = ask(client, shop, "how is Weekly selling")
+    assert a["intent"] == "product_sales"
+    assert a["context"]["product"]["name"] == "Weekly"
+    assert "Weekly" in a["answer"]
+    assert any(
+        e["label"] == "Net sales" and "filtered to product" in e["source"] for e in a["evidence"]
+    )
+    s = ask(client, shop, "stock of Steady")
+    assert s["intent"] == "product_stock"
+    f = ask(client, shop, "forecast for Rare next week")
+    assert f["intent"] in {"product_forecast", "forecast"}
+
+
+def test_product_numbers_match_the_filtered_dashboard(client: TestClient, shop) -> None:
+    h, ws = shop
+    a = ask(client, shop, "sales of Weekly last 30 days")
+    assert a["intent"] == "product_sales"
+    p = a["period"]
+    ov = client.get(
+        f"/api/v1/workspaces/{ws}/analytics/overview?from={p['start']}&to={p['end']}&sku=SKU-A",
+        headers=h,
+    ).json()
+    net = next(k for k in ov["headline"] if k["key"] == "net_sales")["value"]
+    assert inr(net) in a["answer"]
+
+
+def test_follow_up_questions_reuse_the_previous_context(client: TestClient, shop) -> None:
+    first = ask(client, shop, "top 3 products last 30 days")
+    h, ws = shop
+    r = client.post(
+        f"/api/v1/workspaces/{ws}/assistant/ask",
+        json={"question": "and Weekly?", "context": first["context"]},
+        headers=h,
+    ).json()
+    assert r["follow_up"] is True
+    assert r["intent"] == "product_sales" or r["intent"] == "sales"
+    s1 = ask(client, shop, "sales last 30 days")
+    r2 = client.post(
+        f"/api/v1/workspaces/{ws}/assistant/ask",
+        json={"question": "what about last 7 days", "context": s1["context"]},
+        headers=h,
+    ).json()
+    assert r2["follow_up"] is True
+    assert r2["intent"] == "sales"
+    assert r2["period"]["label"] == "last 7 days"
+    # without context the same words are not guessed at
+    assert ask(client, shop, "what about last 7 days")["follow_up"] is False
+
+
+def test_every_answer_lists_where_its_numbers_come_from(client: TestClient, shop) -> None:
+    for q in [
+        "sales last 30 days",
+        "why did sales change",
+        "top 3 products",
+        "next week forecast",
+        "who owes me money",
+        "any alerts",
+    ]:
+        a = ask(client, shop, q)
+        if a["grounded"] and a["evidence"]:
+            assert all(e["label"] and e["value"] and e["source"] for e in a["evidence"])
+    assert ask(client, shop, "sales last 30 days")["evidence"]
+
+
+def test_stream_sends_steps_then_answer(client: TestClient, shop) -> None:
+    h, ws = shop
+    r = client.post(
+        f"/api/v1/workspaces/{ws}/assistant/stream",
+        json={"question": "sales last 30 days"},
+        headers=h,
+    )
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/event-stream")
+    names = [ln.split(": ", 1)[1] for ln in r.text.splitlines() if ln.startswith("event: ")]
+    assert names[0] == "step"
+    assert names[-3:] == ["answer", "evidence", "done"]
+    assert names.count("step") >= 3

@@ -218,6 +218,46 @@ def udhaar(lang: str, r: tools.Result) -> str:
     )
 
 
+def product_sales(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    ch = f["change_pct"]
+    tail_en = f", {pct(ch)} against the period before" if ch is not None else ""
+    tail_h = f"; pichhle period se {pct(ch)}" if ch is not None else ""
+    tail_hi = f"; पिछली अवधि से {pct(ch)}" if ch is not None else ""
+    m = f" Margin {float(f['margin']):.1f}%." if f["margin"] is not None else ""
+    return _pick(
+        lang,
+        f"{f['name']}: {inr(f['net_sales'])} net sales and {float(f['units']):.0f} units in {_span(f)}{tail_en}.{m}",
+        f"{f['name']}: {_span(f)} mein {inr(f['net_sales'])} net bikri aur {float(f['units']):.0f} units{tail_h}.{m}",
+        f"{f['name']}: {_span(f)} में {inr(f['net_sales'])} नेट बिक्री और {float(f['units']):.0f} यूनिट{tail_hi}।",
+    )
+
+
+def product_stock(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    cover = "no recent demand" if f["cover_days"] is None else f"{f['cover_days']} days of cover"
+    cover_h = (
+        "haal mein koi maang nahi" if f["cover_days"] is None else f"{f['cover_days']} din ka stock"
+    )
+    cover_hi = "हाल में कोई मांग नहीं" if f["cover_days"] is None else f"{f['cover_days']} दिन का स्टॉक"
+    return _pick(
+        lang,
+        f"{f['name']}: {cover} (status: {f['status']}). Delivery takes about {f['lead_time']} days. Suggested order: {f['order_qty']} units.",
+        f"{f['name']}: {cover_h} (status: {f['status']}). Maal aane mein lagbhag {f['lead_time']} din. Suggested order: {f['order_qty']} units.",
+        f"{f['name']}: {cover_hi} (स्थिति: {f['status']})। माल आने में लगभग {f['lead_time']} दिन। सुझाया ऑर्डर: {f['order_qty']} यूनिट।",
+    )
+
+
+def product_forecast(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    return _pick(
+        lang,
+        f"{f['name']}: about {f['units_next']:.0f} units in the next {f['horizon']} days (likely {f['low']:.0f} to {f['high']:.0f}), {pct(f['change_pct'])} vs the last {f['horizon']} days. Model confidence: {f['confidence']}.",
+        f"{f['name']}: agle {f['horizon']} din mein lagbhag {f['units_next']:.0f} units ({f['low']:.0f} se {f['high']:.0f}), pichhle {f['horizon']} din se {pct(f['change_pct'])}. Model ka bharosa: {f['confidence']}.",
+        f"{f['name']}: अगले {f['horizon']} दिन में लगभग {f['units_next']:.0f} यूनिट ({f['low']:.0f} से {f['high']:.0f}), पिछले {f['horizon']} दिन से {pct(f['change_pct'])}। मॉडल का भरोसा: {f['confidence']}।",
+    )
+
+
 HELP = {
     "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”, “who owes me money?”.",
     "hinglish": "Main sirf aapke apne numbers se jawab deta hoon. Poochiye: “pichle hafte ki bikri”, “sales kyun gir gayi”, “top 5 products”, “kya mangwana hai”, “dead stock”, “agle hafte ka forecast”, “koi alert?”, “margin”, “supplier ka price”, “reviews”, “aane wale tyohar”.",
@@ -263,5 +303,6 @@ EMPTY = {
 BUILD = {
     "sales": sales, "why": why, "top_products": lambda lg, r: products(lg, r), "slow_products": lambda lg, r: products(lg, r),
     "customers": customers, "stock": stock, "dead_stock": dead_stock, "forecast": forecast, "alerts": alerts,
-    "margin": margin, "udhaar": udhaar, "supplier": supplier, "reviews": reviews, "festival": festivals,
+    "margin": margin, "udhaar": udhaar,
+    "product_sales": product_sales, "product_stock": product_stock, "product_forecast": product_forecast, "supplier": supplier, "reviews": reviews, "festival": festivals,
 }  # fmt: skip

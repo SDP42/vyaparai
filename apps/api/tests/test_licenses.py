@@ -60,9 +60,16 @@ def test_python_dependencies_are_free_and_permissive() -> None:
     assert not bad, f"Disallowed licences: {bad}. See docs/LICENSES.md for the policy."
 
 
+# Packages whose metadata has no licence field but whose bundled LICENSE file was read (MIT).
+LICENCE_FILE_REVIEWED = {"py-rust-stemmers"}
+
+
 def test_every_python_package_declares_a_licence() -> None:
     missing = [
-        d.metadata["Name"] for d in metadata.distributions() if not _text(d.metadata).strip()
+        d.metadata["Name"]
+        for d in metadata.distributions()
+        if not _text(d.metadata).strip()
+        and d.metadata["Name"].lower().replace("_", "-") not in LICENCE_FILE_REVIEWED
     ]
     assert not missing, f"No licence information for: {missing}"
 

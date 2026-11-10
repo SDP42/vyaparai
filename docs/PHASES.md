@@ -32,7 +32,7 @@ each phase contains and its exit criteria.
 | 14 | Alerts and anomalies (rules, lifecycle, sidebar badge, digest link; [notes](research/ALERTS.md)) | - | P1 | ✅ |
 | 15 | Connectors and scheduled imports (remembered mappings, connected links, safe fetch, scheduled runner; [notes](research/CONNECTORS.md)) | - | P1 | ✅ |
 | 15B | Cost history and margin-leak tracking (**done** from per-sale costs, with price suggestions; purchase-bill import **done**, see [BILLS](BILLS.md); [plan](research/COST-TRACKING.md)) | - | P1 | ✅ |
-| 16 | Pricing and promotion advisor | - | P2 | ⬜ |
+| 16 | Pricing and promotion advisor ([notes](PRICING.md)) | - | P2 | ✅ |
 | 17 | Multi-store and staff | - | P2 | ⬜ |
 | 18 | Mobile-first (PWA) and Hinglish/Hindi | - | P1 | ⬜ |
 | 19 | Benchmarks and goals | - | P2 | ⬜ |

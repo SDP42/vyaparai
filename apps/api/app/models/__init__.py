@@ -4,6 +4,7 @@ from app.models.agent import AgentRun, AgentStep
 from app.models.alert import Alert
 from app.models.audit import AuditLog
 from app.models.bill import PurchaseBill, PurchaseBillLine
+from app.models.campaign import Campaign, CampaignRecipient, CustomerContact
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.credit import CreditEntry
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
@@ -25,8 +26,11 @@ __all__ = [
     "AgentStep",
     "Alert",
     "AuditLog",
+    "Campaign",
+    "CampaignRecipient",
     "CreditEntry",
     "Customer",
+    "CustomerContact",
     "Dataset",
     "DatasetStatus",
     "Digest",

@@ -30,8 +30,8 @@ ASSUMPTION = (
     "what the campaign really achieves."
 )
 CONSENT_NOTE = (
-    "Only message customers who agreed to hear from you on that channel. Consent is not recorded "
-    "in Vyapar AI yet, so check it yourself and honour every STOP reply."
+    "Only message customers who agreed to hear from you. Record consent, with how and when, on the "
+    "Campaigns > Consent page; a STOP is final until the customer agrees again."
 )
 
 

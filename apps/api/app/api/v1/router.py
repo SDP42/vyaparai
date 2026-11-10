@@ -7,6 +7,7 @@ from app.api.v1.endpoints import (
     assistant,
     auth,
     bills,
+    campaign_runs,
     campaigns,
     costs,
     datasets,
@@ -48,6 +49,7 @@ api_router.include_router(sources.router)
 api_router.include_router(events.router)
 api_router.include_router(inventory.router)
 api_router.include_router(campaigns.router)
+api_router.include_router(campaign_runs.router)
 api_router.include_router(costs.router)
 api_router.include_router(digests.router)
 api_router.include_router(weather.router)

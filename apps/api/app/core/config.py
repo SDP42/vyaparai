@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     jwt_secret_key: str = DEV_JWT_SECRET
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
+    campaign_daily_cap: int = (
+        100  # messages a person may send from one workspace in a day, to keep it polite
+    )
     refresh_token_days: int = 14  # idle timeout: each refresh extends it
     session_max_days: int = 30  # absolute timeout for one sign-in, however active
     refresh_cookie_name: str = "vyapar_refresh"

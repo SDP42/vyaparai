@@ -1,0 +1,333 @@
+[
+ {
+  "q": "How many days do I have to pay the Ganesh Traders invoice?",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "21 days"
+ },
+ {
+  "q": "Is there a discount for early payment to the supplier",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "2 percent"
+ },
+ {
+  "q": "minimum order for free delivery",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "15,000"
+ },
+ {
+  "q": "What is the delivery charge below the minimum order?",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "400"
+ },
+ {
+  "q": "Supplier delivers on Sundays?",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "Sundays"
+ },
+ {
+  "q": "what do I do if packs arrive leaking",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "24 hours"
+ },
+ {
+  "q": "Can a customer return an opened packet?",
+  "doc": "return_policy_shop.txt",
+  "must": "Opened"
+ },
+ {
+  "q": "how long for UPI refund",
+  "doc": "return_policy_shop.txt",
+  "must": "2 working days"
+ },
+ {
+  "q": "replacement window for electronics",
+  "doc": "return_policy_shop.txt",
+  "must": "7 day"
+ },
+ {
+  "q": "Can loose rice be returned?",
+  "doc": "return_policy_shop.txt",
+  "must": "Loose items"
+ },
+ {
+  "q": "what happens when the customer has no bill for a refund",
+  "doc": "return_policy_shop.txt",
+  "must": "Store credit"
+ },
+ {
+  "q": "What time do we open and what is the cash float?",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "5,000"
+ },
+ {
+  "q": "freezer temperature limit",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "minus 18"
+ },
+ {
+  "q": "what to do with cash above 20000 at closing",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "locker"
+ },
+ {
+  "q": "cash difference reporting limit",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "Rs 200"
+ },
+ {
+  "q": "When is GSTR-3B due?",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "20th"
+ },
+ {
+  "q": "GST rate on cold drinks",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "28 percent"
+ },
+ {
+  "q": "When can we claim input tax credit",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "GSTR-2B"
+ },
+ {
+  "q": "is loose grain taxed",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "exempt"
+ },
+ {
+  "q": "what documents does the accountant need and by when",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "5th"
+ },
+ {
+  "q": "when should I start ordering dry fruits for Diwali",
+  "doc": "festival_stocking_plan.txt",
+  "must": "four weeks"
+ },
+ {
+  "q": "which gift hamper prices sold best",
+  "doc": "festival_stocking_plan.txt",
+  "must": "499"
+ },
+ {
+  "q": "how much more cashew to order this year",
+  "doc": "festival_stocking_plan.txt",
+  "must": "40 percent"
+ },
+ {
+  "q": "price of Aashirvaad atta 5 kg",
+  "doc": "price_list_oct.txt",
+  "must": "245"
+ },
+ {
+  "q": "bulk discount on atta",
+  "doc": "price_list_oct.txt",
+  "must": "Rs 15 off"
+ },
+ {
+  "q": "how often are prices reviewed",
+  "doc": "price_list_oct.txt",
+  "must": "15 days"
+ },
+ {
+  "q": "free salt offer",
+  "doc": "price_list_oct.txt",
+  "must": "free packet"
+ },
+ {
+  "q": "credit limit for regular families",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "3,000"
+ },
+ {
+  "q": "when to stop credit to a customer who has not paid",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "60 days"
+ },
+ {
+  "q": "can new customers get udhaar",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "new customer"
+ },
+ {
+  "q": "udhaar ka limit kitna hai",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "3,000"
+ },
+ {
+  "q": "stock ginti kab karni hai",
+  "doc": "hinglish_stock_hidayat.txt",
+  "must": "Monday"
+ },
+ {
+  "q": "kitne din ka stock hamesha rakhna hai atta chawal ka",
+  "doc": "hinglish_stock_hidayat.txt",
+  "must": "10 din"
+ },
+ {
+  "q": "phata hua packet ho to kya karna hai",
+  "doc": "hinglish_stock_hidayat.txt",
+  "must": "photo"
+ },
+ {
+  "q": "dead stock par kya offer lagana hai",
+  "doc": "hinglish_stock_hidayat.txt",
+  "must": "60 din"
+ },
+ {
+  "q": "एक्सपायरी की तारीख कब जाँचनी है",
+  "doc": "hindi_safai_niyam.txt",
+  "must": "सोमवार"
+ },
+ {
+  "q": "खराब सामान मिलने पर ग्राहक के साथ क्या करें",
+  "doc": "hindi_safai_niyam.txt",
+  "must": "माफी"
+ },
+ {
+  "q": "salary kab milti hai",
+  "doc": "staff_leave_salary.txt",
+  "must": "5th"
+ },
+ {
+  "q": "how many paid leaves per year",
+  "doc": "staff_leave_salary.txt",
+  "must": "12 paid"
+ },
+ {
+  "q": "is leave allowed in Diwali week",
+  "doc": "staff_leave_salary.txt",
+  "must": "no leave"
+ },
+ {
+  "q": "how many packs in a carton of tea",
+  "doc": "ignore_instructions_test.txt",
+  "must": "24 packs"
+ },
+ {
+  "q": "What is the price of a new refrigerator?",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "Who won the cricket match yesterday?",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "How do I register a trademark?",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "best smartphone to buy",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "weather in Mumbai next week",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "kal ka mausam kaisa rahega",
+  "doc": null,
+  "must": null
+ },
+ {
+  "q": "how long before the money is due to the wholesaler",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "21 days",
+  "tier": "hard"
+ },
+ {
+  "q": "what extra charge applies when my purchase from the wholesaler is small",
+  "doc": "supplier_terms_ganesh.txt",
+  "must": "400",
+  "tier": "hard"
+ },
+ {
+  "q": "can someone bring back something they already unwrapped",
+  "doc": "return_policy_shop.txt",
+  "must": "Opened",
+  "tier": "hard"
+ },
+ {
+  "q": "money back timeline for digital payments",
+  "doc": "return_policy_shop.txt",
+  "must": "2 working days",
+  "tier": "hard"
+ },
+ {
+  "q": "how cold should the ice cream cabinet be",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "minus 18",
+  "tier": "hard"
+ },
+ {
+  "q": "what should the cashier do about missing money at night",
+  "doc": "staff_opening_closing_sop.txt",
+  "must": "Rs 200",
+  "tier": "hard"
+ },
+ {
+  "q": "which taxes does the accountant file monthly and when",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "20th",
+  "tier": "hard"
+ },
+ {
+  "q": "rate of levy on fizzy beverages",
+  "doc": "gst_notes_for_ca.txt",
+  "must": "28 percent",
+  "tier": "hard"
+ },
+ {
+  "q": "how early should I buy nuts and sweets for the big lights festival",
+  "doc": "festival_stocking_plan.txt",
+  "must": "four weeks",
+  "tier": "hard"
+ },
+ {
+  "q": "cheaper if I purchase several flour bags",
+  "doc": "price_list_oct.txt",
+  "must": "Rs 15 off",
+  "tier": "hard"
+ },
+ {
+  "q": "loan to neighbours who pay later: how much is allowed",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "3,000",
+  "tier": "hard"
+ },
+ {
+  "q": "what to say to someone who owes us money for a month",
+  "doc": "udhaar_credit_rules.txt",
+  "must": "30 days",
+  "tier": "hard"
+ },
+ {
+  "q": "kab tak ka maal hamesha bhandar mein hona chahiye",
+  "doc": "hinglish_stock_hidayat.txt",
+  "must": "10 din",
+  "tier": "hard"
+ },
+ {
+  "q": "employees ko kitni chhutti milti hai",
+  "doc": "staff_leave_salary.txt",
+  "must": "12 paid",
+  "tier": "hard"
+ },
+ {
+  "q": "extra pay for working long hours",
+  "doc": "staff_leave_salary.txt",
+  "must": "one and a half",
+  "tier": "hard"
+ },
+ {
+  "q": "ग्राहक को एक्सपायर्ड माल देने पर हमें क्या करना चाहिए",
+  "doc": "hindi_safai_niyam.txt",
+  "must": "माफी",
+  "tier": "hard"
+ }
+]

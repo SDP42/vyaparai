@@ -1,0 +1,7 @@
+Stock aur Order ke Niyam
+
+Har Monday subah stock ginti karni hai aur sheet mein likhni hai. Jis item ka stock 5 din se kam bacha ho, uska order usi din dena hai. Atta, chawal, tel aur chini ka kam se kam 10 din ka stock hamesha rakhna hai.
+
+Supplier ko order WhatsApp par bhejna hai aur confirmation screenshot save karna hai. Maal aane par bill se milana hai: quantity, rate aur expiry date. Jo packet phata ya leak hua ho, uski photo kheench kar usi din supplier ko bhejni hai.
+
+Paisa fasa hua dead stock har mahine ke aakhri hafte mein dekhna hai. Jo item 60 din se nahi bika, uspar offer lagana hai.

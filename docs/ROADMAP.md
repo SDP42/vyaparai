@@ -25,7 +25,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 8 | Vyapar Copilot | ✅ | Ask page: English, Hindi, Hinglish; follow-ups, product questions, evidence panel, streamed steps ([ASSISTANT](ASSISTANT.md)) |
 | 9 | Agent workflows | ✅ | Bounded, traced, read-only LangGraph investigations ([AGENTS](AGENTS.md)) |
 | 10 | Recommendations & reports | ✅ | Ranked actions with impact ranges and approvals; PDF/CSV reports ([RECOMMENDATIONS](RECOMMENDATIONS.md)) |
-| 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
+| 11 | Hardening, deployment, launch | ✅ code | Shared rate limits, security headers, size limits, PostgreSQL timeouts, Docker stack, backups, runbook; not yet rehearsed on a server ([RUNBOOK](RUNBOOK.md)) |
 | 12 | Daily and weekly digest (push) | ✅ | Three numbers and one action, by WhatsApp or email |
 | 13 | Cash and credit (udhaar) intelligence | ✅ | Dues by age, who to chase, drafted reminders in three languages ([UDHAAR](UDHAAR.md)) |
 | 14 | Alerts and anomalies | ✅ | Sales drop, margin leak, stock-out risk |
@@ -77,7 +77,7 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 | 8 | Typed tools over the metric layer · intent router · streaming UI · evidence panel · evaluation questions | 4–5 | Phases 2, 4, 7 |
 | 9 | LangGraph analyst workflow · bounded retries · trace storage and viewer | 3–4 | Phase 8 |
 | 10 | Recommendation schema and ranking · approval states · PDF/CSV reports · saved analyses | 4 | Phases 2–9 |
-| 11 | Rate limiting · upload fuzzing · dependency audit · Postgres deployment · backups · runbook · model cards · demo video | 5 | All |
+| 11 | Hardening, deployment, launch | ✅ code | Shared rate limits, security headers, size limits, PostgreSQL timeouts, Docker stack, backups, runbook; not yet rehearsed on a server ([RUNBOOK](RUNBOOK.md)) |
 | M | Recorded (not synthesized) opening audio · short-viewport polish · Lighthouse/accessibility pass | 1–2 | Decision F-A |
 
 **Total remaining to MVP (phases 4, F2):** about 15–18 working days.
@@ -111,6 +111,6 @@ Effort is in focused working days for one developer and is an estimate, not a pr
 - `/app` ships Recharts (276 kB first load); lazy-loading charts is a Phase F2 item.
 - Import progress jumps 10 → 100 because the import is one transaction.
 - Opening audio is synthesized in the browser; the 3D opening needs a visible browser tab.
-- Login throttle counters are in memory (single process); move to Redis before several workers.
+- Rate-limit counters are shared through Redis when `REDIS_URL` is set; without it they are per process.
 - SQLite is the development default; production requires PostgreSQL.
 - The persona dashboard shows illustrative data, not API data.

@@ -1,4 +1,4 @@
-.PHONY: install api web test lint format migrate
+.PHONY: install api web test lint format migrate up down backup
 
 install:      ## Install backend and frontend dependencies
 	cd apps/api && uv sync
@@ -22,3 +22,12 @@ lint:         ## Lint + type-check backend and frontend
 
 format:       ## Auto-format backend
 	cd apps/api && uv run ruff check . --fix && uv run ruff format .
+
+up:           ## Start the production-shaped stack (Docker)
+	docker compose up -d --build
+
+down:         ## Stop it
+	docker compose down
+
+backup:       ## Back up the database and uploaded files
+	./scripts/backup.sh

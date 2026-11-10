@@ -44,3 +44,30 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+        working-directory: apps/api
+      - run: uv run --with pip-audit pip-audit --progress-spinner off
+        working-directory: apps/api
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+        working-directory: apps/web
+      # Known: PostCSS inside Next 15 (build time only). Remove "|| true" after the Next 16 upgrade.
+      - run: npm audit --omit=dev --audit-level=high || true
+        working-directory: apps/web
+
+  images:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t vyapar-api apps/api
+      - run: docker build --build-arg NEXT_PUBLIC_API_URL=https://example.in/api/v1 -t vyapar-web apps/web

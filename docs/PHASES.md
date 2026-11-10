@@ -26,7 +26,7 @@ each phase contains and its exit criteria.
 | 8 | Vyapar Copilot (plain-language questions) ([notes](ASSISTANT.md)) | 4 | P1 | ✅ |
 | 9 | Agent workflows (LangGraph) ([notes](AGENTS.md)) | 12 | P1 | ✅ |
 | 10 | Recommendations & reporting ([notes](RECOMMENDATIONS.md)) | 13 | P2 | ✅ |
-| 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
+| 11 | Hardening, deployment, launch ([runbook](RUNBOOK.md)) | 14 | P0 | ✅ code, ⬜ rehearsal |
 | 12 | Daily and weekly digest (email now; WhatsApp copy-paste; [notes](research/DIGEST.md)) | - | P1 | ✅ |
 | 13 | Cash and credit (udhaar) intelligence ([notes](UDHAAR.md)) | - | P1 | ✅ |
 | 14 | Alerts and anomalies (rules, lifecycle, sidebar badge, digest link; [notes](research/ALERTS.md)) | - | P1 | ✅ |

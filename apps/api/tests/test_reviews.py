@@ -177,7 +177,7 @@ def test_shop_model_is_not_used_when_data_is_thin_or_random() -> None:
     assert supervised.fit(["a b"] * 20, [5] * 20) is None
     import random
 
-    rnd = random.Random(1)
+    rnd = random.Random(1)  # noqa: S311  (test data, not security)
     texts = [f"word{rnd.randint(0, 500)} word{rnd.randint(0, 500)}" for _ in range(300)]
     ratings = [rnd.choice([1, 5]) for _ in range(300)]
     assert supervised.fit(texts, ratings) is None  # no better than guessing

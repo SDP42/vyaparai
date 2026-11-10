@@ -25,6 +25,7 @@ from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.queries import LINE_NET, _lines
 from app.services.analytics.types import ZERO, Filters, dec, metric_values
+from app.services.bills import service as bill_service
 from app.services.reviews import service as review_service
 
 D = Decimal
@@ -354,6 +355,26 @@ def rule_customers(db: Session, workspace: Workspace, end: date) -> list[dict[st
     ]  # fmt: skip
 
 
+def rule_supplier_prices(db: Session, ws: uuid.UUID) -> list[dict[str, Any]]:
+    """A supplier charged noticeably more than last time, before it shows up in sales margins."""
+    out: list[dict[str, Any]] = []
+    for m in bill_service.price_moves(db, ws):
+        if m["change_pct"] <= 0:
+            continue
+        out.append(
+            {
+                "key": f"supplier_price_up|{m['product_id']}", "rule": "supplier_price_up",
+                "severity": "medium" if m["change_pct"] >= 10 else "info",
+                "title": f"{m['name']} now costs {m['change_pct']:.0f}% more to buy",
+                "detail": f"The last bill{' from ' + m['supplier'] if m['supplier'] else ''} was "
+                f"{m['latest']} a unit against {m['previous']} before. Check your selling price covers it.",
+                "evidence": {k: m[k] for k in ("previous", "latest", "change_pct", "supplier", "list_price")},
+                "link": "/app/bills",
+            }
+        )  # fmt: skip
+    return out
+
+
 def rule_reviews(db: Session, ws: uuid.UUID, today: date) -> list[dict[str, Any]]:
     """A complaint theme that is both common and getting worse in the last 30 days."""
     s = review_service.summary(db, ws, 30, today)
@@ -396,6 +417,7 @@ def compute(
         + rule_events(db, workspace, today)
         + rule_sources(db, workspace.id)
         + rule_reviews(db, workspace.id, today)
+        + rule_supplier_prices(db, workspace.id)
     )
     if coverage is not None and coverage < 60:
         out.append(

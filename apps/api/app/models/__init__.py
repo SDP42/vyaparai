@@ -2,6 +2,7 @@
 
 from app.models.alert import Alert
 from app.models.audit import AuditLog
+from app.models.bill import PurchaseBill, PurchaseBillLine
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
@@ -36,6 +37,8 @@ __all__ = [
     "OrderItem",
     "OrderStatus",
     "Product",
+    "PurchaseBill",
+    "PurchaseBillLine",
     "RefreshToken",
     "Review",
     "SourceRun",

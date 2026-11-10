@@ -1,0 +1,86 @@
+Date,Name,Phone,Type,Amount,Note
+2026-07-23,Ramesh Sharma,9896487718,Credit,600,monthly saman
+2026-08-05,Hari Om Dhaba,9650451277,Credit,4000,monthly saman
+2026-08-05,Suresh Hotel,9596981149,Credit,300,rice atta
+2026-08-10,Ramesh Sharma,9896487718,Credit,300,monthly saman
+2026-08-11,Dinesh Yadav,,Credit,600,tea snacks
+2026-08-14,Suresh Hotel,9596981149,Credit,450,tea snacks
+2026-08-18,Arjun Patil,,Credit,600,rice atta
+2026-08-18,Sunita Devi,9603659048,Credit,450,groceries
+2026-08-19,Balu Mama Canteen,,Credit,2500,groceries
+2026-08-19,Hari Om Dhaba,9650451277,Credit,850,
+2026-08-19,Kavita Rao,9689555067,Credit,600,groceries
+2026-08-20,Rekha Shah,9976903117,Credit,600,rice atta
+2026-08-21,Sanjay Gupta,,Credit,600,groceries
+2026-08-23,Fatima Sheikh,9462813998,Credit,850,tea snacks
+2026-08-23,Lakshmi Iyer,9435491024,Credit,2500,monthly saman
+2026-08-25,Meena Kumari,9195710571,Credit,600,tea snacks
+2026-08-26,Dinesh Yadav,,Credit,850,monthly saman
+2026-08-27,Imran Khan,9535818945,Credit,850,rice atta
+2026-08-28,Arjun Patil,,Credit,450,tea snacks
+2026-08-29,Dinesh Yadav,,Credit,850,
+2026-08-29,Geeta Joshi,,Credit,600,monthly saman
+2026-08-29,Sunita Devi,9603659048,Credit,850,tea snacks
+2026-08-30,Vikram Singh,,Credit,850,tea snacks
+2026-09-01,Anita Desai,9129658915,Credit,2500,monthly saman
+2026-09-01,Mohan Tea Stall,,Credit,1200,
+2026-09-02,Fatima Sheikh,9462813998,Credit,850,rice atta
+2026-09-02,Rekha Shah,9976903117,Credit,600,monthly saman
+2026-09-03,Kavita Rao,9689555067,Credit,300,monthly saman
+2026-09-04,Lakshmi Iyer,9435491024,Credit,850,monthly saman
+2026-09-04,Suresh Hotel,9596981149,Credit,600,tea snacks
+2026-09-05,Arjun Patil,,Credit,600,tea snacks
+2026-09-05,Pooja Nair,9946118808,Credit,600,monthly saman
+2026-09-05,Sanjay Gupta,,Credit,1200,tea snacks
+2026-09-06,Balu Mama Canteen,,Credit,2500,rice atta
+2026-09-06,Imran Khan,9535818945,Credit,300,groceries
+2026-09-06,Suresh Hotel,9596981149,Credit,1200,tea snacks
+2026-09-08,Balu Mama Canteen,,Credit,1200,
+2026-09-08,Lakshmi Iyer,9435491024,Credit,300,
+2026-09-10,Dinesh Yadav,,Credit,2500,rice atta
+2026-09-10,Geeta Joshi,,Credit,600,monthly saman
+2026-09-10,Hari Om Dhaba,9650451277,Credit,1200,tea snacks
+2026-09-11,Meena Kumari,9195710571,Credit,2500,groceries
+2026-09-11,Neha Verma,9355385635,Credit,600,rice atta
+2026-09-12,Anita Desai,9129658915,Credit,600,monthly saman
+2026-09-12,Fatima Sheikh,9462813998,Credit,300,tea snacks
+2026-09-13,Pooja Nair,9946118808,Credit,600,rice atta
+2026-09-13,Vikram Singh,,Credit,2500,
+2026-09-16,Balu Mama Canteen,,Payment,300,cash
+2026-09-16,Fatima Sheikh,9462813998,Credit,2500,tea snacks
+2026-09-16,Mohan Tea Stall,,Credit,450,monthly saman
+2026-09-16,Sanjay Gupta,,Credit,2500,tea snacks
+2026-09-17,Arjun Patil,,Payment,300,cash
+2026-09-18,Meena Kumari,9195710571,Credit,600,
+2026-09-19,Hari Om Dhaba,9650451277,Credit,450,monthly saman
+2026-09-19,Rekha Shah,9976903117,Credit,600,tea snacks
+2026-09-20,Neha Verma,9355385635,Credit,2500,
+2026-09-21,Kavita Rao,9689555067,Credit,600,rice atta
+2026-09-22,Kavita Rao,9689555067,Credit,450,groceries
+2026-09-26,Anita Desai,9129658915,Payment,300,cash
+2026-09-26,Imran Khan,9535818945,Credit,600,monthly saman
+2026-09-26,Imran Khan,9535818945,Credit,2500,
+2026-09-29,Pooja Nair,9946118808,Credit,450,rice atta
+2026-09-30,Geeta Joshi,,Credit,2500,monthly saman
+2026-10-01,Sunita Devi,9603659048,Payment,300,cash
+2026-10-03,Anita Desai,9129658915,Credit,450,groceries
+2026-10-06,Balu Mama Canteen,,Credit,1200,
+2026-10-06,Balu Mama Canteen,,Credit,2500,rice atta
+2026-10-07,Anita Desai,9129658915,Credit,2500,groceries
+2026-10-07,Neha Verma,9355385635,Credit,300,
+2026-10-07,Rekha Shah,9976903117,Credit,450,
+2026-10-08,Arjun Patil,,Credit,1200,groceries
+2026-10-10,Kavita Rao,9689555067,Credit,1200,tea snacks
+2026-10-16,Anita Desai,9129658915,Credit,450,monthly saman
+2026-10-18,Meena Kumari,9195710571,Credit,600,rice atta
+2026-10-26,Dinesh Yadav,,Payment,4800,UPI
+2026-10-26,Fatima Sheikh,9462813998,Payment,3150,UPI
+2026-10-28,Suresh Hotel,9596981149,Payment,1785,UPI
+2026-10-30,Pooja Nair,9946118808,Payment,1650,UPI
+2026-10-31,Kavita Rao,9689555067,Payment,3150,UPI
+2026-11-01,Neha Verma,9355385635,Credit,600,groceries
+2026-11-04,Meena Kumari,9195710571,Payment,4300,UPI
+2026-11-06,Geeta Joshi,,Payment,2590,UPI
+2026-11-06,Imran Khan,9535818945,Payment,2975,UPI
+2026-11-07,Vikram Singh,,Payment,3350,UPI
+2026-11-08,Mohan Tea Stall,,Payment,1650,UPI

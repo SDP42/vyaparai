@@ -27,7 +27,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
 | 12 | Daily and weekly digest (push) | ✅ | Three numbers and one action, by WhatsApp or email |
-| 13 | Cash and credit (udhaar) intelligence | ⬜ | Dues, ageing, who to remind, expected collection |
+| 13 | Cash and credit (udhaar) intelligence | ✅ | Dues by age, who to chase, drafted reminders in three languages ([UDHAAR](UDHAAR.md)) |
 | 14 | Alerts and anomalies | ✅ | Sales drop, margin leak, stock-out risk |
 | 15 | Connectors and scheduled imports | ✅ | Remembered column mappings, connected Google Sheet or shared-file links, scheduled and deduplicated |
 | 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill photo/PDF import done ([BILLS](BILLS.md), [plan](research/COST-TRACKING.md)) |

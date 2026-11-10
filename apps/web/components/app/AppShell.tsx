@@ -22,6 +22,7 @@ const NAV = [
   { href: "/app/costs", label: "Costs", icon: "₹", exact: false },
   { href: "/app/reviews", label: "Reviews", icon: "❝", exact: false },
   { href: "/app/documents", label: "Documents", icon: "❏", exact: false },
+  { href: "/app/udhaar", label: "Udhaar", icon: "◐", exact: false },
   { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
   { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
   { href: "/app/data", label: "Data", icon: "▤", exact: false },

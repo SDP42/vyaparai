@@ -39,6 +39,8 @@ function chips(a: AlertItem): [string, string][] {
       return [["Selling days before", String(e.selling_days_before)], ["Units before", String(Math.round(e.units_before ?? 0))]];
     case "supplier_price_up":
       return [["Before", r(Number(e.previous))], ["Now", r(Number(e.latest))], ["Change", p(e.change_pct)]];
+    case "udhaar_overdue":
+      return [["Older than 30 days", r(Number(e.overdue))], ["People", String(e.people)], ["Not paying", String(e.stalled)]];
     case "lapsed_regulars":
       return [["Customers", String(e.customers)]];
     case "no_costs":

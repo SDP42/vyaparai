@@ -2,6 +2,10 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · Udhaar
+
+The research named credit as a strong need that incumbents cover only as a ledger. Built a ledger (import in several layouts, manual entries), FIFO ageing, a chase-first order, drafted reminders in three languages with a firmer tone as dues age, an overdue alert and assistant answers ([UDHAAR.md](UDHAAR.md)). Nothing is sent by the product; a WhatsApp link pre-fills the draft when a phone is saved. All of it is rule-based and tested on a synthetic ledger; whether the tone and the chase order feel right to real shopkeepers is untested.
+
 ## 2026-11-10 · Ask, documents (RAG) and a layout pass
 
 **Assistant.** A rules-based router sends English, Hindi and Hinglish questions to read-only tools over the existing services; the answer is written from the tool's numbers, with the period it used and a link to check it. A 66-question set routes 100% but only after I added keywords for the misses (it began at 91%), so treat that as a development figure ([ASSISTANT.md](ASSISTANT.md)).

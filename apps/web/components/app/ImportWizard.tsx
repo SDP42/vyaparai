@@ -278,6 +278,7 @@ function MapStep({ base, dataset, onValidated }: { base: string; dataset: Datase
 
   const columns = useMemo(() => Object.fromEntries((insp?.columns ?? []).map((c) => [c.name, c])), [insp]);
   if (!insp) return <p className="text-sm text-muted">Loading file details…</p>;
+  const remembered = dataset.column_mapping?.remembered;
 
   const missing = insp.fields.filter((f) => f.required && !fields[f.key]);
   const used = new Set(Object.values(fields));
@@ -305,9 +306,11 @@ function MapStep({ base, dataset, onValidated }: { base: string; dataset: Datase
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Match your columns</h2>
           <p className="mt-1 text-sm text-muted">
-            {dataset.source_filename} · {formatNumber(insp.row_count)} rows · {insp.headers.length} columns. We guessed the
-            matches; check them before validating.
+            {dataset.source_filename} · {formatNumber(insp.row_count)} rows · {insp.headers.length} columns.{" "}
+            {remembered ? "We recognised this layout and filled in the columns you confirmed last time." : "We guessed the matches; check them before validating."}
           </p>
+          {remembered && <p className="mt-1 text-xs text-mor">Remembered from “{dataset.column_mapping?.profile_name}”. Once you confirm, connected links with this layout can import by themselves.</p>}
+          {!remembered && <p className="mt-1 text-xs text-muted">When you confirm, we remember these columns for files with the same layout.</p>}
         </div>
         <label className="text-sm">
           <span className="mr-2 text-muted">Dates are written</span>

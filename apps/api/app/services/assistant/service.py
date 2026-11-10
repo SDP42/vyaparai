@@ -5,8 +5,9 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from app.models.workspace import Workspace
+from app.models.workspace import Workspace, WorkspaceRole
 from app.services.assistant import nlu, replies, tools
+from app.services.docs import service as docs
 
 SUGGESTIONS = {
     "en": ["Sales last week", "Why did sales drop?", "What should I order?", "Any alerts?"],
@@ -41,8 +42,47 @@ def _run(db: Session, ws: Workspace, u: nlu.Understood) -> tools.Result | None:
     }.get(i, lambda: None)()
 
 
+# Words that signal "what do our own papers say" rather than "what do the numbers say".
+DOC_CUES = {
+    "policy", "policies", "rule", "rules", "terms", "allowed", "return", "returned", "refund", "exchange",
+    "procedure", "sop", "niyam", "नियम", "limit", "due", "deadline", "leave", "salary", "checklist",
+    "document", "documents", "contract", "agreement", "warranty", "guarantee",
+}  # fmt: skip
+
+
+def _from_documents(
+    db: Session, ws: Workspace, role: WorkspaceRole, question: str, lang: str, base: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Questions the numbers cannot answer may be answered by the shop's own documents."""
+    try:
+        r = docs.search(db, ws.id, role, question, 3)
+    except Exception:  # model not available on this server: fall back to "not understood"
+        return None
+    if r["confidence"] == "none" or not r["answer"]:
+        return None
+    top = r["results"][0]
+    cite = str(top["title"]) + (f", page {top['page']}" if top["page"] else "")
+    if top["section"]:
+        cite += f", {top['section']}"
+    maybe = ""
+    if r["confidence"] == "possible":
+        maybe = {
+            "en": "This may not answer it. ",
+            "hinglish": "Shayad yeh jawab na ho. ",
+            "hi": "शायद यह जवाब न हो। ",
+        }[lang]
+    return {
+        **base, "intent": "documents", "answer": maybe + str(r["answer"]), "rows": [{"source": cite}],
+        "link": "/app/documents", "note": None, "grounded": True, "source": "documents",
+    }  # fmt: skip
+
+
 def ask(
-    db: Session, workspace: Workspace, question: str, today: date | None = None
+    db: Session,
+    workspace: Workspace,
+    question: str,
+    role: WorkspaceRole = WorkspaceRole.VIEWER,
+    today: date | None = None,
 ) -> dict[str, Any]:
     u = nlu.route(question, today or date.today())
     lang = u.language if u.language in replies.L else "en"
@@ -51,6 +91,12 @@ def ask(
         "period": None if u.period is None else {"label": u.period.label, "start": u.period.start.isoformat(), "end": u.period.end.isoformat()},
         "suggestions": SUGGESTIONS[lang],
     }  # fmt: skip
+    if u.intent not in {"help", "unknown"} and DOC_CUES & set(nlu.tokens(question)):
+        found = _from_documents(db, workspace, role, question, lang, base)
+        if found is not None and not found["answer"].startswith(
+            ("This may not", "Shayad yeh", "शायद यह")
+        ):
+            return found  # a confident match in the shop's own papers wins over a keyword guess
     if u.intent == "help":
         return {
             **base,
@@ -61,6 +107,9 @@ def ask(
             "grounded": False,
         }
     if u.intent == "unknown":
+        found = _from_documents(db, workspace, role, question, lang, base)
+        if found is not None:
+            return found
         return {
             **base,
             "answer": replies.UNKNOWN[lang] + replies.HELP[lang],

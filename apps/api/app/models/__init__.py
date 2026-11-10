@@ -6,6 +6,7 @@ from app.models.bill import PurchaseBill, PurchaseBillLine
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
+from app.models.document import Document, DocumentChunk
 from app.models.forecast import ForecastRun, ForecastSeries
 from app.models.inventory import InventorySetting, StockSnapshot
 from app.models.review import Review
@@ -23,6 +24,8 @@ __all__ = [
     "DatasetStatus",
     "Digest",
     "DigestSettings",
+    "Document",
+    "DocumentChunk",
     "ForecastRun",
     "ForecastSeries",
     "ImportSource",

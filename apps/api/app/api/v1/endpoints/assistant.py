@@ -17,4 +17,4 @@ class Ask(BaseModel):
 
 @router.post("/ask")
 def ask(data: Ask, ctx: ViewerCtx, db: DbSession) -> dict[str, Any]:
-    return service.ask(db, ctx.workspace, data.question.strip())
+    return service.ask(db, ctx.workspace, data.question.strip(), ctx.role)

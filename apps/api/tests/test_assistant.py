@@ -161,3 +161,17 @@ def test_input_is_bounded_and_tenancy_holds(client: TestClient, shop, make_user)
     assert client.post(base, json={"question": "x" * 301}, headers=h).status_code == 422
     stranger = make_user("other@shop.in")
     assert client.post(base, json={"question": "sales"}, headers=stranger).status_code == 404
+
+
+def test_unanswerable_by_numbers_falls_back_to_documents(client: TestClient, shop) -> None:
+    h, ws = shop
+    doc = b"Return Policy\n\nPackaged food can be returned within 3 days if the pack is sealed and the bill is shown."
+    up = client.post(
+        f"/api/v1/workspaces/{ws}/documents", files={"file": ("return_policy.txt", doc)}, headers=h
+    )
+    assert up.status_code == 201
+    a = ask(client, shop, "can customers return sealed packs after a few days")
+    assert a["intent"] == "documents"
+    assert "3 days" in a["answer"]
+    assert "return policy" in a["rows"][0]["source"].lower()
+    assert ask(client, shop, "what is the capital of France")["intent"] in {"unknown", "documents"}

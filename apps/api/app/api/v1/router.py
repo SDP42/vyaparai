@@ -10,6 +10,7 @@ from app.api.v1.endpoints import (
     costs,
     datasets,
     digests,
+    documents,
     events,
     forecasts,
     health,
@@ -26,6 +27,7 @@ api_router.include_router(health.router)
 api_router.include_router(auth.router)
 api_router.include_router(assistant.router)
 api_router.include_router(bills.router)
+api_router.include_router(documents.router)
 api_router.include_router(reviews.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(workspaces.join_router)

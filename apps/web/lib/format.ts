@@ -14,3 +14,8 @@ export function formatINRCompact(v: number): string {
 }
 
 export const formatPct = (v: number, digits = 1) => `${v > 0 ? "+" : ""}${v.toFixed(digits)}%`;
+
+/** The API sends UTC times without a timezone marker (SQLite drops it); read them as UTC, not local. */
+export function parseUtc(iso: string): Date {
+  return new Date(/[zZ]$|[+-]\d\d:?\d\d$/.test(iso) ? iso : `${iso}Z`);
+}

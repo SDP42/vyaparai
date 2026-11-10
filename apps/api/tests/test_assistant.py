@@ -38,6 +38,7 @@ QUESTIONS = [
     ("रिव्यू में क्या शिकायत है", "reviews"),
     ("upcoming festivals", "festival"), ("what should I stock for Diwali", "festival"), ("Diwali ke liye kya stock", "festival"),
     ("आने वाले त्योहार", "festival"),
+    ("who owes me money", "udhaar"), ("udhaar kitna baaki hai", "udhaar"), ("outstanding dues from customers", "udhaar"), ("उधार कितना बाकी है", "udhaar"),
     ("hello", "help"), ("help", "help"), ("what can you do", "help"), ("namaste", "help"),
     ("asdf qwerty", "unknown"), ("what is the capital of France", "unknown"), ("tell me a joke", "unknown"),
 ]  # fmt: skip

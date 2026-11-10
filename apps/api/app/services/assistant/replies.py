@@ -208,8 +208,18 @@ def festivals(lang: str, r: tools.Result) -> str:
     )
 
 
+def udhaar(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    return _pick(
+        lang,
+        f"{f['parties']} people owe you {inr(f['outstanding'])} in udhaar; {inr(f['overdue'])} ({f['overdue_pct']:.0f}%) is more than 30 days old and {f['stalled']} have not paid for two months or more.",
+        f"{f['parties']} logon ka {inr(f['outstanding'])} udhaar baaki hai; {inr(f['overdue'])} ({f['overdue_pct']:.0f}%) 30 din se purana hai aur {f['stalled']} ne do mahine se kuch nahi diya.",
+        f"{f['parties']} लोगों का {inr(f['outstanding'])} उधार बाकी है; {inr(f['overdue'])} ({f['overdue_pct']:.0f}%) 30 दिन से पुराना है और {f['stalled']} ने दो महीने से कुछ नहीं दिया।",
+    )
+
+
 HELP = {
-    "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”.",
+    "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”, “who owes me money?”.",
     "hinglish": "Main sirf aapke apne numbers se jawab deta hoon. Poochiye: “pichle hafte ki bikri”, “sales kyun gir gayi”, “top 5 products”, “kya mangwana hai”, “dead stock”, “agle hafte ka forecast”, “koi alert?”, “margin”, “supplier ka price”, “reviews”, “aane wale tyohar”.",
     "hi": "मैं सिर्फ आपके अपने आंकड़ों से जवाब देता हूँ। पूछिए: “पिछले हफ्ते की बिक्री”, “बिक्री क्यों गिरी”, “टॉप 5 प्रोडक्ट”, “क्या मंगवाना है”, “डेड स्टॉक”, “अगले हफ्ते का अनुमान”, “कोई अलर्ट?”, “मार्जिन”, “रिव्यू”, “आने वाले त्योहार”।",
 }
@@ -219,6 +229,11 @@ UNKNOWN = {
     "hi": "यह मुझे समझ नहीं आया, और मैं अंदाज़ा नहीं लगाऊँगा। ",
 }
 EMPTY_HINT = {
+    "udhaar": (
+        "Add your udhaar ledger on the Udhaar page.",
+        "Udhaar page par apna khata daalein.",
+        "उधार पेज पर अपना खाता डालें।",
+    ),
     "stock": (
         "Add stock counts on the Stock page.",
         "Stock page par stock ginti daalein.",
@@ -248,5 +263,5 @@ EMPTY = {
 BUILD = {
     "sales": sales, "why": why, "top_products": lambda lg, r: products(lg, r), "slow_products": lambda lg, r: products(lg, r),
     "customers": customers, "stock": stock, "dead_stock": dead_stock, "forecast": forecast, "alerts": alerts,
-    "margin": margin, "supplier": supplier, "reviews": reviews, "festival": festivals,
+    "margin": margin, "udhaar": udhaar, "supplier": supplier, "reviews": reviews, "festival": festivals,
 }  # fmt: skip

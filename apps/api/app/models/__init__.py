@@ -4,6 +4,7 @@ from app.models.alert import Alert
 from app.models.audit import AuditLog
 from app.models.bill import PurchaseBill, PurchaseBillLine
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
+from app.models.credit import CreditEntry
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.document import Document, DocumentChunk
@@ -19,6 +20,7 @@ from app.models.workspace import Membership, Workspace, WorkspaceRole
 __all__ = [
     "Alert",
     "AuditLog",
+    "CreditEntry",
     "Customer",
     "Dataset",
     "DatasetStatus",

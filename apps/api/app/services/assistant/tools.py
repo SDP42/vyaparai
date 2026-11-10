@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from app.models.commerce import Product
 from app.models.workspace import Workspace
 from app.services import alerts as alert_service
-from app.services import events_insight, inventory
+from app.services import credit, events_insight, inventory
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics import service as analytics
@@ -244,6 +244,18 @@ def festivals(db: Session, workspace: Workspace) -> Result:
         rows=[{"name": e["event"].name, "start": e["event"].start.isoformat(),
                "products": ", ".join(p["name"] for p in e.get("products", [])[:3])} for e in ev[:3]],
         link="/app/festivals",
+    )  # fmt: skip
+
+
+def udhaar(db: Session, workspace: Workspace) -> Result:
+    s = credit.summary(db, workspace.id, date.today())
+    if not s["has_data"]:
+        return Result(empty=True, link="/app/udhaar", note="No udhaar ledger yet.")
+    return Result(
+        facts={"outstanding": s["outstanding"], "parties": s["parties_owing"], "overdue": s["overdue"],
+               "overdue_pct": s["overdue_pct"], "stalled": s["stalled"]},
+        rows=[{"name": b["name"], "owed": inr(b["owed"]), "days": f"{b['oldest_days']} days old"} for b in s["biggest"][:4]],
+        link="/app/udhaar",
     )  # fmt: skip
 
 

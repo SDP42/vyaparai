@@ -246,6 +246,27 @@ INTENTS: dict[str, set[str]] = {
     "help": {"help", "madad", "मदद", "hello", "hi", "hey", "namaste", "नमस्ते"},
 }
 
+INTENTS["udhaar"] = {
+    "udhaar",
+    "udhar",
+    "baaki",
+    "bakaya",
+    "dues",
+    "owe",
+    "owed",
+    "owes",
+    "outstanding",
+    "receivable",
+    "receivables",
+    "उधार",
+    "बकाया",
+    "बाकी",
+    "khata",
+    "खाता",
+    "lena",
+    "dena",
+}
+
 # Hindi (Devanagari) forms added after the first evaluation run.
 INTENTS["stock"] |= {"मंगवाना", "मंगवाओ", "मंगाना", "मंगवाएं"}
 INTENTS["alerts"] |= {"अलर्ट", "अलर्ट्स"}
@@ -285,6 +306,12 @@ PHRASES: list[tuple[str, str]] = [
     (r"complain|shikayat|शिकायत", "reviews"),
     (r"sell\s+least|least\s+sell|sell\s+the\s+least", "slow_products"),
 ]
+PHRASES.append(
+    (
+        r"who\s+owes|owe\s+me|paisa\s+(?:lena|dena)|kitna\s+(?:baaki|udhaar|udhar)|pending\s+(?:money|payments?)|ने\s+उधार|किसका\s+(?:बाकी|उधार)",
+        "udhaar",
+    )
+)
 
 MONTHS = {
     m: i for i, names in enumerate(

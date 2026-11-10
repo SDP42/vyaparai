@@ -20,7 +20,7 @@ from app.models.alert import Alert
 from app.models.commerce import Order, OrderItem, Product
 from app.models.source import ImportSource
 from app.models.workspace import Workspace
-from app.services import costs, events_insight, inventory
+from app.services import costs, credit, events_insight, inventory
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics.queries import LINE_NET, _lines
@@ -375,6 +375,26 @@ def rule_supplier_prices(db: Session, ws: uuid.UUID) -> list[dict[str, Any]]:
     return out
 
 
+def rule_udhaar(db: Session, ws: uuid.UUID, today: date) -> list[dict[str, Any]]:
+    """Credit given that has stayed unpaid for more than 30 days."""
+    s = credit.summary(db, ws, today)
+    overdue = s["overdue"]
+    if overdue < D(5000):
+        return []
+    rows = [r for r in credit.parties(db, ws, today) if r["oldest_days"] > 30]
+    return [
+        {
+            "key": "udhaar_overdue", "rule": "udhaar_overdue",
+            "severity": "medium" if overdue >= D(20000) or s["stalled"] >= 3 else "info",
+            "title": f"{inr(overdue)} of udhaar is more than 30 days old",
+            "detail": f"{len(rows)} people owe it, {s['stalled']} have not paid for two months or more. "
+            "A friendly message now is easier than a hard conversation later.",
+            "evidence": {"overdue": float(overdue), "people": len(rows), "stalled": s["stalled"]},
+            "link": "/app/udhaar",
+        }
+    ]  # fmt: skip
+
+
 def rule_reviews(db: Session, ws: uuid.UUID, today: date) -> list[dict[str, Any]]:
     """A complaint theme that is both common and getting worse in the last 30 days."""
     s = review_service.summary(db, ws, 30, today)
@@ -418,6 +438,7 @@ def compute(
         + rule_sources(db, workspace.id)
         + rule_reviews(db, workspace.id, today)
         + rule_supplier_prices(db, workspace.id)
+        + rule_udhaar(db, workspace.id, today)
     )
     if coverage is not None and coverage < 60:
         out.append(

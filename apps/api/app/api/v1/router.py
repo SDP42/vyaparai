@@ -18,6 +18,7 @@ from app.api.v1.endpoints import (
     inventory,
     reviews,
     sources,
+    udhaar,
     weather,
     workspaces,
 )
@@ -29,6 +30,7 @@ api_router.include_router(assistant.router)
 api_router.include_router(bills.router)
 api_router.include_router(documents.router)
 api_router.include_router(reviews.router)
+api_router.include_router(udhaar.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(workspaces.join_router)
 api_router.include_router(datasets.router)

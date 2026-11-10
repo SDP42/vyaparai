@@ -39,6 +39,7 @@ def _run(db: Session, ws: Workspace, u: nlu.Understood) -> tools.Result | None:
         "supplier": lambda: tools.supplier(db, ws),
         "reviews": lambda: tools.review_summary(db, ws),
         "festival": lambda: tools.festivals(db, ws),
+        "udhaar": lambda: tools.udhaar(db, ws),
     }.get(i, lambda: None)()
 
 

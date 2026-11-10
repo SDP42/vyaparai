@@ -27,6 +27,9 @@ const tiro = Tiro_Devanagari_Hindi({
 });
 
 export const metadata: Metadata = {
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "Vyapar", statusBarStyle: "default" },
   title: "Vyapar AI — your business, explained",
   description:
     "Vyapar AI turns a retailer's sales, customers and stock into trusted numbers, honest forecasts and actions you approve.",

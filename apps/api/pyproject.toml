@@ -20,6 +20,7 @@ dependencies = [
     "pillow>=13.0.0",
     "rapidocr-onnxruntime>=1.4.4",
     "pypdfium2>=5.15.2",
+    "fastembed>=0.9.1",
 ]
 
 [dependency-groups]
@@ -63,6 +64,9 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 "app/services/events.py" = ["E501"]
 "app/services/bills/*.py" = ["E501"]
 "app/services/assistant/*.py" = ["E501"]
+"app/services/docs/*.py" = ["E501"]
+"app/models/document.py" = ["E501"]
+"app/api/v1/endpoints/documents.py" = ["E501"]
 "app/api/v1/endpoints/assistant.py" = ["E501"]
 "app/api/v1/endpoints/bills.py" = ["E501"]
 "app/services/events_insight.py" = ["E501"]
@@ -93,5 +97,5 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [[tool.mypy.overrides]]
-module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2"]
+module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*"]
 ignore_missing_imports = true

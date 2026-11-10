@@ -258,6 +258,17 @@ def product_forecast(lang: str, r: tools.Result) -> str:
     )
 
 
+def recommend(lang: str, r: tools.Result) -> str:
+    top = "; ".join(f"{x['title']} ({x['impact']})" for x in r.rows)
+    n = r.facts["count"]
+    return _pick(
+        lang,
+        f"{n} suggestions are waiting. Most valuable first: {top}.",
+        f"{n} sujhav intezaar kar rahe hain. Sabse zyada fayde wale pehle: {top}.",
+        f"{n} सुझाव इंतज़ार कर रहे हैं। सबसे ज्यादा फायदे वाले पहले: {top}।",
+    )
+
+
 HELP = {
     "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”, “who owes me money?”.",
     "hinglish": "Main sirf aapke apne numbers se jawab deta hoon. Poochiye: “pichle hafte ki bikri”, “sales kyun gir gayi”, “top 5 products”, “kya mangwana hai”, “dead stock”, “agle hafte ka forecast”, “koi alert?”, “margin”, “supplier ka price”, “reviews”, “aane wale tyohar”.",
@@ -303,6 +314,6 @@ EMPTY = {
 BUILD = {
     "sales": sales, "why": why, "top_products": lambda lg, r: products(lg, r), "slow_products": lambda lg, r: products(lg, r),
     "customers": customers, "stock": stock, "dead_stock": dead_stock, "forecast": forecast, "alerts": alerts,
-    "margin": margin, "udhaar": udhaar,
+    "margin": margin, "udhaar": udhaar, "recommend": recommend,
     "product_sales": product_sales, "product_stock": product_stock, "product_forecast": product_forecast, "supplier": supplier, "reviews": reviews, "festival": festivals,
 }  # fmt: skip

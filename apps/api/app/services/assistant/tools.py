@@ -259,6 +259,20 @@ def udhaar(db: Session, workspace: Workspace) -> Result:
     )  # fmt: skip
 
 
+def recommendations(db: Session, workspace: Workspace) -> Result:
+    from app.services.recommend import service as rec
+
+    rec.refresh(db, workspace)
+    all_ = rec.listing(db, workspace.id, "proposed")
+    if not all_:
+        return Result(empty=True, link="/app/recommendations", note="Nothing needs action.")
+    return Result(
+        facts={"count": len(all_)},
+        rows=[{"title": r.title, "impact": inr(r.impact["expected"]) if r.impact.get("expected") is not None else "not estimated"} for r in all_[:3]],
+        link="/app/recommendations",
+    )  # fmt: skip
+
+
 def find_product(db: Session, ws: uuid.UUID, text: str) -> Product | None:
     """A product named in the question (best fuzzy match above a safe threshold)."""
     from app.services.bills.service import match_score

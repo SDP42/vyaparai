@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     open_meteo_api_key: str | None = None
     weather_timeout_seconds: float = 8.0
 
+    # Link sources (scheduled imports). Only these hosts may be fetched unless an admin opens it up.
+    source_allowed_hosts: list[str] = [
+        "docs.google.com", "drive.google.com", "*.googleusercontent.com",
+        "dl.dropboxusercontent.com", "dl.dropbox.com", "raw.githubusercontent.com",
+    ]  # fmt: skip
+    source_allow_any_public_host: bool = False
+    source_fetch_timeout_seconds: float = 20.0
+    max_sources_per_workspace: int = 5
+
     # Owner digest email. Disabled until an SMTP host is configured; the text can always be copied.
     app_url: str = "http://localhost:3000"
     smtp_host: str | None = None

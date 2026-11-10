@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     alerts,
     analytics,
+    assistant,
     auth,
     bills,
     campaigns,
@@ -23,6 +24,7 @@ from app.api.v1.endpoints import (
 api_router = APIRouter()
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
+api_router.include_router(assistant.router)
 api_router.include_router(bills.router)
 api_router.include_router(reviews.router)
 api_router.include_router(workspaces.router)

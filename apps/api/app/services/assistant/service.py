@@ -1,0 +1,88 @@
+"""Answer a question: route it, run one typed tool, write the reply from the tool's numbers."""
+
+from datetime import date
+from typing import Any
+
+from sqlalchemy.orm import Session
+
+from app.models.workspace import Workspace
+from app.services.assistant import nlu, replies, tools
+
+SUGGESTIONS = {
+    "en": ["Sales last week", "Why did sales drop?", "What should I order?", "Any alerts?"],
+    "hinglish": [
+        "Pichle hafte ki bikri",
+        "Sales kyun gir gayi?",
+        "Kya mangwana hai?",
+        "Koi alert?",
+    ],
+    "hi": ["पिछले हफ्ते की बिक्री", "बिक्री क्यों गिरी?", "क्या मंगवाना है?", "कोई अलर्ट?"],
+}
+
+
+def _run(db: Session, ws: Workspace, u: nlu.Understood) -> tools.Result | None:
+    i, p = u.intent, u.period
+    if i == "sales":
+        return tools.sales(db, ws, p)
+    if i == "why":
+        return tools.why(db, ws, p)
+    if i in {"top_products", "slow_products"}:
+        return tools.products(db, ws, p, u.top_n, slow=i == "slow_products")
+    return {
+        "customers": lambda: tools.customers(db, ws),
+        "stock": lambda: tools.stock(db, ws),
+        "dead_stock": lambda: tools.dead_stock(db, ws),
+        "forecast": lambda: tools.forecast(db, ws),
+        "alerts": lambda: tools.alerts(db, ws),
+        "margin": lambda: tools.margin(db, ws, p),
+        "supplier": lambda: tools.supplier(db, ws),
+        "reviews": lambda: tools.review_summary(db, ws),
+        "festival": lambda: tools.festivals(db, ws),
+    }.get(i, lambda: None)()
+
+
+def ask(
+    db: Session, workspace: Workspace, question: str, today: date | None = None
+) -> dict[str, Any]:
+    u = nlu.route(question, today or date.today())
+    lang = u.language if u.language in replies.L else "en"
+    base: dict[str, Any] = {
+        "intent": u.intent, "language": lang, "question": question,
+        "period": None if u.period is None else {"label": u.period.label, "start": u.period.start.isoformat(), "end": u.period.end.isoformat()},
+        "suggestions": SUGGESTIONS[lang],
+    }  # fmt: skip
+    if u.intent == "help":
+        return {
+            **base,
+            "answer": replies.HELP[lang],
+            "rows": [],
+            "link": None,
+            "note": None,
+            "grounded": False,
+        }
+    if u.intent == "unknown":
+        return {
+            **base,
+            "answer": replies.UNKNOWN[lang] + replies.HELP[lang],
+            "rows": [],
+            "link": None,
+            "note": None,
+            "grounded": False,
+        }
+    res = _run(db, workspace, u)
+    if res is None or res.empty:
+        hint = replies.EMPTY_HINT.get(u.intent)
+        text = replies.EMPTY[lang] + (
+            hint[replies.L.index(lang)] if hint else (res.note if res and res.note else "")
+        )
+        return {**base, "answer": text, "rows": [],
+                "link": res.link if res else None, "note": None, "grounded": True}  # fmt: skip
+    answer = replies.BUILD[u.intent](lang, res)
+    return {
+        **base,
+        "answer": answer.strip(),
+        "rows": res.rows,
+        "link": res.link,
+        "note": res.note,
+        "grounded": True,
+    }

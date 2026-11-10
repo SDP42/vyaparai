@@ -2,6 +2,10 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · Purchase bills
+
+Research said the biggest weakness is data access, so bills now come in by photo or PDF ([BILLS.md](BILLS.md)). Pretrained OCR was allowed, so RapidOCR (PaddleOCR models, CPU) is used when installed, with Tesseract as the fallback and the PDF text layer first. A drafted bill is checked by a person before it changes any cost. Real OCR on a rendered bill read every line, total, GSTIN and date correctly, but that is one clean image: accuracy on real, crumpled bills is unmeasured. Confirmed bills feed a supplier price history and an alert when a price rises 5% or more.
+
 ## 2026-11-10 · F2 sessions, team invites, MVP journey, Phase 6 reviews
 
 **Sessions.** Researched OWASP's session guidance, then moved sign-in off `localStorage`: a 15-minute access token lives only in page memory and a rotating refresh token sits in an HttpOnly cookie. Reusing an old refresh token revokes the whole sign-in; logout and "sign out everywhere" revoke server-side; cookie endpoints need a custom header and a known Origin; login and sign-up are throttled. The throttle counters are in memory, which is fine for one process and must move to Redis before several workers. **Team.** Roles can be changed, members removed (never the last owner), and one-time invitation links created (the token travels after `#`, is stored hashed, expires in 7 days). **MVP.** `test_mvp_journey.py` walks sign-up to stock advice to teammate to sign-out as one user; [MVP.md](MVP.md) lists what is ready and what is not.

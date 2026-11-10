@@ -28,6 +28,8 @@ Interactive docs: `http://localhost:8000/docs` · OpenAPI: `/api/v1/openapi.json
 | POST | `/auth/logout` | cookie + header | Revoke this sign-in; clears the cookie (204) |
 | POST | `/auth/logout-all` | user + header | Revoke every sign-in of this user (204) |
 | GET | `/auth/me` | user | Current user |
+
+Purchase bills (`/workspaces/{id}/bills`, see [BILLS](BILLS.md)) and reviews (`/workspaces/{id}/reviews`, see [REVIEWS](REVIEWS.md)) have their own endpoint lists in those documents.
 | POST | `/workspaces` | user | Create workspace; caller becomes **owner** |
 | GET | `/workspaces` | user | Workspaces the caller belongs to, with role |
 | GET | `/workspaces/{id}` | viewer | Workspace detail + caller role |

@@ -30,7 +30,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 13 | Cash and credit (udhaar) intelligence | ⬜ | Dues, ageing, who to remind, expected collection |
 | 14 | Alerts and anomalies | ✅ | Sales drop, margin leak, stock-out risk |
 | 15 | Connectors and scheduled imports | ✅ | Remembered column mappings, connected Google Sheet or shared-file links, scheduled and deduplicated |
-| 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill import still to do ([plan](research/COST-TRACKING.md)) |
+| 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill photo/PDF import done ([BILLS](BILLS.md), [plan](research/COST-TRACKING.md)) |
 | 16 | Pricing and promotion advisor | ⬜ | Which discounts paid off, safe price moves |
 | 17 | Multi-store and staff | ⬜ | Compare shops, targets, staff roles |
 | 18 | Mobile-first and Hinglish/Hindi | ⬜ | Installable PWA, language, offline read |

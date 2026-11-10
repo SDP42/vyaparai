@@ -17,8 +17,8 @@ each phase contains and its exit criteria.
 | 3 | Customer & product intelligence | 6 | P0 | ✅ |
 | 3B | Campaigns & retention automation (**C1 done**: audiences, margin-guarded offers, messages, holdout, CSV; C2–C4 consent, sending, measurement still to do; [plan](research/CAMPAIGNS-PLAN.md)) | 9 | P1 | 🟡 |
 | 4 | Forecasting & predictive MVP | 7 | P0 | ✅ |
-| F2 | App shell wired to real APIs | 2–7 | P0 | ⬜ |
-| — | **MVP release (end-to-end journey works)** | — | — | — |
+| F2 | App shell wired to real APIs | 2–7 | P0 | 🟡 sessions and team done |
+| — | **MVP release (end-to-end journey works)** ([checklist](MVP.md)) | — | — | ✅ |
 | 5 | Inventory & decision support | 8 | P1 | ✅ |
 | 5B | Festivals, regions and cricket | - | P1 | ✅ |
 | 6 | NLP review intelligence | 9 | P1 | ⬜ |
@@ -177,9 +177,9 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ## Phase F2 — App shell hardening
 
-- [ ] HttpOnly, SameSite cookie session with refresh-token rotation; CSRF protection; logout everywhere
+- [x] HttpOnly, SameSite cookie session with refresh-token rotation; CSRF protection; logout everywhere
 - [ ] Typed API client generated from OpenAPI (`openapi-typescript`) replacing the hand-written types
-- [ ] Workspace switcher and member invites (owner/admin)
+- [x] Workspace switcher and member invites (owner/admin)
 - [ ] Remove the persona demo once real data is the default (decision F-C)
 - [ ] Consistent empty / loading / error states; mobile layouts for every table
 - [ ] Accessibility pass (keyboard, focus, screen-reader labels, contrast) and Lighthouse check

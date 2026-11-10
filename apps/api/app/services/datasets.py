@@ -17,7 +17,7 @@ from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.user import User
 from app.models.workspace import Workspace
-from app.services import audit
+from app.services import audit, mapping_profiles
 from app.services.ingestion.pipeline import (
     import_lines,
     inspect_file,
@@ -111,11 +111,7 @@ async def create_dataset(
         row_count=inspection["row_count"],
         status=DatasetStatus.UPLOADED,
         inspection=inspection,
-        column_mapping={
-            "fields": inspection["suggested_mapping"],
-            "date_order": "dmy",
-            "suggested": True,
-        },
+        column_mapping=remembered_or_suggested(db, workspace.id, inspection),
         created_by_id=user.id,
     )
     db.add(dataset)
@@ -132,6 +128,19 @@ async def create_dataset(
     return dataset
 
 
+def remembered_or_suggested(
+    db: Session, ws: uuid.UUID, inspection: dict[str, Any]
+) -> dict[str, Any]:
+    """The mapping confirmed for this exact file layout before, else our best guess."""
+    headers: list[str] = inspection["headers"]
+    profile = mapping_profiles.find(db, ws, headers)
+    saved = mapping_profiles.usable(profile, headers) if profile else None
+    if profile is not None and saved is not None:
+        mapping_profiles.mark_used(profile)
+        return {**saved, "remembered": True, "profile_name": profile.name}
+    return {"fields": inspection["suggested_mapping"], "date_order": "dmy", "suggested": True}
+
+
 def save_mapping(
     db: Session, dataset: Dataset, user: User, fields: dict[str, str | None], date_order: str
 ) -> Dataset:
@@ -141,6 +150,9 @@ def save_mapping(
     clean = {k: v for k, v in fields.items() if v}
     validate_mapping({"fields": clean}, headers)
     dataset.column_mapping = {"fields": clean, "date_order": date_order}
+    mapping_profiles.remember(
+        db, dataset.workspace_id, headers, {"fields": clean, "date_order": date_order}, dataset.name
+    )  # next file with these columns is recognised
     dataset.validation = None
     dataset.status = DatasetStatus.MAPPED
     audit.record(

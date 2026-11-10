@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.models.commerce import Product
 from app.models.workspace import Workspace
 from app.services import alerts as alert_service
-from app.services import credit, events_insight, inventory
+from app.services import credit, events_insight, inventory, pricing
 from app.services.analytics import intelligence
 from app.services.assistant.tools import inr
 from app.services.bills import service as bills
@@ -183,7 +183,45 @@ def supplier_pass_through(db: Session, ws: Workspace, today: date) -> list[dict[
     return out
 
 
-GENERATORS = [reorder, margin_leaks, udhaar, dead_stock, winback, festival, supplier_pass_through]
+def stop_losing_discounts(db: Session, ws: Workspace, today: date) -> list[dict[str, Any]]:
+    d = pricing.discounts(db, ws.id)
+    bad = [i for i in d.get("items", []) if i["verdict"] == "lost_money"][:3]
+    out = []
+    for i in bad:
+        lo, hi = abs(i["profit_effect_high"]), abs(i["profit_effect_low"])
+        out.append(_cand(
+            f"discount|{i['sku']}", "stop_discount", f"Stop discounting {i['name']}: it lost money",
+            f"On {i['promo_days']} discount days sales rose only {i['lift_pct']:.0f}% and profit was {inr(abs(i['profit_effect']))} lower than normal days would have given.",
+            [("Discount days", str(i["promo_days"]), "pricing:promo days"), ("Sales lift", f"{i['lift_pct']:+.0f}%", "pricing:vs same weekday"), ("Profit effect", inr(i["profit_effect"]), "pricing:bootstrap 95% range")],
+            _impact(lo, abs(i["profit_effect"]), hi, "Profit lost on discount days over the last 180 days, range from the bootstrap", ["Other things changed on those days too (festivals, weather, stock)"], True),
+            "S", "medium", "/app/pricing"))  # fmt: skip
+    return out
+
+
+def price_tests(db: Session, ws: Workspace, today: date) -> list[dict[str, Any]]:
+    m = pricing.price_moves(db, ws.id)
+    out = []
+    for s in m.get("suggestions", [])[:2]:
+        pc = s["profit_change_month"]
+        out.append(_cand(
+            f"price_test|{s['sku']}", "price_test", f"Try {inr(s['suggested_price'])} for {s['name']} (+{s['step_pct']:.0f}%) for a week",
+            s["why"], [("Margin now", f"{s['margin_pct']}%", "costs:margin"), ("Price now", inr(s["price"]), "sales:net price per unit")],
+            _impact(max(0, pc["low"]), pc["expected"], pc["high"], "Monthly profit change from a small rise, using " + ("this product's own measured response" if s["measured"] else "an assumed range of shopper response"), [s["assumption"]] if s["assumption"] else [], bool(s["measured"])),
+            "S", "medium" if s["measured"] else "low", "/app/pricing"))  # fmt: skip
+    return out
+
+
+GENERATORS = [
+    reorder,
+    margin_leaks,
+    udhaar,
+    dead_stock,
+    winback,
+    festival,
+    supplier_pass_through,
+    stop_losing_discounts,
+    price_tests,
+]
 
 
 # ------------------------------------------------------------------ outcome metrics

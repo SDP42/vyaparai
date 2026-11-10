@@ -273,6 +273,23 @@ def recommendations(db: Session, workspace: Workspace) -> Result:
     )  # fmt: skip
 
 
+def pricing_summary(db: Session, workspace: Workspace) -> Result:
+    from app.services import pricing
+
+    d = pricing.discounts(db, workspace.id)
+    if not d.get("has_data") or not d["items"]:
+        return Result(empty=True, link="/app/pricing", note="Not enough discount history.")
+    m = pricing.price_moves(db, workspace.id)
+    lost = [i for i in d["items"] if i["verdict"] == "lost_money"]
+    paid = [i for i in d["items"] if i["verdict"] == "paid_off"]
+    return Result(
+        facts={"judged": d["summary"]["judged"], "lost": len(lost), "paid": len(paid), "given": d["summary"]["discount_in_losing_promos"],
+               "suggestions": len(m.get("suggestions", []))},
+        rows=[{"name": i["name"], "verdict": i["verdict"].replace("_", " "), "lift": f"{i['lift_pct']:+.0f}%"} for i in d["items"][:4]],
+        link="/app/pricing",
+    )  # fmt: skip
+
+
 def find_product(db: Session, ws: uuid.UUID, text: str) -> Product | None:
     """A product named in the question (best fuzzy match above a safe threshold)."""
     from app.services.bills.service import match_score

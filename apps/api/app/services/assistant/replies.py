@@ -269,6 +269,16 @@ def recommend(lang: str, r: tools.Result) -> str:
     )
 
 
+def pricing(lang: str, r: tools.Result) -> str:
+    f = r.facts
+    return _pick(
+        lang,
+        f"Of {f['judged']} products with enough discount history, {f['paid']} paid off and {f['lost']} lost money ({inr(f['given'])} given away in those). {f['suggestions']} small price trials are suggested.",
+        f"{f['judged']} products mein se {f['paid']} par chhoot se fayda hua aur {f['lost']} par nuksan ({inr(f['given'])} chhoot di gayi). {f['suggestions']} chhote price trial sujhaye gaye hain.",
+        f"{f['judged']} प्रोडक्ट में से {f['paid']} पर छूट से फायदा हुआ और {f['lost']} पर नुकसान ({inr(f['given'])} की छूट दी गई)। {f['suggestions']} छोटे प्राइस ट्रायल सुझाए गए हैं।",
+    )
+
+
 HELP = {
     "en": "I answer from your own numbers only. Try: “sales last week”, “why did sales drop?”, “top 5 products”, “what should I order?”, “dead stock”, “next week forecast”, “any alerts?”, “margin”, “supplier price rises”, “customer reviews”, “upcoming festivals”, “who owes me money?”.",
     "hinglish": "Main sirf aapke apne numbers se jawab deta hoon. Poochiye: “pichle hafte ki bikri”, “sales kyun gir gayi”, “top 5 products”, “kya mangwana hai”, “dead stock”, “agle hafte ka forecast”, “koi alert?”, “margin”, “supplier ka price”, “reviews”, “aane wale tyohar”.",
@@ -280,6 +290,11 @@ UNKNOWN = {
     "hi": "यह मुझे समझ नहीं आया, और मैं अंदाज़ा नहीं लगाऊँगा। ",
 }
 EMPTY_HINT = {
+    "pricing": (
+        "Add a few months of sales with discounts.",
+        "Kuch mahine ki bikri (chhoot ke saath) daalein.",
+        "कुछ महीनों की बिक्री (छूट के साथ) डालें।",
+    ),
     "udhaar": (
         "Add your udhaar ledger on the Udhaar page.",
         "Udhaar page par apna khata daalein.",
@@ -314,6 +329,6 @@ EMPTY = {
 BUILD = {
     "sales": sales, "why": why, "top_products": lambda lg, r: products(lg, r), "slow_products": lambda lg, r: products(lg, r),
     "customers": customers, "stock": stock, "dead_stock": dead_stock, "forecast": forecast, "alerts": alerts,
-    "margin": margin, "udhaar": udhaar, "recommend": recommend,
+    "margin": margin, "udhaar": udhaar, "pricing": pricing, "recommend": recommend,
     "product_sales": product_sales, "product_stock": product_stock, "product_forecast": product_forecast, "supplier": supplier, "reviews": reviews, "festival": festivals,
 }  # fmt: skip

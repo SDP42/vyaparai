@@ -40,6 +40,7 @@ QUESTIONS = [
     ("आने वाले त्योहार", "festival"),
     ("who owes me money", "udhaar"), ("udhaar kitna baaki hai", "udhaar"), ("outstanding dues from customers", "udhaar"), ("उधार कितना बाकी है", "udhaar"),
     ("what should I do this week", "recommend"), ("any suggestions for my shop", "recommend"), ("is hafte kya karna chahiye", "recommend"),
+    ("did my discounts work", "pricing"), ("are discounts paying off", "pricing"), ("discount se fayda hua kya", "pricing"),
     ("hello", "help"), ("help", "help"), ("what can you do", "help"), ("namaste", "help"),
     ("asdf qwerty", "unknown"), ("what is the capital of France", "unknown"), ("tell me a joke", "unknown"),
 ]  # fmt: skip
@@ -131,8 +132,15 @@ def test_a_period_with_no_sales_says_so_and_falls_back(client: TestClient, shop)
 
 
 def test_every_intent_answers_without_error_and_in_the_asked_language(
-    client: TestClient, shop
+    client: TestClient, shop, monkeypatch
 ) -> None:
+    from app.core import hardening
+    from app.core.config import get_settings
+
+    monkeypatch.setattr(
+        get_settings(), "heavy_rate_limit_per_minute", 10_000
+    )  # this test asks every question
+    hardening.reset()
     for q, _ in QUESTIONS:
         a = ask(client, shop, q)
         assert a["answer"]

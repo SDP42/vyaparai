@@ -285,6 +285,19 @@ INTENTS["recommend"] = {
     "सलाह",
 }
 
+INTENTS["pricing"] = {
+    "discount",
+    "discounts",
+    "promotion",
+    "promotions",
+    "promo",
+    "pricing",
+    "chhoot",
+    "chhut",
+    "छूट",
+    "डिस्काउंट",
+}
+
 # Hindi (Devanagari) forms added after the first evaluation run.
 INTENTS["stock"] |= {"मंगवाना", "मंगवाओ", "मंगाना", "मंगवाएं"}
 INTENTS["alerts"] |= {"अलर्ट", "अलर्ट्स"}
@@ -324,6 +337,12 @@ PHRASES: list[tuple[str, str]] = [
     (r"complain|shikayat|शिकायत", "reviews"),
     (r"sell\s+least|least\s+sell|sell\s+the\s+least", "slow_products"),
 ]
+PHRASES.append(
+    (
+        r"did\s+(?:my\s+)?(?:discounts?|offers?)|discounts?\s+(?:work|pay|help)|worth\s+discount|raise\s+my\s+prices?|safe\s+to\s+(?:raise|increase)|discount\s+se\s+fayda|chhoot\s+se\s+fayda",
+        "pricing",
+    )
+)
 PHRASES.append(
     (
         r"what\s+(?:should|do)\s+i\s+do|what\s+to\s+do|next\s+steps?|this\s+week.{0,12}(?:do|focus)|kya\s+kar(?:na|u|oon)\s+(?:chahiye|hai)|क्या\s+करना\s+चाहिए",

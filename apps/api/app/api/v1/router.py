@@ -18,6 +18,7 @@ from app.api.v1.endpoints import (
     health,
     intelligence,
     inventory,
+    pricing,
     recommendations,
     reports,
     reviews,
@@ -34,6 +35,7 @@ api_router.include_router(assistant.router)
 api_router.include_router(bills.router)
 api_router.include_router(documents.router)
 api_router.include_router(recommendations.router)
+api_router.include_router(pricing.router)
 api_router.include_router(reports.router)
 api_router.include_router(reviews.router)
 api_router.include_router(udhaar.router)

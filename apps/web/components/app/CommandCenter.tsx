@@ -49,7 +49,7 @@ export function CommandCenter() {
             <Insights items={data.insights} />
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="fluid [--gap:1.25rem] [--min:17rem]">
             <Card title="By category" subtitle="Share of net sales and change">
               <MixList rows={data.category_mix} />
             </Card>
@@ -130,7 +130,7 @@ function KpiGrid({ items, compareLabel }: { items: Kpi[]; compareLabel: string |
 
 function SecondaryStrip({ items }: { items: Kpi[] }) {
   return (
-    <section aria-label="More metrics" className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+    <section aria-label="More metrics" className="fluid [--min:8.5rem]">
       {items.map((k) => (
         <div key={k.key} className="rounded-xl border border-line bg-surface px-4 py-3">
           <p className="flex items-center gap-1.5 text-[11px] text-muted">

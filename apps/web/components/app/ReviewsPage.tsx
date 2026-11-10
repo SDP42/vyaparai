@@ -151,7 +151,7 @@ export function ReviewsPage() {
   const reset = (fn: () => void) => { fn(); setPage(0); };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-8">
+    <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Reviews</p>
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">What customers are saying</h1>
@@ -193,7 +193,7 @@ export function ReviewsPage() {
 
           <section aria-label="Themes">
             <h2 className="mb-3 font-semibold">What they talk about</h2>
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="fluid [--min:15rem]">
               {s.themes.map((t) => {
                 const delta = t.prior_negative_pct == null ? null : t.negative_pct - t.prior_negative_pct;
                 const on = theme === t.theme;

@@ -56,7 +56,7 @@ export function DataPage() {
       </div>
 
       {summary && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <div className="fluid [--min:9rem]">
           <Tile label="Orders" value={formatNumber(summary.orders)} />
           <Tile label="Line items" value={formatNumber(summary.order_items)} />
           <Tile label="Products" value={formatNumber(summary.products)} />

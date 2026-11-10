@@ -127,7 +127,7 @@ def test_summary_list_and_try(client: TestClient, ws) -> None:
 
 
 def test_viewers_cannot_import_and_strangers_see_nothing(client: TestClient, ws, make_user) -> None:
-    h, wid = ws
+    _, wid = ws
     stranger = make_user("x@x.in")
     assert (
         client.get(f"/api/v1/workspaces/{wid}/reviews/summary", headers=stranger).status_code == 404

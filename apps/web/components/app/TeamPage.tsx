@@ -61,7 +61,7 @@ export function TeamPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-8">
+    <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Team</p>
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Who can see {workspace.name}</h1>
@@ -70,6 +70,7 @@ export function TeamPage() {
 
       {err && <ErrorNote message={err} />}
 
+      <div className="grid items-start gap-6 lg:grid-cols-[1.3fr_1fr]">
       <section aria-labelledby="people" className="rounded-2xl border border-line bg-surface">
         <h2 id="people" className="border-b border-line px-5 py-3 font-semibold">People</h2>
         {members.loading && !members.data && <Skeleton className="m-5 h-24" />}
@@ -109,6 +110,7 @@ export function TeamPage() {
         </ul>
       </section>
 
+      <div className="space-y-6">
       {isAdmin ? (
         <section aria-labelledby="invite" className="rounded-2xl border border-line bg-surface p-5">
           <h2 id="invite" className="font-semibold">Invite someone</h2>
@@ -156,6 +158,8 @@ export function TeamPage() {
           Sign out everywhere
         </button>
       </section>
+      </div>
+      </div>
     </div>
   );
 }

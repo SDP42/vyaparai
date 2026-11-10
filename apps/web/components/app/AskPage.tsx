@@ -63,7 +63,7 @@ export function AskPage() {
 
   const last = turns.at(-1)?.a;
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-8">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Ask</p>
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Ask your shop</h1>

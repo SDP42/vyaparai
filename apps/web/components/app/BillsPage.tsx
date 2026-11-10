@@ -133,7 +133,7 @@ export function BillsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-4 sm:p-8">
+    <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Purchase bills</p>
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">What you paid your suppliers</h1>

@@ -10,6 +10,7 @@ import { useWorkspace } from "./AppContext";
 
 const NAV = [
   { href: "/app", label: "Command center", icon: "◧", exact: true },
+  { href: "/app/ask", label: "Ask", icon: "✦", exact: false },
   { href: "/app/alerts", label: "Alerts", icon: "!", exact: false },
   { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
   { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
@@ -25,7 +26,7 @@ const NAV = [
   { href: "/app/data", label: "Data", icon: "▤", exact: false },
   { href: "/app/team", label: "Team", icon: "☺", exact: false },
 ];
-const SOON = ["Copilot"];
+const SOON: string[] = [];
 
 /** Open alerts that need a look (high and medium), refreshed when alerts change. */
 function useAlertBadge(wsId: string): number {

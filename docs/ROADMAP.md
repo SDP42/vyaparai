@@ -32,7 +32,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 15 | Connectors and scheduled imports | ✅ | Remembered column mappings, connected Google Sheet or shared-file links, scheduled and deduplicated |
 | 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill photo/PDF import done ([BILLS](BILLS.md), [plan](research/COST-TRACKING.md)) |
 | 16 | Pricing and promotion advisor | ✅ | Which discounts paid off (vs the same weekday, profit after discount), small safe price trials ([PRICING](PRICING.md)) |
-| 17 | Multi-store and staff | ⬜ | Compare shops, targets, staff roles |
+| 17 | Multi-store and staff | ✅ stores | Side-by-side comparison, needs-attention flags, add a shop; per-staff attribution not possible without a cashier column ([STORES](STORES.md)) |
 | 18 | Mobile-first and Hinglish/Hindi | ⬜ | Installable PWA, language, offline read |
 | 19 | Benchmarks and goals | ⬜ | Targets and peer ranges |
 

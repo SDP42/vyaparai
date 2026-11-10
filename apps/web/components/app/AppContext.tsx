@@ -6,7 +6,7 @@ import { addDays, type Compare, type FilterOptions, type MetricRegistry, type Qu
 
 /* ------------------------------------------------------------------ workspace */
 
-type WorkspaceCtx = { workspace: Workspace; workspaces: Workspace[]; canImport: boolean; switchTo: (id: string) => void };
+type WorkspaceCtx = { workspace: Workspace; workspaces: Workspace[]; canImport: boolean; switchTo: (id: string) => void; reload: () => Promise<void> };
 const WorkspaceContext = createContext<WorkspaceCtx | null>(null);
 
 export function useWorkspace(): WorkspaceCtx {
@@ -64,7 +64,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setChosen(id);
   };
   return (
-    <WorkspaceContext.Provider value={{ workspace, workspaces, switchTo, canImport: ["owner", "admin", "analyst"].includes(workspace.role) }}>
+    <WorkspaceContext.Provider value={{ workspace, workspaces, switchTo, reload: load, canImport: ["owner", "admin", "analyst"].includes(workspace.role) }}>
       {children}
     </WorkspaceContext.Provider>
   );

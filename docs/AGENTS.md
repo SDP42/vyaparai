@@ -24,11 +24,16 @@ A workflow is a small graph of nodes. Each node calls an existing, tested servic
 
 **weekly_review** ("what should I do this week?"): refresh every recommendation signal, read alert counts, list the top five suggestions with reasons.
 
+**customer_health**: regulars slipping away, repeat rate, concentration of sales in the top 10% of customers, complaints in reviews, credit customers who stopped paying.
+
+**stock_risk**: products that will run out, cash stuck in dead stock, festivals that may strain stock, and whether the forecast is current.
+
 ## Limits
 
 - Weights are transparent rules (share of the change; fixed weights for context), not learned. They order findings; they are not probabilities.
 - The stock check sees today's stock, not the position during the period, so it can only suggest a possibility.
-- Two workflows so far; adding one means adding nodes that call existing services.
+- A running step cannot be interrupted without leaving the shared database session in an unknown state, so a step over 8 seconds is flagged and the 20-second budget stops the run; the hard stop is a database statement timeout set in production.
+- Four workflows so far; adding one means adding nodes that call existing services.
 
 ## API
 

@@ -224,18 +224,18 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ## Phase 9 — Agent workflows
 
-- [x] LangGraph analyst workflows: two built (`investigate_sales`, `weekly_review`). The graph is fixed (scope, compare, drivers, checks, conclude), not planned by a model
+- [x] LangGraph analyst workflows: four built (`investigate_sales`, `weekly_review`, `customer_health`, `stock_risk`). The graph is fixed (scope, compare, drivers, checks, conclude), not planned by a model
 - [x] Typed state, bounded retries (one retry), step budget, full run trace stored and viewable
-- [ ] Hard timeouts: only a total 20 s budget checked *between* steps; a single slow step is not interrupted
+- [x] Timeouts: 20 s total budget and a per-step slow flag (8 s). A running step cannot be interrupted safely (shared database session); production adds a database statement timeout (Phase 11)
 - [x] No arbitrary SQL, secrets, permission changes or purchases (read-only; a test enforces it)
 
 ## Phase 10 — Recommendations & reporting
 
 - [x] Recommendation objects: rationale, evidence refs, impact range, confidence, assumptions
 - [x] Status lifecycle: proposed → approved/dismissed → done (audited)
-- [ ] Outcome measured: nothing yet compares what happened after an item was marked done
+- [x] Outcome measured: a baseline number is saved when an item is marked done and read again after 14 days (improved, no change, worse, or not measurable), with the caveat that this is not proof of cause
 - [x] PDF/CSV reports; saved reports (snapshots) and saved investigation runs
-- [ ] Metric definitions inside the PDF (the metric registry has them; the report does not print them)
+- [x] Metric definitions printed inside the PDF
 
 ## Phase 11 — Hardening, deployment & launch
 

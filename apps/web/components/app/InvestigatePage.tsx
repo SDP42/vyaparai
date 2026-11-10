@@ -13,6 +13,7 @@ type Step = { position: number; node: string; status: "ok" | "failed" | "skipped
 type Run = { id: string; workflow: string; status: string; params: { from?: string; to?: string }; started_at: string; finished_at: string | null; error: string | null; summary: string | null; result?: { summary: string; findings: Finding[]; notes: string[]; caveat: string }; steps?: Step[] };
 
 const NODE_LABEL: Record<string, string> = {
+  overview: "Customer overview", reviews_check: "Check reviews", credit_check: "Check credit", stock: "Check stock levels", festival: "Check upcoming festivals", forecast_check: "Check the forecast", refresh: "Read every signal", alerts: "Read alerts", rank: "Rank suggestions",
   scope: "Choose the periods", headline: "Compare net sales", drivers: "Split the change into effects", movers: "Find the products behind it", stock_check: "Check stock",
   cost_check: "Check costs and supplier prices", discount_check: "Check discounts", calendar_check: "Check the festival calendar", review_check: "Check reviews", customers_check: "Orders or basket size?", conclude: "Rank what was found",
 };
@@ -98,7 +99,7 @@ export function InvestigatePage() {
 
   const go = async (workflow = "investigate_sales") => {
     setBusy(true); setErr(null);
-    try { setRun(await api<Run>(`${base}/runs`, { method: "POST", body: JSON.stringify(workflow === "weekly_review" ? { workflow } : { workflow, date_from: from, date_to: to }) })); setVersion((v) => v + 1); }
+    try { setRun(await api<Run>(`${base}/runs`, { method: "POST", body: JSON.stringify(workflow === "investigate_sales" ? { workflow, date_from: from, date_to: to } : { workflow }) })); setVersion((v) => v + 1); }
     catch (e) { setErr(e instanceof ApiError ? e.message : "Could not run it"); }
     finally { setBusy(false); }
   };
@@ -120,7 +121,7 @@ export function InvestigatePage() {
             <label className="text-xs text-muted">From<input type="date" className={`block ${f}`} value={from} onChange={(e) => setFrom(e.target.value)} /></label>
             <label className="text-xs text-muted">To<input type="date" className={`block ${f}`} value={to} onChange={(e) => setTo(e.target.value)} /></label>
             <button type="button" disabled={busy || !from || !to || from > to} onClick={() => go()} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "Working…" : "Investigate"}</button>
-            <button type="button" disabled={busy} onClick={() => go("weekly_review")} className="rounded-full border border-line px-5 py-2.5 text-sm hover:bg-surface-2 disabled:opacity-50">What should I do this week?</button>
+            {[["weekly_review", "What should I do this week?"], ["customer_health", "Are my customers healthy?"], ["stock_risk", "Where is stock at risk?"]].map(([k, l]) => <button key={k} type="button" disabled={busy} onClick={() => go(k)} className="rounded-full border border-line px-5 py-2.5 text-sm hover:bg-surface-2 disabled:opacity-50">{l}</button>)}
           </div>
         </Card>
       ) : <EmptyNote>Viewers can read past investigations. Analysts and above can run them.</EmptyNote>}

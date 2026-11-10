@@ -10,7 +10,8 @@ import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
 type Ev = { label: string; value: string; source: string };
 type Impact = { low: number | null; expected: number | null; high: number | null; basis: string; assumptions: string[]; measured: boolean };
-type Rec = { id: string; kind: string; title: string; why: string; evidence: Ev[]; impact: Impact; effort: "S" | "M" | "L"; confidence: "high" | "medium" | "low"; score: number; link: string; status: string; note: string | null; last_seen: string };
+type Outcome = { verdict: string; metric?: string; before?: number; after?: number; change_pct?: number | null; days?: number; money?: boolean; caveat?: string; note?: string };
+type Rec = { done_at?: string | null; outcome?: Outcome | null; id: string; kind: string; title: string; why: string; evidence: Ev[]; impact: Impact; effort: "S" | "M" | "L"; confidence: "high" | "medium" | "low"; score: number; link: string; status: string; note: string | null; last_seen: string };
 type Summary = { counts: Record<string, number>; proposed_impact: { low: number; expected: number; high: number; unestimated: number } };
 
 const TABS = [["proposed", "To decide"], ["approved", "To do"], ["done", "Done"], ["dismissed", "Dismissed"], ["stale", "No longer needed"]] as const;
@@ -49,6 +50,18 @@ function Card({ r, onAct, canAct, busy }: { r: Rec; onAct: (a: string, id: strin
         </div>
       </details>
       {r.note && <p className="mt-2 text-xs text-muted">Note: {r.note}</p>}
+      {r.status === "done" && (
+        <div className="mt-3 rounded-xl border border-line bg-canvas p-3 text-sm">
+          {!r.outcome && <p className="text-muted">Done {r.done_at}. The result is read two weeks later.</p>}
+          {r.outcome && r.outcome.verdict === "not_measurable" && <p className="text-muted">{r.outcome.note}</p>}
+          {r.outcome && r.outcome.verdict !== "not_measurable" && (
+            <>
+              <p><b className={r.outcome.verdict === "improved" ? "text-mor" : r.outcome.verdict === "worse" ? "text-sindoor" : ""}>{r.outcome.verdict === "improved" ? "Improved" : r.outcome.verdict === "worse" ? "Got worse" : "No change"}</b>: {r.outcome.metric} went from {r.outcome.money ? formatINR(r.outcome.before ?? 0) : r.outcome.before} to {r.outcome.money ? formatINR(r.outcome.after ?? 0) : r.outcome.after} in {r.outcome.days} days.</p>
+              <p className="mt-1 text-xs text-muted">{r.outcome.caveat}</p>
+            </>
+          )}
+        </div>
+      )}
       <div className="mt-4 flex flex-wrap gap-2">
         <Link href={r.link} className="rounded-full border border-line px-4 py-1.5 text-sm hover:bg-surface-2">Open the page →</Link>
         {canAct && r.status === "proposed" && <><button type="button" disabled={busy} onClick={() => onAct("approve", r.id)} className="rounded-full bg-fg px-4 py-1.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">I will do this</button><button type="button" disabled={busy} onClick={() => onAct("dismiss", r.id)} className="rounded-full px-4 py-1.5 text-sm text-muted hover:text-fg">Not now</button></>}

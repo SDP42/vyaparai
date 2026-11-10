@@ -20,6 +20,8 @@ Every item shows its basis and assumptions; assumptions that are not measured on
 
 **Lifecycle**: proposed, approved ("I will do this"), done; or dismissed. A dismissed item is not proposed again while its cause remains. An item whose cause has gone becomes "no longer needed". A signal that fails to read never hides the others or marks existing items stale. Each decision is audited.
 
+**Outcomes**: when an item is marked done, the number it should move is saved (udhaar older than 30 days, cash in dead stock, regulars gone quiet, products about to run out, margin leaks). Two weeks later the same number is read again and shown as improved, no change or worse, with a reminder that other things changed too. Items with no single honest number (festival stock, supplier price changes) say "not measurable".
+
 **Limits**: the recovery and uplift shares are general assumptions, not measured on any shop; they are shown as ranges so the owner can discount them. Impacts of different items can overlap, so the total is "if you did everything", not a forecast.
 
 ## Reports

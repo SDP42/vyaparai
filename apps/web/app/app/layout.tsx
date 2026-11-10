@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnalyticsProvider, WorkspaceProvider } from "@/components/app/AppContext";
 import { AppShell } from "@/components/app/AppShell";
+import { LanguageProvider } from "@/lib/i18n";
+import { PwaRegister } from "@/components/app/PwaRegister";
 import { loadSession, signOut as endSession, type Session } from "@/lib/session";
 
 /**
@@ -29,12 +31,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     void endSession().finally(() => router.push("/login"));
   };
   return (
+    <LanguageProvider>
     <WorkspaceProvider>
+      <PwaRegister />
       <AnalyticsProvider>
         <AppShell name={session.name} onSignOut={signOut}>
           {children}
         </AppShell>
       </AnalyticsProvider>
     </WorkspaceProvider>
+    </LanguageProvider>
   );
 }

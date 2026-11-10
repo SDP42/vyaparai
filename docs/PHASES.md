@@ -34,7 +34,7 @@ each phase contains and its exit criteria.
 | 15B | Cost history and margin-leak tracking (**done** from per-sale costs, with price suggestions; purchase-bill import **done**, see [BILLS](BILLS.md); [plan](research/COST-TRACKING.md)) | - | P1 | ✅ |
 | 16 | Pricing and promotion advisor ([notes](PRICING.md)) | - | P2 | ✅ |
 | 17 | Multi-store and staff ([notes](STORES.md)) | - | P2 | ✅ stores compared; ⬜ staff attribution |
-| 18 | Mobile-first (PWA) and Hinglish/Hindi | - | P1 | ⬜ |
+| 18 | Mobile-first (PWA) and Hinglish/Hindi ([notes](MOBILE.md)) | - | P1 | ✅ app; 🟡 translation covers 4 areas |
 | 19 | Benchmarks and goals | - | P2 | ⬜ |
 
 **MVP journey (blueprint §03):** create workspace → upload retail dataset → map columns →

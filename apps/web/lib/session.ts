@@ -86,6 +86,12 @@ export async function signOut(everywhere = false) {
 export function clearSession() {
   accessToken = null;
   try {
+    navigator.serviceWorker?.controller?.postMessage("clear"); // forget saved numbers on this device
+    void caches?.delete("vyapar-data-v1");
+  } catch {
+    /* no cache API */
+  }
+  try {
     localStorage.removeItem(KEY);
   } catch {
     /* ignore */

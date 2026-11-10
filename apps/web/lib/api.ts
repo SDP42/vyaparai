@@ -47,6 +47,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     if (e instanceof ApiError) throw e;
     throw new ApiError(0, "network", "Could not reach the Vyapar API. Is it running on port 8000?");
   }
+  if (res.headers.get("x-vyapar-offline") && typeof window !== "undefined") window.dispatchEvent(new Event("vyapar:offline-data"));
   if (res.status === 401) expired();
   if (!res.ok) {
     const body = await res.json().catch(() => null);

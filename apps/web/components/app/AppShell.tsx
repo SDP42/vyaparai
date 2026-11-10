@@ -3,35 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, type ReactNode } from "react";
+import { LANGS, useT, type Key } from "@/lib/i18n";
 import { Logo } from "@/components/landing/Nav";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useWorkspace } from "./AppContext";
 
 const NAV = [
-  { href: "/app", label: "Command center", icon: "◧", exact: true },
-  { href: "/app/ask", label: "Ask", icon: "✦", exact: false },
-  { href: "/app/recommendations", label: "Next steps", icon: "✓", exact: false },
-  { href: "/app/alerts", label: "Alerts", icon: "!", exact: false },
-  { href: "/app/investigate", label: "Investigate", icon: "◇", exact: false },
-  { href: "/app/sales", label: "Sales", icon: "◨", exact: false },
-  { href: "/app/customers", label: "Customers", icon: "◉", exact: false },
-  { href: "/app/products", label: "Products", icon: "◈", exact: false },
-  { href: "/app/forecasts", label: "Forecasts", icon: "◬", exact: false },
-  { href: "/app/inventory", label: "Stock", icon: "▦", exact: false },
-  { href: "/app/festivals", label: "Festivals", icon: "◎", exact: false },
-  { href: "/app/bills", label: "Bills", icon: "▥", exact: false },
-  { href: "/app/pricing", label: "Pricing", icon: "%", exact: false },
-  { href: "/app/costs", label: "Costs", icon: "₹", exact: false },
-  { href: "/app/reviews", label: "Reviews", icon: "❝", exact: false },
-  { href: "/app/documents", label: "Documents", icon: "❏", exact: false },
-  { href: "/app/udhaar", label: "Udhaar", icon: "◐", exact: false },
-  { href: "/app/campaigns", label: "Campaigns", icon: "◍", exact: false },
-  { href: "/app/digest", label: "Digest", icon: "✉", exact: false },
-  { href: "/app/data", label: "Data", icon: "▤", exact: false },
-  { href: "/app/reports", label: "Reports", icon: "▣", exact: false },
-  { href: "/app/stores", label: "Stores", icon: "⌂", exact: false },
-  { href: "/app/team", label: "Team", icon: "☺", exact: false },
+  { href: "/app", label: "Command center", key: "nav.command", icon: "◧", exact: true },
+  { href: "/app/ask", label: "Ask", key: "nav.ask", icon: "✦", exact: false },
+  { href: "/app/recommendations", label: "Next steps", key: "nav.steps", icon: "✓", exact: false },
+  { href: "/app/alerts", label: "Alerts", key: "nav.alerts", icon: "!", exact: false },
+  { href: "/app/investigate", label: "Investigate", key: "nav.investigate", icon: "◇", exact: false },
+  { href: "/app/sales", label: "Sales", key: "nav.sales", icon: "◨", exact: false },
+  { href: "/app/customers", label: "Customers", key: "nav.customers", icon: "◉", exact: false },
+  { href: "/app/products", label: "Products", key: "nav.products", icon: "◈", exact: false },
+  { href: "/app/forecasts", label: "Forecasts", key: "nav.forecasts", icon: "◬", exact: false },
+  { href: "/app/inventory", label: "Stock", key: "nav.stock", icon: "▦", exact: false },
+  { href: "/app/festivals", label: "Festivals", key: "nav.festivals", icon: "◎", exact: false },
+  { href: "/app/bills", label: "Bills", key: "nav.bills", icon: "▥", exact: false },
+  { href: "/app/pricing", label: "Pricing", key: "nav.pricing", icon: "%", exact: false },
+  { href: "/app/costs", label: "Costs", key: "nav.costs", icon: "₹", exact: false },
+  { href: "/app/reviews", label: "Reviews", key: "nav.reviews", icon: "❝", exact: false },
+  { href: "/app/documents", label: "Documents", key: "nav.documents", icon: "❏", exact: false },
+  { href: "/app/udhaar", label: "Udhaar", key: "nav.udhaar", icon: "◐", exact: false },
+  { href: "/app/campaigns", label: "Campaigns", key: "nav.campaigns", icon: "◍", exact: false },
+  { href: "/app/digest", label: "Digest", key: "nav.digest", icon: "✉", exact: false },
+  { href: "/app/data", label: "Data", key: "nav.data", icon: "▤", exact: false },
+  { href: "/app/reports", label: "Reports", key: "nav.reports", icon: "▣", exact: false },
+  { href: "/app/stores", label: "Stores", key: "nav.stores", icon: "⌂", exact: false },
+  { href: "/app/team", label: "Team", key: "nav.team", icon: "☺", exact: false },
 ];
 const SOON: string[] = [];
 
@@ -53,6 +54,7 @@ function useAlertBadge(wsId: string): number {
 
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();
+  const { t, lang, setLang } = useT();
   const { workspace, workspaces, switchTo } = useWorkspace();
   const alertCount = useAlertBadge(workspace.id);
   const badge = (href: string) =>
@@ -71,7 +73,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
   return (
     <div className="min-h-dvh bg-canvas md:grid md:grid-cols-[232px_1fr]">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-fg focus:px-4 focus:py-2 focus:text-sm focus:text-canvas">
-        Skip to content
+        {t("shell.skip")}
       </a>
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line bg-surface p-5 md:flex">
         <Link href="/" aria-label="Vyapar AI home">
@@ -107,7 +109,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
               <span aria-hidden className="text-muted">
                 {n.icon}
               </span>
-              {n.label}
+              {t(n.key as Key)}
               {badge(n.href)}
             </Link>
           ))}
@@ -119,7 +121,13 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
             </span>
           ))}
         </nav>
-        <div className="mt-auto flex items-center gap-3 border-t border-line pt-4">
+        <label className="mt-auto block text-[11px] text-muted">
+          {t("shell.language")}
+          <select aria-label={t("shell.language")} value={lang} onChange={(e) => setLang(e.target.value as (typeof LANGS)[number]["key"])} className="mt-1 w-full rounded-md border border-line bg-canvas px-1.5 py-1 text-sm">
+            {LANGS.map((l) => <option key={l.key} value={l.key}>{l.label}</option>)}
+          </select>
+        </label>
+        <div className="mt-3 flex items-center gap-3 border-t border-line pt-4">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-fg font-mono text-xs font-bold text-canvas" aria-hidden>
             {name.slice(0, 2).toUpperCase()}
           </span>
@@ -127,7 +135,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
             <p className="truncate text-sm font-medium">{name}</p>
           </div>
           <button type="button" onClick={onSignOut} className="text-xs text-muted hover:text-fg">
-            Sign out
+            {t("shell.signOut")}
           </button>
         </div>
       </aside>
@@ -145,8 +153,11 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
                 ))}
               </select>
             )}
+            <select aria-label={t("shell.language")} value={lang} onChange={(e) => setLang(e.target.value as (typeof LANGS)[number]["key"])} className="mr-2 rounded-full border border-line bg-surface px-2 py-1 text-xs">
+              {LANGS.map((l) => <option key={l.key} value={l.key}>{l.label}</option>)}
+            </select>
             <button type="button" onClick={onSignOut} className="rounded-full border border-line px-3 py-1 text-xs text-muted">
-              Sign out
+              {t("shell.signOut")}
             </button>
           </div>
           <nav ref={strip} aria-label="App" className="flex snap-x gap-2 overflow-x-auto px-4 pb-2 [mask-image:linear-gradient(to_right,#000_92%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -159,7 +170,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
                   active(n) ? "border-fg bg-fg text-canvas" : "border-line text-fg/60"
                 }`}
               >
-                {n.label}
+                {t(n.key as Key)}
                 {badge(n.href)}
               </Link>
             ))}

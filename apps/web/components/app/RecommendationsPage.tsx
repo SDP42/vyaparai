@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ApiError, api } from "@/lib/api";
 import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
+import { useT, type Key } from "@/lib/i18n";
 import { useWorkspace } from "./AppContext";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
@@ -14,12 +15,13 @@ type Outcome = { verdict: string; metric?: string; before?: number; after?: numb
 type Rec = { done_at?: string | null; outcome?: Outcome | null; id: string; kind: string; title: string; why: string; evidence: Ev[]; impact: Impact; effort: "S" | "M" | "L"; confidence: "high" | "medium" | "low"; score: number; link: string; status: string; note: string | null; last_seen: string };
 type Summary = { counts: Record<string, number>; proposed_impact: { low: number; expected: number; high: number; unestimated: number } };
 
-const TABS = [["proposed", "To decide"], ["approved", "To do"], ["done", "Done"], ["dismissed", "Dismissed"], ["stale", "No longer needed"]] as const;
+const TABS = [["proposed", "steps.decide"], ["approved", "steps.todo"], ["done", "steps.done"], ["dismissed", "steps.dismissed"], ["stale", "steps.stale"]] as const;
 const EFFORT = { S: "A few minutes", M: "An afternoon", L: "Several days" } as const;
 const CONF = { high: "bg-mor/12 text-mor", medium: "bg-haldi/25", low: "bg-surface-2 text-muted" } as const;
 
 function Card({ r, onAct, canAct, busy }: { r: Rec; onAct: (a: string, id: string) => void; canAct: boolean; busy: boolean }) {
   const i = r.impact;
+  const { t } = useT();
   return (
     <article className="rounded-2xl border border-line bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -63,9 +65,9 @@ function Card({ r, onAct, canAct, busy }: { r: Rec; onAct: (a: string, id: strin
         </div>
       )}
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href={r.link} className="rounded-full border border-line px-4 py-1.5 text-sm hover:bg-surface-2">Open the page →</Link>
-        {canAct && r.status === "proposed" && <><button type="button" disabled={busy} onClick={() => onAct("approve", r.id)} className="rounded-full bg-fg px-4 py-1.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">I will do this</button><button type="button" disabled={busy} onClick={() => onAct("dismiss", r.id)} className="rounded-full px-4 py-1.5 text-sm text-muted hover:text-fg">Not now</button></>}
-        {canAct && r.status === "approved" && <><button type="button" disabled={busy} onClick={() => onAct("done", r.id)} className="rounded-full bg-mor px-4 py-1.5 text-sm font-semibold text-canvas disabled:opacity-50">Mark done</button><button type="button" disabled={busy} onClick={() => onAct("dismiss", r.id)} className="rounded-full px-4 py-1.5 text-sm text-muted hover:text-fg">Drop it</button></>}
+        <Link href={r.link} className="rounded-full border border-line px-4 py-1.5 text-sm hover:bg-surface-2">{t("steps.open")}</Link>
+        {canAct && r.status === "proposed" && <><button type="button" disabled={busy} onClick={() => onAct("approve", r.id)} className="rounded-full bg-fg px-4 py-1.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{t("steps.approve")}</button><button type="button" disabled={busy} onClick={() => onAct("dismiss", r.id)} className="rounded-full px-4 py-1.5 text-sm text-muted hover:text-fg">{t("steps.later")}</button></>}
+        {canAct && r.status === "approved" && <><button type="button" disabled={busy} onClick={() => onAct("done", r.id)} className="rounded-full bg-mor px-4 py-1.5 text-sm font-semibold text-canvas disabled:opacity-50">{t("steps.markDone")}</button><button type="button" disabled={busy} onClick={() => onAct("dismiss", r.id)} className="rounded-full px-4 py-1.5 text-sm text-muted hover:text-fg">Drop it</button></>}
         {canAct && ["done", "dismissed"].includes(r.status) && <button type="button" disabled={busy} onClick={() => onAct("reopen", r.id)} className="rounded-full border border-line px-4 py-1.5 text-sm hover:bg-surface-2">Reopen</button>}
       </div>
     </article>
@@ -74,6 +76,7 @@ function Card({ r, onAct, canAct, busy }: { r: Rec; onAct: (a: string, id: strin
 
 export function RecommendationsPage() {
   const { workspace, canImport } = useWorkspace();
+  const { t } = useT();
   const base = `/workspaces/${workspace.id}/recommendations`;
   const [tab, setTab] = useState<(typeof TABS)[number][0]>("proposed");
   const [version, setVersion] = useState(0);
@@ -101,10 +104,10 @@ export function RecommendationsPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Recommendations</p>
-          <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">What is worth doing next</h1>
-          <p className="mt-1 max-w-2xl text-sm text-fg/70">Ranked by likely value, how sure we are, and how much effort it takes. Nothing happens until you choose, and every figure shows how it was worked out.</p>
+          <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">{t("steps.title")}</h1>
+          <p className="mt-1 max-w-2xl text-sm text-fg/70">{t("steps.intro")}</p>
         </div>
-        {canImport && <button type="button" onClick={refresh} disabled={busy} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "Working…" : "Look again"}</button>}
+        {canImport && <button type="button" onClick={refresh} disabled={busy} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "…" : t("steps.again")}</button>}
       </header>
 
       {err && <ErrorNote message={err} />}
@@ -118,7 +121,7 @@ export function RecommendationsPage() {
       )}
 
       <div role="tablist" aria-label="Status" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1">
-        {TABS.map(([k, l]) => <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm ${tab === k ? "bg-fg text-canvas" : "text-fg/65 hover:text-fg"}`}>{l}{sum.data && sum.data.counts[k] ? ` · ${sum.data.counts[k]}` : ""}</button>)}
+        {TABS.map(([k, l]) => <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm ${tab === k ? "bg-fg text-canvas" : "text-fg/65 hover:text-fg"}`}>{t(l as Key)}{sum.data && sum.data.counts[k] ? ` · ${sum.data.counts[k]}` : ""}</button>)}
       </div>
 
       {list.error && <ErrorNote message={list.error} />}

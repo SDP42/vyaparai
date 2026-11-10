@@ -33,7 +33,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill photo/PDF import done ([BILLS](BILLS.md), [plan](research/COST-TRACKING.md)) |
 | 16 | Pricing and promotion advisor | ✅ | Which discounts paid off (vs the same weekday, profit after discount), small safe price trials ([PRICING](PRICING.md)) |
 | 17 | Multi-store and staff | ✅ stores | Side-by-side comparison, needs-attention flags, add a shop; per-staff attribution not possible without a cashier column ([STORES](STORES.md)) |
-| 18 | Mobile-first and Hinglish/Hindi | ⬜ | Installable PWA, language, offline read |
+| 18 | Mobile-first and Hinglish/Hindi | ✅ app · 🟡 language | Installable PWA with offline reading and Hinglish/Hindi for navigation, Ask, Next steps and Udhaar; other pages English ([MOBILE](MOBILE.md)) |
 | 19 | Benchmarks and goals | ⬜ | Targets and peer ranges |
 
 **MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app).

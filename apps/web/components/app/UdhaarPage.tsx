@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { ApiError, api, download } from "@/lib/api";
 import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
@@ -18,6 +19,7 @@ const BUCKET_TONE: Record<string, string> = { "0-30": "bg-mor", "31-60": "bg-hal
 const LANGS = [["hinglish", "Hinglish"], ["en", "English"], ["hi", "हिन्दी"]] as const;
 
 function AddEntry({ base, onDone }: { base: string; onDone: () => void }) {
+  const { t } = useT();
   const [party, setParty] = useState("");
   const [kind, setKind] = useState<"credit" | "payment">("credit");
   const [amount, setAmount] = useState("");
@@ -32,18 +34,18 @@ function AddEntry({ base, onDone }: { base: string; onDone: () => void }) {
   };
   const f = "mt-1 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-sm";
   return (
-    <Card title="Write an entry" subtitle="Credit given, or a payment received. Today's date is used.">
+    <Card title={t("udhaar.write")}>
       <form onSubmit={submit} className="space-y-3">
         <div role="radiogroup" aria-label="Entry type" className="flex gap-1 rounded-full border border-line p-1 text-sm">
-          {(["credit", "payment"] as const).map((k) => <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)} className={`flex-1 rounded-full px-3 py-1.5 ${kind === k ? "bg-fg text-canvas" : "text-fg/65"}`}>{k === "credit" ? "Gave udhaar" : "Got payment"}</button>)}
+          {(["credit", "payment"] as const).map((k) => <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)} className={`flex-1 rounded-full px-3 py-1.5 ${kind === k ? "bg-fg text-canvas" : "text-fg/65"}`}>{k === "credit" ? t("udhaar.gave") : t("udhaar.got")}</button>)}
         </div>
-        <label className="block text-xs text-muted">Name<input className={f} value={party} onChange={(e) => setParty(e.target.value)} maxLength={120} required /></label>
+        <label className="block text-xs text-muted">{t("udhaar.name")}<input className={f} value={party} onChange={(e) => setParty(e.target.value)} maxLength={120} required /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block text-xs text-muted">Amount (₹)<input className={f} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} required /></label>
+          <label className="block text-xs text-muted">{t("udhaar.amount")}<input className={f} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} required /></label>
           <label className="block text-xs text-muted">Phone (optional)<input className={f} inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} /></label>
         </div>
         {err && <p role="alert" className="text-sm text-sindoor">{err}</p>}
-        <button type="submit" disabled={busy || !party.trim() || !amount} className="w-full rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "Saving…" : "Save entry"}</button>
+        <button type="submit" disabled={busy || !party.trim() || !amount} className="w-full rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">{busy ? "…" : t("udhaar.save")}</button>
       </form>
     </Card>
   );
@@ -124,6 +126,7 @@ function LedgerView({ base, k, onClose }: { base: string; k: string; onClose: ()
 
 export function UdhaarPage() {
   const { workspace, canImport } = useWorkspace();
+  const { t } = useT();
   const base = `/workspaces/${workspace.id}/udhaar`;
   const [version, setVersion] = useState(0);
   const [panel, setPanel] = useState<"remind" | string | null>(null);
@@ -136,8 +139,8 @@ export function UdhaarPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Udhaar</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Who owes you, and for how long</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Payments are counted against the oldest udhaar first, so the age of what is still owed is honest. Reminders are drafts you send yourself.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">{t("udhaar.title")}</h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70">{t("udhaar.intro")}</p>
       </header>
 
       {sum.error && <ErrorNote message={sum.error} />}
@@ -146,7 +149,7 @@ export function UdhaarPage() {
       {s && s.has_data && (
         <>
           <section aria-label="Totals" className="fluid [--min:11rem]">
-            {[["Total owed", formatINR(total), `${s.parties_owing} people`], ["Older than 30 days", formatINR(n(s.overdue)), `${s.overdue_pct.toFixed(0)}% of what is owed`], ["Not paying", String(s.stalled), "two months or more"]].map(([l, v, sub]) => (
+            {[[t("udhaar.total"), formatINR(total), `${s.parties_owing}`], [t("udhaar.old"), formatINR(n(s.overdue)), `${s.overdue_pct.toFixed(0)}%`], [t("udhaar.notPaying"), String(s.stalled), "60+"]].map(([l, v, sub]) => (
               <div key={l} className="rounded-2xl border border-line bg-surface p-4"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">{l}</p><p className="mt-1 text-3xl font-bold tracking-tight">{v}</p><p className="text-xs text-muted">{sub}</p></div>
             ))}
           </section>
@@ -167,8 +170,8 @@ export function UdhaarPage() {
           {panel && panel !== "remind" && <LedgerView base={base} k={panel} onClose={() => setPanel(null)} />}
           <section aria-label="People" className="rounded-2xl border border-line bg-surface">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3">
-              <h2 className="font-semibold">Who to chase first</h2>
-              {canImport && s?.has_data && <button type="button" onClick={() => setPanel("remind")} className="rounded-full bg-fg px-4 py-1.5 text-xs font-semibold text-canvas hover:bg-sindoor">Draft reminders</button>}
+              <h2 className="font-semibold">{t("udhaar.first")}</h2>
+              {canImport && s?.has_data && <button type="button" onClick={() => setPanel("remind")} className="rounded-full bg-fg px-4 py-1.5 text-xs font-semibold text-canvas hover:bg-sindoor">{t("udhaar.draft")}</button>}
             </div>
             {parties.loading && !parties.data && <Skeleton className="m-4 h-24" />}
             {s && !s.has_data && <div className="p-4"><EmptyNote>No udhaar recorded yet. Write an entry or bring in your khata.</EmptyNote></div>}

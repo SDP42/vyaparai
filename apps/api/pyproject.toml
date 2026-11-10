@@ -16,6 +16,10 @@ dependencies = [
     "openpyxl>=3.1",
     "numpy>=2.5.4",
     "lightgbm>=4.7.0",
+    "pypdf>=7.0.0",
+    "pillow>=13.0.0",
+    "rapidocr-onnxruntime>=1.4.4",
+    "pypdfium2>=5.15.2",
 ]
 
 [dependency-groups]
@@ -57,6 +61,8 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 "app/services/safe_fetch.py" = ["E501"]
 "app/services/mapping_profiles.py" = ["E501"]
 "app/services/events.py" = ["E501"]
+"app/services/bills/*.py" = ["E501"]
+"app/api/v1/endpoints/bills.py" = ["E501"]
 "app/services/events_insight.py" = ["E501"]
 "app/api/v1/endpoints/events.py" = ["E501"]
 "app/api/v1/endpoints/inventory.py" = ["E501"]
@@ -85,5 +91,5 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [[tool.mypy.overrides]]
-module = ["lightgbm", "lightgbm.*"]
+module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2"]
 ignore_missing_imports = true

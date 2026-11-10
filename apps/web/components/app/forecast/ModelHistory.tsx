@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ApiError, api } from "@/lib/api";
 import { longDate, useApi } from "@/lib/analytics";
+import { parseUtc } from "@/lib/format";
 import type { RunVersion } from "@/lib/forecast";
 import { Card } from "../analytics/parts";
 import { MODEL_LABEL } from "./bits";
@@ -45,7 +46,7 @@ export function ModelHistory({ wsId, canEdit, version, onChanged }: { wsId: stri
                 <b>Version {r.version}</b>
                 <span className={`rounded-full px-2 py-0.5 text-[11px] ${STATUS[r.status].tone}`}>{STATUS[r.status].label}</span>
               </span>
-              <span className="font-mono text-[11px] text-muted">{longDate(r.created_at.slice(0, 10))} · sales to {longDate(r.as_of)}</span>
+              <span className="font-mono text-[11px] text-muted">{longDate(parseUtc(r.created_at).toLocaleDateString("en-CA"))} · sales to {longDate(r.as_of)}</span>
             </div>
             <p className="mt-1 text-xs text-muted">
               Typically off by {pct(r.wape)}

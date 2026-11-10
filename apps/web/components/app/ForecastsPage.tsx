@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ApiError, api, download, type Job } from "@/lib/api";
 import { addDays, longDate, useApi } from "@/lib/analytics";
 import { hasForecast, type ForecastOverview, type Latest, type ProductForecastPage } from "@/lib/forecast";
-import { formatINRCompact, formatNumber } from "@/lib/format";
+import { formatINRCompact, formatNumber, parseUtc } from "@/lib/format";
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Notices, Skeleton } from "./analytics/parts";
 import { ConfidenceChip, MODEL_LABEL, RangeBar, Sparkline, useCountUp } from "./forecast/bits";
@@ -225,7 +225,7 @@ function Overview({ data, base, stale, onRefresh, running, wsId, canEdit, onLoca
       <ModelHistory wsId={wsId} canEdit={canEdit} version={data.run.version ?? 1} onChanged={onLocationSaved} />
 
       <p className="text-xs text-muted">
-        Built {new Date(data.run.created_at).toLocaleString("en-IN")} in {data.run.seconds}s from {data.run.history_days} days of sales across {data.run.n_series} products. Methods: {Object.entries(card.models).filter(([, n]) => n > 0).map(([m, n]) => `${MODEL_LABEL[m]} (${n})`).join(", ")}.
+        Built {parseUtc(data.run.created_at).toLocaleString("en-IN")} in {data.run.seconds}s from {data.run.history_days} days of sales across {data.run.n_series} products. Methods: {Object.entries(card.models).filter(([, n]) => n > 0).map(([m, n]) => `${MODEL_LABEL[m]} (${n})`).join(", ")}.
       </p>
     </div>
   );

@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api, type DataSummary, type Dataset, type Page } from "@/lib/api";
-import { formatINR, formatNumber } from "@/lib/format";
+import { formatINR, formatNumber, parseUtc } from "@/lib/format";
 import { useAnalyticsState, useWorkspace } from "./AppContext";
+import { ConnectionsCard } from "./ConnectionsCard";
 import { ImportWizard } from "./ImportWizard";
 
 const STATUS: Record<Dataset["status"], { label: string; cls: string }> = {
@@ -69,6 +70,8 @@ export function DataPage() {
         </p>
       )}
 
+      <ConnectionsCard base={base} canEdit={canImport} onNewData={onChanged} />
+
       {wizard.open && <ImportWizard workspaceId={workspace.id} initial={wizard.dataset} onChanged={onChanged} onClose={() => setWizard({ open: false, dataset: null })} />}
 
       {empty && !wizard.open && (
@@ -112,7 +115,7 @@ export function DataPage() {
                     <td className="px-5 py-3">
                       <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS[d.status].cls}`}>{STATUS[d.status].label}</span>
                     </td>
-                    <td className="px-5 py-3 text-muted">{new Date(d.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</td>
+                    <td className="px-5 py-3 text-muted">{parseUtc(d.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</td>
                     <td className="px-5 py-3 text-right">
                       {canImport && d.status !== "imported" && (
                         <button type="button" onClick={() => setWizard({ open: true, dataset: d })} className="text-sm font-medium text-sindoor underline underline-offset-4">

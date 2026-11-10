@@ -2,6 +2,14 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-10 · Copilot, agents, recommendations and reports
+
+**Copilot.** Added product questions, follow-ups that reuse the last question's context, an evidence list on every answer, and a streaming endpoint whose steps are the real recorded ones ([ASSISTANT.md](ASSISTANT.md)). Routing is 100% on 73 questions but keywords were added for misses, so that is a development figure.
+
+**Agents.** Built `investigate_sales` and `weekly_review` as LangGraph graphs over existing services, with a 16-node and 20-second budget, one retry per node, and every step stored and viewable ([AGENTS.md](AGENTS.md)). No language model is used on purpose: steps stay inspectable and text in reviews or documents cannot steer the workflow. Tests plant a sales drop, fail a node, and cut the budget. Weights are transparent rules, not probabilities.
+
+**Recommendations and reports.** Seven kinds of suggestion with a stated impact range; the ones that rest on assumed recovery or uplift rates say so and rank by that. A broken signal does not hide the rest. Reports are frozen snapshots rendered as PDF and CSV; the PDF is English with "Rs" because the built-in fonts lack the rupee sign ([RECOMMENDATIONS.md](RECOMMENDATIONS.md)). The impact assumptions are general, not measured on any shop.
+
 ## 2026-11-10 · Udhaar
 
 The research named credit as a strong need that incumbents cover only as a ledger. Built a ledger (import in several layouts, manual entries), FIFO ageing, a chase-first order, drafted reminders in three languages with a firmer tone as dues age, an overdue alert and assistant answers ([UDHAAR.md](UDHAAR.md)). Nothing is sent by the product; a WhatsApp link pre-fills the draft when a phone is saved. All of it is rule-based and tested on a synthetic ledger; whether the tone and the chase order feel right to real shopkeepers is untested.

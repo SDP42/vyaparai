@@ -40,6 +40,7 @@ Hinglish text, WhatsApp-style messages, and tools that run on a laptop for free.
 | **Campaigns** | Segment audiences, margin-guarded offers, message drafts, holdout design (nothing is sent automatically) |
 | **Festivals** | 320 dated events with region matching, forecast signals and "stock before" warnings |
 | **Ask and documents** | Ask in English, Hindi or Hinglish and get answers from your own numbers; search your own policies and supplier terms with cited passages ([ASSISTANT](docs/ASSISTANT.md), [DOCUMENTS](docs/DOCUMENTS.md)) |
+| **Investigate, next steps, reports** | Bounded, traced LangGraph investigations ("why did sales change?"), ranked recommendations with impact ranges and approvals, and saved PDF/CSV business summaries ([AGENTS](docs/AGENTS.md), [RECOMMENDATIONS](docs/RECOMMENDATIONS.md)) |
 | **Udhaar** | Credit ledger with FIFO ageing, who to chase first, and reminder drafts in Hinglish, English or Hindi for you to send ([UDHAAR](docs/UDHAAR.md)) |
 | **Purchase bills** | Photo or PDF of a supplier bill read by OCR, checked by a person, then costs and supplier price rises tracked ([BILLS](docs/BILLS.md)) |
 | **Reviews** | Import reviews; language, sentiment and themes for English, Hindi and Hinglish with the phrase behind each claim |
@@ -135,7 +136,7 @@ disallowed licence enters the dependency tree. A project licence has not been ch
 
 ## Roadmap
 
-Next: campaign consent and sending, agent workflows, and hardening for deployment. Later phases are in the
+Next: campaign consent and sending, pricing advice, multi-store, and hardening for deployment. Later phases are in the
 [roadmap](docs/ROADMAP.md).
 
 ## Engineering principles

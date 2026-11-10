@@ -15,10 +15,18 @@ A fixed set of 66 questions (en/hinglish/hi) in `tests/test_assistant.py` routes
 
 ## Limits
 
-- No follow-up memory: each question stands alone.
+- Follow-ups work through a small context (previous intent, period and product) that the browser sends back; it is not stored on the server and covers one step back.
 - Keyword routing can be pulled the wrong way by a stray business word; policy-style words route to the documents first to reduce this.
-- Product-specific questions ("sales of Basmati rice") are not yet supported; the product matcher exists and is the next step.
+- Products are found by their distinctive words (all words for short names, 60% for long ones, at least one of 4+ letters); an unusual spelling or a Hindi product name is not matched.
 - Forecast accuracy is quoted from the stored backtest, including when it is poor.
+
+## Product questions, follow-ups, evidence and streaming
+
+- "how is Weekly selling", "stock of Steady", "forecast for Rare" run the same calculations filtered to that product; a test checks the number equals the filtered dashboard.
+- "and Weekly?" or "what about last 7 days" after an answer reuse its intent, period and product. Without context the same words are not guessed at.
+- Every answer carries an evidence list (label, value, source such as `metric:net_sales@v1`) shown in a collapsible panel.
+- `POST .../assistant/stream` sends the real recorded steps (understood, tool run with milliseconds, done), then the answer, evidence and the full result as server-sent events. The answer is computed before streaming begins, so the steps are not an animation.
+- "What should I do this week?" lists the top recommendations.
 
 ## API
 

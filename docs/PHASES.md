@@ -23,9 +23,9 @@ each phase contains and its exit criteria.
 | 5B | Festivals, regions and cricket | - | P1 | ✅ |
 | 6 | NLP review intelligence | 9 | P1 | ✅ |
 | 7 | Document intelligence & RAG | 5 | P1 | ✅ |
-| 8 | Vyapar Copilot (plain-language questions) | 4 | P1 | 🟡 rules-based first version |
-| 9 | Agent workflows (LangGraph) | 12 | P1 | ⬜ |
-| 10 | Recommendations & reporting | 13 | P2 | ⬜ |
+| 8 | Vyapar Copilot (plain-language questions) ([notes](ASSISTANT.md)) | 4 | P1 | ✅ |
+| 9 | Agent workflows (LangGraph) ([notes](AGENTS.md)) | 12 | P1 | ✅ |
+| 10 | Recommendations & reporting ([notes](RECOMMENDATIONS.md)) | 13 | P2 | ✅ |
 | 11 | Hardening, deployment & launch | 14–16 | P0 for launch | ⬜ |
 | 12 | Daily and weekly digest (email now; WhatsApp copy-paste; [notes](research/DIGEST.md)) | - | P1 | ✅ |
 | 13 | Cash and credit (udhaar) intelligence ([notes](UDHAAR.md)) | - | P1 | ✅ |
@@ -215,7 +215,7 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [ ] Citations to document/page/section; abstain when evidence is insufficient
 - [ ] Evaluation set: Recall@K, MRR, citation correctness; prompt-injection test documents
 
-## Phase 8 — Vyapar Copilot 🟡 first version ([how it works](ASSISTANT.md))
+## Phase 8 — Vyapar Copilot ✅ ([how it works](ASSISTANT.md))
 
 - [ ] Intent routing: metric, comparison, forecast, customer, inventory, document, unsupported
 - [ ] Typed tools (`get_sales_summary`, `compare_periods`, `top_products`, `forecast_demand`, `search_documents`)

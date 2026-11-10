@@ -22,9 +22,9 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 5B | Festivals, regions and cricket | ✅ | 320 dated events, region matching, forecast signals, alerts, Festivals page |
 | 6 | NLP review intelligence | ✅ | Sentiment and themes in English, Hindi and Hinglish, with evidence |
 | 7 | Document intelligence (RAG) | ✅ | Multilingual search over your own documents with citations ([DOCUMENTS](DOCUMENTS.md)) |
-| 8 | Vyapar Copilot | 🟡 | Ask page: English, Hindi, Hinglish questions answered from the metric layer ([ASSISTANT](ASSISTANT.md)) |
-| 9 | Agent workflows | ⬜ | Bounded, traced, read-only investigations (P1) |
-| 10 | Recommendations & reports | ⬜ | Approvable actions, PDF/CSV reports (P2) |
+| 8 | Vyapar Copilot | ✅ | Ask page: English, Hindi, Hinglish; follow-ups, product questions, evidence panel, streamed steps ([ASSISTANT](ASSISTANT.md)) |
+| 9 | Agent workflows | ✅ | Bounded, traced, read-only LangGraph investigations ([AGENTS](AGENTS.md)) |
+| 10 | Recommendations & reports | ✅ | Ranked actions with impact ranges and approvals; PDF/CSV reports ([RECOMMENDATIONS](RECOMMENDATIONS.md)) |
 | 11 | Hardening, deployment, launch | ⬜ | Rate limits, Postgres deploy, runbook, demo video |
 | 12 | Daily and weekly digest (push) | ✅ | Three numbers and one action, by WhatsApp or email |
 | 13 | Cash and credit (udhaar) intelligence | ✅ | Dues by age, who to chase, drafted reminders in three languages ([UDHAAR](UDHAAR.md)) |

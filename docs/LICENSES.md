@@ -34,6 +34,8 @@ Notable: Next.js, React (MIT), Recharts (MIT), three.js and React Three Fiber (M
 | Open-Meteo weather | Data CC BY 4.0 (attribution shown in the app). **The free endpoint is for non-commercial use only**; the app refuses it in production without a paid key (see EXTERNAL-FACTORS.md). Not used in a paid product until that is settled |
 | Udhaar demo ledger (`data/sample/vyapar_demo_udhaar.csv`), sample documents (`data/sample/docs/`), document test questions | Written for this project, CC0, synthetic names and amounts |
 | Review word lists, sentiment test sets, demo reviews (`data/sample/vyapar_demo_reviews.csv`) | Written for this project, CC0, no third-party text |
+| Agent workflows: langgraph, langgraph-checkpoint, langgraph-prebuilt, langgraph-sdk, langsmith, langchain-core (all MIT); orjson (MPL-2.0 AND Apache-2.0 OR MIT, used unmodified), xxhash, zstandard, uuid-utils (BSD), tenacity, ormsgpack (Apache-2.0 or MIT) | Permissive; langsmith is a tracing client and is not enabled (a test checks the environment) |
+| Reports: reportlab | BSD |
 | py-rust-stemmers (dependency of fastembed) | MIT per its bundled LICENSE file (copyright qdrant); its package metadata leaves the field empty, so the licence test lists it as a reviewed exception |
 | Document search: fastembed (Apache-2.0); embedding model paraphrase-multilingual-MiniLM-L12-v2 (Apache-2.0, per the fastembed model list; model card to be re-read before release) | Downloaded once at first use; not bundled |
 | OCR engines for purchase bills: RapidOCR (Apache-2.0) with PaddleOCR-derived models, Tesseract (Apache-2.0), pypdf (BSD), pypdfium2 (Apache-2.0/BSD), Pillow (HPND) | Per upstream licence files; model-file licence to be re-confirmed from the RapidOCR repository before a public release |

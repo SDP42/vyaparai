@@ -8,11 +8,14 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.models.agent import AgentRun
 from app.services.agents import runner
 from app.services.agents.workflows import WORKFLOWS
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/agents", tags=["agents"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/agents", tags=["agents"], route_class=MaskedRoute
+)
 
 
 class RunIn(BaseModel):

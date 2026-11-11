@@ -7,10 +7,15 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.models.recommendation import Recommendation
 from app.services.recommend import service
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/recommendations", tags=["recommendations"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/recommendations",
+    tags=["recommendations"],
+    route_class=MaskedRoute,
+)
 
 
 class Decision(BaseModel):

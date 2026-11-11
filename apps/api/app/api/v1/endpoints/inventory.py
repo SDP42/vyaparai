@@ -18,11 +18,14 @@ from fastapi.responses import Response
 from sqlalchemy import select
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.models.commerce import Product
 from app.schemas.inventory import ImportResult, InventoryOverview, ItemUpdate
 from app.services import audit, inventory
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/inventory", tags=["inventory"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/inventory", tags=["inventory"], route_class=MaskedRoute
+)
 Service = Annotated[
     Decimal, Query(ge=0, le=1, description="0 lean, 1 cautious (share of the p50 to p90 gap)")
 ]

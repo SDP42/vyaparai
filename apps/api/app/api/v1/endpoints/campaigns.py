@@ -15,10 +15,13 @@ from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.schemas.campaigns import CampaignPlan, PlaybookEntry
 from app.services import audit, campaigns
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/campaigns", tags=["campaigns"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/campaigns", tags=["campaigns"], route_class=MaskedRoute
+)
 
 Segment = Annotated[str, Query(max_length=30)]
 AsOf = Annotated[date | None, Query()]

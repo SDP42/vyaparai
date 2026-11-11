@@ -8,9 +8,12 @@ from fastapi import APIRouter, Query, Response, status
 from pydantic import BaseModel, Field
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.services import goals
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/goals", tags=["goals"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/goals", tags=["goals"], route_class=MaskedRoute
+)
 
 
 class GoalIn(BaseModel):

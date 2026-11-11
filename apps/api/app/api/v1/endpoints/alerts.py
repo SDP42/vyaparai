@@ -13,13 +13,16 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 
 from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.core.errors import NotFoundError
 from app.models.alert import Alert
 from app.schemas.alerts import AlertList, AlertRead
 from app.services import alerts as service
 from app.services import audit
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/alerts", tags=["alerts"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/alerts", tags=["alerts"], route_class=MaskedRoute
+)
 
 
 @router.get("", response_model=AlertList)

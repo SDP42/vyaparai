@@ -12,10 +12,11 @@ GET /workspaces/{id}/analytics/basket                 products bought together
 from datetime import date
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 
-from app.api.deps import DbSession, ViewerCtx
+from app.api.deps import DbSession, ViewerCtx, require_capability
+from app.api.masking import MaskedRoute
 from app.schemas.intelligence import (
     BasketResponse,
     Cohorts,
@@ -27,7 +28,9 @@ from app.services.analytics import intelligence as svc
 from app.services.analytics import service
 from app.services.analytics.types import CompareMode
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/analytics", tags=["intelligence"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/analytics", tags=["intelligence"], route_class=MaskedRoute
+)
 
 AsOf = Annotated[
     date | None, Query(description="Evaluate customers as of this day (default: latest order)")
@@ -55,7 +58,11 @@ SegmentName = Literal[
 StatusName = Literal["Active", "Cooling", "Lapsed"]
 
 
-@router.get("/customers/summary", response_model=CustomersSummary)
+@router.get(
+    "/customers/summary",
+    dependencies=[Depends(require_capability("customers"))],
+    response_model=CustomersSummary,
+)
 def customers_summary(
     ctx: ViewerCtx,
     db: DbSession,
@@ -70,7 +77,11 @@ def customers_summary(
     )
 
 
-@router.get("/customers/list", response_model=CustomerList)
+@router.get(
+    "/customers/list",
+    dependencies=[Depends(require_capability("customers"))],
+    response_model=CustomerList,
+)
 def customers_list(
     ctx: ViewerCtx,
     db: DbSession,
@@ -94,7 +105,11 @@ def customers_list(
     )  # fmt: skip
 
 
-@router.get("/customers/cohorts", response_model=Cohorts)
+@router.get(
+    "/customers/cohorts",
+    dependencies=[Depends(require_capability("customers"))],
+    response_model=Cohorts,
+)
 def customer_cohorts(
     ctx: ViewerCtx,
     db: DbSession,
@@ -104,7 +119,11 @@ def customer_cohorts(
     return svc.cohorts(db, ctx.workspace, as_of, months)
 
 
-@router.get("/customers/export.csv", response_class=StreamingResponse)
+@router.get(
+    "/customers/export.csv",
+    dependencies=[Depends(require_capability("customers"))],
+    response_class=StreamingResponse,
+)
 def customers_export(
     ctx: ViewerCtx,
     db: DbSession,

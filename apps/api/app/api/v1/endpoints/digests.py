@@ -14,11 +14,14 @@ from fastapi import APIRouter, Query
 from sqlalchemy import select
 
 from app.api.deps import AdminCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.models.digest import Digest
 from app.schemas.digest import DigestPreview, DigestRead, DigestSettingsIn, DigestSettingsOut
 from app.services import audit, digest, digest_delivery, mailer
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/digests", tags=["digests"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/digests", tags=["digests"], route_class=MaskedRoute
+)
 KindQ = Annotated[digest.Kind, Query()]
 
 

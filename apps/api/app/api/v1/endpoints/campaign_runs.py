@@ -7,12 +7,15 @@ from fastapi import APIRouter, File, Query, UploadFile, status
 from pydantic import BaseModel, Field
 
 from app.api.deps import AdminCtx, AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.core.errors import AppError
 from app.models.campaign import Campaign
 from app.services import audit, campaign_runs
 from app.services.campaigns import Language
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/campaigns", tags=["campaign-runs"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/campaigns", tags=["campaign-runs"], route_class=MaskedRoute
+)
 MAX_BYTES = 5 * 1024 * 1024
 
 

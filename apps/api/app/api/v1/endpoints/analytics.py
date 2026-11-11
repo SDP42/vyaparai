@@ -13,6 +13,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from app.api.deps import DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.schemas.analytics import (
     DriversResponse,
     FilterOptions,
@@ -23,7 +24,7 @@ from app.schemas.analytics import (
 from app.services.analytics import service
 from app.services.analytics.types import CompareMode, Dimension, Granularity
 
-router = APIRouter(prefix="/workspaces/{workspace_id}", tags=["analytics"])
+router = APIRouter(prefix="/workspaces/{workspace_id}", tags=["analytics"], route_class=MaskedRoute)
 
 DateFrom = Annotated[date | None, Query(alias="from", description="First business day, inclusive")]
 DateTo = Annotated[date | None, Query(alias="to", description="Last business day, inclusive")]

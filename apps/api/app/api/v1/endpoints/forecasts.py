@@ -16,6 +16,7 @@ from fastapi import APIRouter, BackgroundTasks, Query, status
 from fastapi.responses import StreamingResponse
 
 from app.api.deps import AdminCtx, AnalystCtx, DbSession, ViewerCtx
+from app.api.masking import MaskedRoute
 from app.core.errors import NotFoundError
 from app.models.dataset import Job
 from app.schemas.dataset import JobRead
@@ -28,7 +29,9 @@ from app.schemas.forecast import (
 )
 from app.services.forecasting import service
 
-router = APIRouter(prefix="/workspaces/{workspace_id}/forecasts", tags=["forecasts"])
+router = APIRouter(
+    prefix="/workspaces/{workspace_id}/forecasts", tags=["forecasts"], route_class=MaskedRoute
+)
 
 
 @router.post("/run", response_model=JobRead, status_code=status.HTTP_202_ACCEPTED)

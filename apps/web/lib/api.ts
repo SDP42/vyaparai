@@ -1,5 +1,6 @@
 "use client";
 
+import type { components } from "./api-types";
 import { API_URL, clearSession, ensureToken, loadSession, refreshAccessToken } from "./session";
 
 /** Error shape returned by the API: {"error": {code, message, details, request_id}}. */
@@ -108,7 +109,9 @@ export async function streamAnswer(path: string, body: unknown, on: (event: stri
 
 // ---------- types mirrored from the API (apps/api/app/schemas) ----------
 
-export type Workspace = { id: string; name: string; slug: string; currency: string; timezone: string; role: string; city?: string | null; state?: string | null };
+/** Generated from the API's OpenAPI description (`npm run gen:api`); do not edit lib/api-types.ts by hand. */
+export type Schemas = components["schemas"];
+export type Workspace = Schemas["WorkspaceWithRole"];
 
 export type FieldSpec = { key: string; label: string; required: boolean; kind: string };
 export type ColumnInfo = { name: string; inferred_type: string; empty_pct: number; samples: string[] };
@@ -151,22 +154,7 @@ export type Dataset = {
   inspection?: Inspection | null;
   validation?: ValidationSummary | null;
 };
-export type Job = {
-  id: string;
-  status: "queued" | "running" | "succeeded" | "failed" | "cancelled";
-  progress: number;
-  rows_accepted: number | null;
-  rows_rejected: number | null;
-  error_message: string | null;
-  result: Record<string, number> | null;
-};
-export type DataSummary = {
-  orders: number;
-  order_items: number;
-  products: number;
-  customers: number;
-  date_from: string | null;
-  date_to: string | null;
-  net_sales_completed: string;
-};
+/** `result` is free-form JSON in the schema; here it is the import counts. */
+export type Job = Omit<Schemas["JobRead"], "result"> & { result: Record<string, number> | null };
+export type DataSummary = Schemas["DataSummary"];
 export type Page<T> = { items: T[]; total: number; limit: number; offset: number };

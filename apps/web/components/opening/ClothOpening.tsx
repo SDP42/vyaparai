@@ -7,10 +7,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * The shop is closed: a cotton cloth hangs over the front, tied with a red satin ribbon.
- * Tap the bow and it comes undone, the ribbon is pulled away, the cloth drops (peeling down from the middle out)
- * and the page behind it is there to scroll. Once per visit; Esc or "Skip" opens it at once; people who prefer
- * reduced motion never see it.
+ * The shop is closed: a cotton cloth hangs over the front, tied with a red satin ribbon, and a pair of scissors
+ * rests beside it. Drag the scissors to the dotted line on the ribbon and let go (or just tap them, or press Enter):
+ * the ribbon is snipped, the bow and tag fall, and the cloth drops (peeling down from the middle out), leaving the
+ * page behind it to scroll. Once per visit; Esc or "Skip" opens it at once; people who prefer reduced motion never
+ * see it.
  */
 
 const STRIPS = 12;
@@ -56,9 +57,14 @@ export function ClothOpening() {
   const [opening, setOpening] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const strips = useRef<HTMLDivElement[]>([]);
-  const ribbon = useRef<HTMLDivElement>(null);
+  const ribbonTop = useRef<HTMLDivElement>(null);
+  const ribbonBottom = useRef<HTMLDivElement>(null);
   const bow = useRef<SVGSVGElement>(null);
   const hint = useRef<HTMLDivElement>(null);
+  const scissors = useRef<HTMLButtonElement>(null);
+  const target = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ px: number; py: number; x: number; y: number; moved: number } | null>(null);
+  const [near, setNear] = useState(false);
 
   // Decide before paint whether to show it at all.
   useLayoutEffect(() => {
@@ -83,8 +89,9 @@ export function ClothOpening() {
     if (!on || opening) return;
     const ctx = gsap.context(() => {
       gsap.to("[data-sway]", { skewX: 0.35, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1, stagger: { each: 0.18, from: "center" } });
-      gsap.fromTo("[data-ring]", { scale: 0.7, opacity: 0.9 }, { scale: 1.7, opacity: 0, duration: 1.8, ease: "power1.out", repeat: -1 });
       gsap.to("[data-tag]", { rotate: 6, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 0%" });
+      gsap.to("[data-blade='a']", { rotate: -9, duration: 0.5, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 1.6, transformOrigin: "42% 50%" });
+      gsap.to("[data-blade='b']", { rotate: 9, duration: 0.5, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 1.6, transformOrigin: "42% 50%" });
     }, root);
     return () => ctx.revert();
   }, [on, opening]);
@@ -103,25 +110,46 @@ export function ClothOpening() {
     });
   }, []);
 
-  const open = useCallback(() => {
+  const cut = useCallback(() => {
     if (opening) return;
     setOpening(true);
-    gsap.killTweensOf("[data-sway],[data-ring],[data-tag]");
+    setNear(false);
+    drag.current = null;
+    gsap.killTweensOf("[data-sway],[data-ring],[data-tag],[data-blade]");
     const s = strips.current.filter(Boolean);
     const mid = (s.length - 1) / 2;
+    const el = scissors.current;
+    const t = target.current?.getBoundingClientRect();
+    const here = el?.getBoundingClientRect();
     const tl = gsap.timeline({ onComplete: finish });
+    // the scissors go to the dotted line (if they are not already there) and snip across the ribbon
+    if (el && t && here) {
+      tl.to(
+        el,
+        {
+          x: `+=${t.left + t.width / 2 - (here.left + here.width * 0.8)}`,
+          y: `+=${t.top + t.height / 2 - (here.top + here.height / 2)}`,
+          rotate: 0,
+          duration: 0.45,
+          ease: "power2.inOut",
+        },
+        0,
+      );
+    }
     tl.to(hint.current, { opacity: 0, duration: 0.25 }, 0)
-      // the knot gives, the loops fall slack and the tails swing
-      .to("[data-knot]", { scale: 1.15, duration: 0.18, transformOrigin: "50% 50%", ease: "power2.out" }, 0)
-      .to("[data-loop='l']", { rotate: -34, scaleX: 0.55, y: 46, transformOrigin: "100% 50%", duration: 0.55, ease: "power2.in" }, 0.12)
-      .to("[data-loop='r']", { rotate: 34, scaleX: 0.55, y: 46, transformOrigin: "0% 50%", duration: 0.55, ease: "power2.in" }, 0.12)
-      .to("[data-knot]", { scale: 0, duration: 0.3, transformOrigin: "50% 50%", ease: "back.in(2)" }, 0.3)
-      .to("[data-tail='l']", { rotate: 18, transformOrigin: "100% 0%", duration: 0.5, ease: "power2.in" }, 0.15)
-      .to("[data-tail='r']", { rotate: -18, transformOrigin: "0% 0%", duration: 0.5, ease: "power2.in" }, 0.15)
-      .to("[data-tag]", { y: "120vh", rotate: 20, duration: 0.9, ease: "power2.in" }, 0.2)
-      // the ribbon is pulled down and out
-      .to(bow.current, { y: "115vh", duration: 0.85, ease: "power2.in" }, 0.45)
-      .to(ribbon.current, { y: "115vh", duration: 0.85, ease: "power2.in" }, 0.5)
+      .to("[data-blade='a']", { rotate: 16, duration: 0.14, repeat: 3, yoyo: true, ease: "power1.inOut", transformOrigin: "42% 50%" }, 0.45)
+      .to("[data-blade='b']", { rotate: -16, duration: 0.14, repeat: 3, yoyo: true, ease: "power1.inOut", transformOrigin: "42% 50%" }, 0.45)
+      .to("[data-cutline]", { opacity: 0, duration: 0.2 }, 0.75)
+      // snipped: the lower length of ribbon and the scissors fall away
+      .to([ribbonBottom.current, el], { y: "+=" + Math.round(window.innerHeight * 0.9), rotate: (i: number) => (i === 0 ? 5 : 24), duration: 0.8, ease: "power2.in" }, 0.85)
+      // nothing holds the bow now: it slips, swings and drops with the upper length and the tag
+      .to("[data-knot]", { scale: 1.1, duration: 0.15, transformOrigin: "50% 50%" }, 0.9)
+      .to("[data-loop='l']", { rotate: -14, y: 14, transformOrigin: "100% 50%", duration: 0.5, ease: "power1.in" }, 0.95)
+      .to("[data-loop='r']", { rotate: 14, y: 14, transformOrigin: "0% 50%", duration: 0.5, ease: "power1.in" }, 0.95)
+      .to("[data-tail='l']", { rotate: 10, transformOrigin: "100% 0%", duration: 0.5, ease: "power1.in" }, 0.95)
+      .to("[data-tail='r']", { rotate: -10, transformOrigin: "0% 0%", duration: 0.5, ease: "power1.in" }, 0.95)
+      .to([ribbonTop.current, bow.current], { y: "115vh", rotate: (i: number) => (i === 0 ? -2 : 4), duration: 0.9, ease: "power2.in", transformOrigin: "50% 0%" }, 1.15)
+      .to("[data-tag]", { y: "120vh", rotate: 22, duration: 0.9, ease: "power2.in" }, 1.05)
       // the cloth lets go from the middle outward, each strip a little out of step
       .to(
         s,
@@ -133,10 +161,39 @@ export function ClothOpening() {
           ease: "power3.in",
           stagger: { each: 0.045, from: "center" },
         },
-        0.85,
-      )
-      .to(root.current, { backgroundColor: "rgba(0,0,0,0)", duration: 0.2 }, 0.85);
+        1.55,
+      );
   }, [opening, finish]);
+
+  const onDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (opening) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = { px: e.clientX, py: e.clientY, x: Number(gsap.getProperty(e.currentTarget, "x")), y: Number(gsap.getProperty(e.currentTarget, "y")), moved: 0 };
+    gsap.killTweensOf("[data-blade]");
+  };
+  const onMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = drag.current;
+    if (!d || opening) return;
+    const dx = e.clientX - d.px;
+    const dy = e.clientY - d.py;
+    d.moved = Math.max(d.moved, Math.hypot(dx, dy));
+    gsap.set(e.currentTarget, { x: d.x + dx, y: d.y + dy, rotate: Math.max(-14, Math.min(14, dx / 14)) });
+    const dist = tipDistance(e.currentTarget);
+    setNear(dist < 90);
+    if (dist < 50) cut(); // the blades are on the line
+  };
+  /** How far the blade tips are from the dotted line, wherever the scissors were grabbed. */
+  const tipDistance = (el: HTMLElement) => {
+    const t = target.current?.getBoundingClientRect();
+    if (!t) return Infinity;
+    const r = el.getBoundingClientRect();
+    return Math.hypot(r.left + r.width * 0.9 - (t.left + t.width / 2), r.top + r.height * 0.5 - (t.top + t.height / 2));
+  };
+  const onUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = drag.current;
+    drag.current = null;
+    if (d && (d.moved < 6 || tipDistance(e.currentTarget) < 110)) cut(); // a tap, or let go close to the line
+  };
 
   useEffect(() => {
     if (!on) return;
@@ -148,7 +205,7 @@ export function ClothOpening() {
   if (!on) return null;
 
   return (
-    <div ref={root} id="opening" className="fixed inset-0 z-[60] overflow-hidden" role="dialog" aria-label="Open the shop">
+    <div ref={root} id="opening" className="fixed inset-0 z-[60] overflow-hidden" role="dialog" aria-label="Cut the ribbon to open the shop">
       {/* the cloth, as vertical strips so it can come away in pieces; each strip shows the same full-width cloth */}
       <div className="absolute inset-0 flex" aria-hidden>
         {Array.from({ length: STRIPS }, (_, i) => (
@@ -170,18 +227,32 @@ export function ClothOpening() {
         ))}
       </div>
 
-      {/* the ribbon: a satin band down the middle */}
-      <div
-        ref={ribbon}
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-1/2 w-[clamp(46px,7.2vw,84px)] -translate-x-1/2 shadow-[0_0_14px_rgba(40,10,0,.45)]"
-        style={{
-          background:
-            "repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,0,0) 1px 3px), linear-gradient(90deg, #8f1d15 0%, #c93428 16%, #e8594a 38%, #f27a68 48%, #d8402f 62%, #b22a20 84%, #86190f 100%)",
-        }}
-      >
-        <div className="absolute inset-y-0 left-[7%] w-px bg-[rgba(255,214,190,.45)]" />
-        <div className="absolute inset-y-0 right-[7%] w-px bg-[rgba(255,214,190,.45)]" />
+      {/* the ribbon: a satin band down the middle, in two lengths either side of the dotted cut line */}
+      {(["top", "bottom"] as const).map((part) => (
+        <div
+          key={part}
+          ref={part === "top" ? ribbonTop : ribbonBottom}
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 w-[clamp(46px,7.2vw,84px)] -translate-x-1/2 shadow-[0_0_14px_rgba(40,10,0,.45)]"
+          style={{
+            top: part === "top" ? 0 : "72%",
+            bottom: part === "top" ? "28%" : 0,
+            clipPath: part === "top" ? "polygon(0 0,100% 0,100% 100%,0 calc(100% - 7px))" : "polygon(0 7px,100% 0,100% 100%,0 100%)",
+            background:
+              "repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,0,0) 1px 3px), linear-gradient(90deg, #8f1d15 0%, #c93428 16%, #e8594a 38%, #f27a68 48%, #d8402f 62%, #b22a20 84%, #86190f 100%)",
+          }}
+        >
+          <div className="absolute inset-y-0 left-[7%] w-px bg-[rgba(255,214,190,.45)]" />
+          <div className="absolute inset-y-0 right-[7%] w-px bg-[rgba(255,214,190,.45)]" />
+        </div>
+      ))}
+
+      {/* where to cut */}
+      <div data-cutline className="pointer-events-none absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2" aria-hidden>
+        <div ref={target} className="mx-auto h-10 w-[clamp(110px,16vw,170px)]">
+          <div className={`absolute inset-x-0 top-1/2 border-t-2 border-dashed transition-colors ${near ? "border-[#fff3c4]" : "border-[rgba(255,243,196,.8)]"}`} />
+        </div>
+        <p className={`mt-1 text-center font-serif text-base italic transition-opacity ${near ? "opacity-100" : "opacity-80"} text-[#fff3d1] [text-shadow:0_1px_6px_rgba(50,22,0,.8)]`}>cut here</p>
       </div>
 
       {/* the bow, with the wordmark on a paper tag */}
@@ -260,20 +331,53 @@ export function ClothOpening() {
         </g>
       </svg>
 
-      {/* the tap target and the ring that invites it */}
+      {/* the scissors: drag them to the dotted line, or tap / press Enter */}
       <button
+        ref={scissors}
         type="button"
-        onClick={open}
-        disabled={opening}
-        aria-label="Open the shop"
-        className="absolute left-1/2 top-1/2 h-[clamp(120px,18vw,190px)] w-[clamp(150px,24vw,260px)] -translate-x-1/2 -translate-y-[40%] cursor-pointer rounded-full outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#fff3c4]"
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={() => (drag.current = null)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            cut();
+          }
+        }}
+                aria-label="Scissors: drag them to the dotted line on the ribbon, or press Enter, to cut the ribbon and open the shop"
+        className="absolute left-[calc(50%-clamp(150px,22vw,250px))] top-[60%] z-10 h-[clamp(74px,11vw,120px)] w-[clamp(74px,11vw,120px)] cursor-grab touch-none select-none outline-offset-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#fff3c4] active:cursor-grabbing"
+        style={{ filter: "drop-shadow(0 8px 6px rgba(40,18,0,.55))" }}
       >
-        <span data-ring aria-hidden className="absolute inset-[18%] rounded-full border-2 border-[#ffe9a8]/80" />
+        <svg viewBox="0 0 120 120" className="h-full w-full" aria-hidden>
+          <defs>
+            <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#f4f6f8" />
+              <stop offset="0.5" stopColor="#b9c0c8" />
+              <stop offset="1" stopColor="#7d858e" />
+            </linearGradient>
+            <linearGradient id="grip" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#2a2623" />
+              <stop offset="1" stopColor="#0f0d0c" />
+            </linearGradient>
+          </defs>
+          <g data-blade="a">
+            <path d="M44 61 L112 46 L112 52 L50 66 Z" fill="url(#steel)" stroke="#6b737b" strokeWidth=".6" />
+            <path d="M44 62 C 30 66, 22 76, 22 88" stroke="url(#grip)" strokeWidth="6" fill="none" strokeLinecap="round" />
+            <ellipse cx="17" cy="95" rx="13" ry="16" fill="none" stroke="url(#grip)" strokeWidth="6" transform="rotate(-22 17 95)" />
+          </g>
+          <g data-blade="b">
+            <path d="M44 59 L112 74 L112 68 L50 54 Z" fill="url(#steel)" stroke="#6b737b" strokeWidth=".6" />
+            <path d="M44 58 C 30 54, 22 44, 22 32" stroke="url(#grip)" strokeWidth="6" fill="none" strokeLinecap="round" />
+            <ellipse cx="17" cy="25" rx="13" ry="16" fill="none" stroke="url(#grip)" strokeWidth="6" transform="rotate(22 17 25)" />
+          </g>
+          <circle cx="47" cy="60" r="4.2" fill="#8a929a" stroke="#3b4147" strokeWidth="1" />
+        </svg>
       </button>
 
       <div ref={hint} className="pointer-events-none absolute inset-x-0 bottom-[11%] text-center text-[#fff7e0] [text-shadow:0_2px_10px_rgba(50,22,0,.7)]">
         <p className="font-serif text-2xl italic sm:text-3xl">The shop is closed.</p>
-        <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.24em]">Pull the ribbon to open</p>
+        <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.24em]">Drag the scissors to the ribbon and cut</p>
       </div>
 
       <button

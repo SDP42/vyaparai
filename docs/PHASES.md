@@ -72,7 +72,7 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
       zoom reveal, features, principles, CTA
 - [x] One token source; Bricolage + Instrument Serif typography
 - [x] Responsive at desktop, tablet and mobile; reduced-motion paths; production build passes
-- [x] Opening (replaced 2026-11-11): the shop is closed under a woven cloth tied with a satin ribbon and bow; tap it, the bow comes undone, the ribbon is pulled away and the cloth drops from the middle outward, then the page scrolls. Drawn in code, once per visit, Esc/Skip, none under reduced motion. (The earlier 3D key-and-lock scene was removed.)
+- [x] Opening (replaced 2026-11-11): the shop is closed under a woven cloth tied with a satin ribbon and bow; drag the scissors to the dotted line (or tap them, or press Enter) and the ribbon is snipped, the bow and tag fall and the cloth drops from the middle outward, then the page scrolls. Drawn in code, once per visit, Esc/Skip, none under reduced motion. (The earlier 3D key-and-lock scene was removed.)
 - [x] Religious motifs removed
 - [x] Hero text waits for the cloth to drop, then animates in
 - [ ] Short-viewport polish for pinned sections; full visitor-journey test

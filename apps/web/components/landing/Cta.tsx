@@ -39,9 +39,9 @@ export function Cta() {
               className="group relative inline-flex h-40 w-40 items-center justify-center rounded-full bg-sindoor text-center font-semibold text-canvas transition-[transform,background-color] duration-300 ease-out hover:bg-sindoor-deep sm:h-48 sm:w-48"
             >
               <span className="leading-tight">
-                Choose a
+                Try the
                 <br />
-                persona →
+                sample shop →
               </span>
               <span aria-hidden className="absolute inset-0 rounded-full border border-sindoor/50 transition-transform duration-700 group-hover:scale-125 group-hover:opacity-0" />
             </Link>
@@ -51,7 +51,7 @@ export function Cta() {
 
       <footer className="mx-auto mt-32 flex max-w-7xl flex-col gap-6 border-t border-line pt-8 text-sm text-fg/50 md:flex-row md:items-center md:justify-between">
         <Logo />
-        <p>Built as a portfolio-grade engineering case study. Demo figures are synthetic.</p>
+        <p>A work in progress, not yet tested with real shops. Every figure on this page is made-up demo data.</p>
         <p className="font-mono text-xs">© {new Date().getFullYear()} Vyapar AI</p>
       </footer>
     </section>

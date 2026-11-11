@@ -49,7 +49,7 @@ export function Nav() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-[background,border-color,backdrop-filter,transform,opacity] duration-500 ${
-        scrolled ? "border-b border-line/60 bg-canvas/70 backdrop-blur-md" : "border-b border-transparent"
+        scrolled ? "border-b border-line/60 bg-canvas/95 backdrop-blur-md" : "border-b border-transparent"
       } ${overOpening ? "pointer-events-none -translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-10" aria-label="Main">

@@ -160,13 +160,20 @@ def ask(
             "product_stock": "stock",
             "product_forecast": "forecast",
         }[u.intent]
+    candidates: list[dict[str, str]] = []
+    if product is None and u.intent in {"sales", "stock", "forecast"}:
+        word = {"sales": "sales", "stock": "stock", "forecast": "forecast"}[u.intent]
+        candidates = [
+            {"name": n, "question": f"{n} {word}"}
+            for n in tools.product_candidates(db, workspace.id, question)
+        ]
     steps: list[dict[str, Any]] = [
         {"step": "understood", "detail": f"{u.intent} · {lang}" + (f" · {u.period.label}" if u.period else "") + (f" · {product.name}" if product else "") + (" · follow-up" if followed else "")}
     ]  # fmt: skip
     base: dict[str, Any] = {
         "intent": u.intent, "language": lang, "question": question, "follow_up": followed,
         "period": None if u.period is None else {"label": u.period.label, "start": u.period.start.isoformat(), "end": u.period.end.isoformat()},
-        "suggestions": SUGGESTIONS[lang], "steps": steps, "evidence": [], "context": _ctx(u, product),
+        "suggestions": SUGGESTIONS[lang], "candidates": candidates, "steps": steps, "evidence": [], "context": _ctx(u, product),
     }  # fmt: skip
 
     def finish(out: dict[str, Any]) -> dict[str, Any]:

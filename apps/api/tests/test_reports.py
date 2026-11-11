@@ -23,9 +23,9 @@ def _create(client, shop, **body):
 
 
 def test_rupee_formatting_in_the_pdf_uses_indian_grouping() -> None:
-    assert render.rs(1234567) == "Rs 12,34,567"
-    assert render.rs(999) == "Rs 999"
-    assert render.rs(-52300.6) == "-Rs 52,301"
+    assert render.rs(1234567) == "₹12,34,567"
+    assert render.rs(999) == "₹999"
+    assert render.rs(-52300.6) == "-₹52,301"
     assert render.rs(None) == "-"
 
 
@@ -54,7 +54,7 @@ def test_the_pdf_is_a_real_document_with_the_shop_and_numbers(client: TestClient
     text = "".join(p.extract_text() for p in PdfReader(io.BytesIO(pdf.content)).pages)
     assert "Shop" in text
     assert "Net sales" in text.title() or "NET SALES" in text
-    assert "Rs " in text
+    assert "₹" in text
     assert "Notes and limits" in text
 
 

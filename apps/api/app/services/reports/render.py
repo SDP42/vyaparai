@@ -1,11 +1,13 @@
 """Render a saved report as PDF (reportlab, BSD) or CSV.
 
-The built-in PDF fonts have no rupee sign or Devanagari, so amounts are written "Rs 1,23,456" and
-reports are in English.
+Text is set in Noto Sans (SIL OFL, bundled in app/assets/fonts) so the rupee sign prints as ₹. Reports are
+still English: reportlab cannot shape Devanagari (conjuncts and vowel signs would come out wrong), so Hindi
+text is not attempted rather than printed badly.
 """
 
 import csv
 import io
+from pathlib import Path
 from typing import Any
 
 from reportlab.graphics.charts.barcharts import VerticalBarChart
@@ -14,7 +16,22 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
+FONTS = Path(__file__).resolve().parents[2] / "assets" / "fonts"
+REGULAR, BOLD = "NotoSans", "NotoSans-Bold"
+
+
+def _fonts() -> None:
+    if REGULAR not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont(REGULAR, str(FONTS / "NotoSans-Regular.ttf")))
+        pdfmetrics.registerFont(TTFont(BOLD, str(FONTS / "NotoSans-Bold.ttf")))
+        pdfmetrics.registerFontFamily(
+            REGULAR, normal=REGULAR, bold=BOLD, italic=REGULAR, boldItalic=BOLD
+        )
+
 
 INK, MUTED, LINE, ACCENT = (
     colors.HexColor("#2a2118"),
@@ -38,7 +55,7 @@ def rs(x: Any) -> str:
         if head:
             parts.insert(0, head)
         s = ",".join(parts) + "," + tail
-    return f"{sign}Rs {s}"
+    return f"{sign}₹{s}"
 
 
 def _val(k: dict[str, Any]) -> str:
@@ -62,11 +79,11 @@ def _chg(k: dict[str, Any]) -> str:
 
 def _table(rows: list[list[str]], widths: list[float], head: bool = True) -> Table:
     t = Table(rows, colWidths=widths, repeatRows=1 if head else 0)
-    st = [("FONT", (0, 0), (-1, -1), "Helvetica", 8.5), ("TEXTCOLOR", (0, 0), (-1, -1), INK), ("LINEBELOW", (0, 0), (-1, -1), 0.25, LINE),
+    st = [("FONT", (0, 0), (-1, -1), REGULAR, 8.5), ("TEXTCOLOR", (0, 0), (-1, -1), INK), ("LINEBELOW", (0, 0), (-1, -1), 0.25, LINE),
           ("VALIGN", (0, 0), (-1, -1), "TOP"), ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3)]  # fmt: skip
     if head:
         st += [
-            ("FONT", (0, 0), (-1, 0), "Helvetica-Bold", 8),
+            ("FONT", (0, 0), (-1, 0), BOLD, 8),
             ("TEXTCOLOR", (0, 0), (-1, 0), MUTED),
         ]
     for c in range(1, len(widths)):
@@ -76,12 +93,13 @@ def _table(rows: list[list[str]], widths: list[float], head: bool = True) -> Tab
 
 
 def to_pdf(rep: dict[str, Any]) -> bytes:
+    _fonts()
     buf = io.BytesIO()
     ss = getSampleStyleSheet()
     h1 = ParagraphStyle(
         "h1",
         parent=ss["Title"],
-        fontName="Helvetica-Bold",
+        fontName=BOLD,
         fontSize=20,
         textColor=INK,
         alignment=0,
@@ -90,21 +108,21 @@ def to_pdf(rep: dict[str, Any]) -> bytes:
     h2 = ParagraphStyle(
         "h2",
         parent=ss["Heading2"],
-        fontName="Helvetica-Bold",
+        fontName=BOLD,
         fontSize=11.5,
         textColor=INK,
         spaceBefore=12,
         spaceAfter=4,
     )
     body = ParagraphStyle(
-        "b", parent=ss["BodyText"], fontName="Helvetica", fontSize=9, leading=12.5, textColor=INK
+        "b", parent=ss["BodyText"], fontName=REGULAR, fontSize=9, leading=12.5, textColor=INK
     )
     small = ParagraphStyle("s", parent=body, fontSize=7.5, textColor=MUTED, leading=10)
     p = rep["period"]
 
     def foot(c: Any, d: Any) -> None:
         c.saveState()
-        c.setFont("Helvetica", 7.5)
+        c.setFont(REGULAR, 7.5)
         c.setFillColor(MUTED)
         c.drawString(
             18 * mm,

@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { parseUtc } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Meta = { id: string; title: string; from: string; to: string; created_at: string };
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -38,8 +39,8 @@ export function ReportsPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Reports</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">A summary you can print or send</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Sales and what changed, products, customers, stock, udhaar, the forecast and suggested actions, as a PDF for your accountant or partner, or a CSV. A saved report stays exactly as it was made.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.reports" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.reports" /></p>
       </header>
       {err && <ErrorNote message={err} />}
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_1.4fr] [&>*]:min-w-0">

@@ -5,6 +5,7 @@ import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Disc = { sku: string; name: string; promo_days: number; normal_days: number; avg_discount_pct: number; lift_pct: number; extra_units: number; discount_given: number; profit_known: boolean; profit_effect?: number; profit_effect_low?: number; profit_effect_high?: number; verdict: "paid_off" | "lost_money" | "unclear"; note?: string };
 type Discounts = { has_data: boolean; from?: string; to?: string; items: Disc[]; summary: { judged?: number; paid_off?: number; lost_money?: number; unclear?: number; discount_in_losing_promos?: number }; method?: string; limits?: string[] };
@@ -24,8 +25,8 @@ export function PricingPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Pricing</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Did your offers pay off?</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Each product&apos;s discount days are compared with its normal days of the same weekday, in sales and in profit after the discount. Price moves are small trials, never big jumps.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.pricing" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.pricing" /></p>
       </header>
       <div role="tablist" aria-label="Section" className="flex w-fit gap-1 rounded-full border border-line bg-surface p-1">
         {([["discounts", "Discounts"], ["moves", "Price moves"]] as const).map(([k, l]) => <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={`rounded-full px-4 py-1.5 text-sm ${tab === k ? "bg-fg text-canvas" : "text-fg/65 hover:text-fg"}`}>{l}</button>)}

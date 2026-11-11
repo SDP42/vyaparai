@@ -7,6 +7,7 @@ import type { CostHistory, CostItem, CostOverview, CostStatus } from "@/lib/cost
 import { formatINR } from "@/lib/format";
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const STATUS: Record<CostStatus, { label: string; tone: string; help: string }> = {
   margin_leak: { label: "Margin leak", tone: "bg-sindoor/10 text-sindoor", help: "Cost rose and the price did not keep up" },
@@ -34,7 +35,7 @@ export function CostsPage() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Costs and margin</h1>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.costs" /></h1>
         <p className="mt-1 text-sm text-muted">
           Supplier prices change. We read the cost on every sale to show where a cost went up and your price did not follow.
           {data?.current ? ` Comparing the last ${data.window_days} days with the ${data.window_days} before.` : ""}

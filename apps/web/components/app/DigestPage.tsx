@@ -7,6 +7,7 @@ import { longDate, num, useApi } from "@/lib/analytics";
 import type { DigestKind, DigestPreview, DigestRow, DigestSettings } from "@/lib/digest";
 import { useWorkspace } from "./AppContext";
 import { Card, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const STATUS: Record<string, string> = {
@@ -33,8 +34,8 @@ export function DigestPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Your daily summary</h1>
-          <p className="mt-1 text-sm text-muted">Three numbers and one thing to do. Read it in half a minute, without opening a dashboard.</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.digest" /></h1>
+          <p className="mt-1 text-sm text-muted"><Tx k="i.digest" /></p>
         </div>
         <div role="group" aria-label="Summary type" className="flex gap-1 rounded-full border border-line bg-surface p-1">
           {(["daily", "weekly"] as const).map((k) => (

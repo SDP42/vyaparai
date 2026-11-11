@@ -7,6 +7,7 @@ import type { BasketResponse, ProductItem, ProductsResponse } from "@/lib/intell
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { PeriodBar } from "./analytics/PeriodBar";
 import { Card, EmptyNote, ErrorNote, Notices, Skeleton, fmt } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const QUAD_TONE: Record<string, string> = {
   Star: "bg-mor/12 text-mor",
@@ -53,8 +54,8 @@ export function ProductsPage() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Products</h1>
-        <p className="mt-1 text-sm text-muted">Which products carry the business, which earn their shelf space, and what is bought together.</p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.products" /></h1>
+        <p className="mt-1 text-sm text-muted"><Tx k="i.products" /></p>
       </header>
 
       <PeriodBar showFilters />

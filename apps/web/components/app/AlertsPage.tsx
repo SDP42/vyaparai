@@ -8,6 +8,7 @@ import type { AlertItem, AlertList, AlertStatus, Severity } from "@/lib/alerts";
 import { formatINR } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const SEV: Record<Severity, { label: string; bar: string; chip: string }> = {
   high: { label: "Needs attention", bar: "bg-sindoor", chip: "bg-sindoor/10 text-sindoor" },
@@ -76,7 +77,7 @@ export function AlertsPage() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Alerts</h1>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.alerts" /></h1>
         <p className="mt-1 text-sm text-muted">
           What changed that you should know about: sales that fell, costs that rose, discounts that crept up, products that stopped selling.
           {data?.as_of ? ` Checked against sales up to ${longDate(data.as_of)}.` : ""}

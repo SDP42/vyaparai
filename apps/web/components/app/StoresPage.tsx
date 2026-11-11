@@ -7,6 +7,7 @@ import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Store = { id: string; name: string; city?: string | null; role: string; has_data: boolean; from?: string; to?: string; latest_sale?: string; net_sales?: number; growth_pct?: number | null; orders?: number; aov?: number; margin_pct?: number | null; discount_rate?: number | null; urgent_stock?: number | null; udhaar_overdue?: number | null; high_alerts?: number; flags: string[] };
 type Overview = { stores: Store[]; totals: { stores: number; net_sales: number; needs_attention: number; average_margin_pct: number | null }; notes: string[]; method: string };
@@ -38,8 +39,8 @@ export function StoresPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Stores</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">All your shops, side by side</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Compared on growth, margin and order value rather than raw sales, because a bigger shop is not a better-run one. Each shop keeps its own data and its own team.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.stores" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.stores" /></p>
       </header>
       {(error || err) && <ErrorNote message={(error ?? err) as string} />}
       {!data && loading && <Skeleton className="h-48" />}

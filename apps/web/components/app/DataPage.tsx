@@ -7,6 +7,7 @@ import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { ConnectionsCard } from "./ConnectionsCard";
 import { ImportWizard } from "./ImportWizard";
 import { ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const STATUS: Record<Dataset["status"], { label: string; cls: string }> = {
   uploaded: { label: "Needs mapping", cls: "bg-haldi/15 text-haldi-deep" },
@@ -53,7 +54,7 @@ export function DataPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Data</h1>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.data" /></h1>
         </div>
         {canImport && !wizard.open && (
           <button type="button" onClick={() => setWizard({ open: true, dataset: null })} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor">

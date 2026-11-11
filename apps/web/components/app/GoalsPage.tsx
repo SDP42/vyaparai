@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Goal = { id: string; name: string; metric: string; label: string; unit: "inr" | "count" | "percent"; kind: string; target: number; direction: string; from: string; to: string; status: string; message?: string; value?: number; progress_pct?: number; pace?: number; elapsed_days?: number; total_days?: number; needed_per_day?: number | null; projection?: { low: number; expected: number; high: number; recent_daily: number }; data_through?: string };
 type Metric = { key: string; label: string; unit: string; kind: string; direction: string };
@@ -56,8 +57,8 @@ export function GoalsPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Goals</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Where you are against where you want to be</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Set a target for the month or week. You see your pace, the amount needed each remaining day, and a range for where you will likely finish, not a single promise.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.goals" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.goals" /></p>
       </header>
       {err && <ErrorNote message={err} />}
       <div className="grid items-start gap-6 lg:grid-cols-[1.5fr_1fr] [&>*]:min-w-0">

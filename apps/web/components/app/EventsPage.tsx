@@ -7,6 +7,7 @@ import { longDate, num, useApi } from "@/lib/analytics";
 import type { EffectRow, EventItem, RegionInfo, UpcomingEvent } from "@/lib/events";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const DEMAND: Record<string, string> = {
   sweets_dryfruits: "Sweets and dry fruits",
@@ -60,8 +61,8 @@ export function EventsPage() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Festivals and cricket</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">Something is on almost every day in India, but only some dates really move a shop&apos;s sales. These are the ones that can, with the products they touch in your shop and whether your stock will last.</p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.festivals" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-muted"><Tx k="i.festivals" /></p>
       </header>
 
       <RegionCard base={base} info={region.data} canEdit={["owner", "admin"].includes(workspace.role)} onSaved={() => setVersion((v) => v + 1)} />

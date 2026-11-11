@@ -7,6 +7,7 @@ import type { ImportResult, InventoryItem, InventoryOverview, StockStatus } from
 import { formatINR, formatNumber } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const STATUS: Record<StockStatus, { label: string; tone: string }> = {
   urgent: { label: "Order now", tone: "bg-sindoor/10 text-sindoor" },
@@ -41,8 +42,8 @@ export function InventoryPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Stock</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted">How long your stock will last, what to order and how much, and where cash is stuck on the shelf. It uses your forecast, so build one first for the best advice.</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.stock" /></h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted"><Tx k="i.stock" /></p>
         </div>
         {canImport && s && s.tracked > 0 && (
           <button type="button" onClick={() => download(`${base}/order-list.csv?${qs}`, "order-list.csv")} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-canvas hover:bg-sindoor">

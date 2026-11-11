@@ -17,6 +17,7 @@ import {
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { PeriodBar } from "./analytics/PeriodBar";
 import { Card, EmptyNote, ErrorNote, Notices, Skeleton, ToneDot, fmt, signed } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const DIMENSIONS: { key: Dimension; label: string }[] = [
   { key: "category", label: "Category" },
@@ -43,8 +44,8 @@ export function SalesExplorer() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Sales</h1>
-        <p className="mt-1 text-sm text-muted">What moved net sales, how much each part contributed, and the transactions behind it.</p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.sales" /></h1>
+        <p className="mt-1 text-sm text-muted"><Tx k="i.sales" /></p>
       </header>
 
       <PeriodBar showFilters />

@@ -12,6 +12,7 @@ import { ForecastChart } from "./forecast/ForecastChart";
 import { ProductDrawer } from "./forecast/ProductDrawer";
 import { ModelHistory } from "./forecast/ModelHistory";
 import { WeatherCard } from "./forecast/WeatherCard";
+import { Tx } from "./Tx";
 
 const PAGE = 15;
 
@@ -61,8 +62,8 @@ export function ForecastsPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Forecasts</h1>
-          <p className="mt-1 text-sm text-muted">What to expect over the next two weeks, how sure we are, and why you can trust it.</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.forecasts" /></h1>
+          <p className="mt-1 text-sm text-muted"><Tx k="i.forecasts" /></p>
         </div>
         {canImport && d && (hasForecast(d) || d.can_forecast) && (
           <div className="flex flex-wrap items-center gap-2">

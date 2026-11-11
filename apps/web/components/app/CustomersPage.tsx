@@ -6,6 +6,7 @@ import { longDate, num, useApi } from "@/lib/analytics";
 import type { Cohorts, CustomerList, CustomersSummary } from "@/lib/intelligence";
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Notices, Skeleton, fmt } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const STATUS_TONE: Record<string, string> = {
   Active: "bg-mor/12 text-mor",
@@ -58,7 +59,7 @@ export function CustomersPage() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Customers</h1>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="h.customers" /></h1>
         <p className="mt-1 text-sm text-muted">
           Who buys, how often, and who is drifting away
           {s ? ` · as of ${longDate(s.params.as_of)}, last ${s.params.lookback_days} days` : ""}.

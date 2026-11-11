@@ -5,6 +5,7 @@ import { ApiError, api, download } from "@/lib/api";
 import { useApi } from "@/lib/analytics";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Label = "positive" | "neutral" | "negative";
 type Theme = { theme: string; polarity: number; snippet: string };
@@ -154,8 +155,8 @@ export function ReviewsPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Reviews</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">What customers are saying</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Every review is read for language, mood and what it is about. Each claim shows the words it came from, so you can check it.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.reviews" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.reviews" /></p>
       </header>
 
       {sum.error && <ErrorNote message={sum.error} onRetry={() => setVersion((v) => v + 1)} />}

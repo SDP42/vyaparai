@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { parseUtc } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Ev = { label: string; value: string; source: string };
 type Finding = { kind: "measured" | "context"; title: string; detail: string; weight: number; evidence: Ev[] };
@@ -110,8 +111,8 @@ export function InvestigatePage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Investigate</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Why did sales change?</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Pick a period. It is compared with the one before, the change is split into effects, and the usual suspects are checked: stock, costs, discounts, festivals, reviews and customers. You see every step.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.investigate" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.investigate" /></p>
       </header>
 
       {err && <ErrorNote message={err} />}

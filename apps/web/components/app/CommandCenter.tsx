@@ -8,6 +8,7 @@ import { MixList } from "./analytics/MixList";
 import { PeriodBar } from "./analytics/PeriodBar";
 import { TrendChart } from "./analytics/TrendChart";
 import { Card, DeltaChip, EmptyNote, ErrorNote, MetricInfo, Notices, Skeleton, ToneDot, fmt, signed } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -21,7 +22,7 @@ export function CommandCenter() {
     <div className="space-y-5">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-sindoor">{workspace.name}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Command center</h1>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl"><Tx k="nav.command" /></h1>
         {data?.meta.freshness.last_order_date && (
           <p className="mt-1 text-sm text-muted">
             Sales through {longDate(data.meta.freshness.last_order_date)}

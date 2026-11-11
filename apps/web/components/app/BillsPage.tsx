@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { formatINR } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Line = { description: string; quantity: string; unit_price: string; amount: string; unit: string | null; confidence: "high" | "medium" | "low"; product_id: string | null };
 type Bill = { id: string; status: "draft" | "confirmed"; supplier: string | null; gstin: string | null; bill_no: string | null; bill_date: string | null; total: string | null; engine: string; warnings: string[]; line_count: number; created_at: string; lines?: Line[] };
@@ -136,8 +137,8 @@ export function BillsPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Purchase bills</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">What you paid your suppliers</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Take a photo of a bill or upload a PDF. We read the items and rates, you check them, and your costs and supplier price changes stay current without typing.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.bills" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.bills" /></p>
       </header>
 
       {canImport && !open && (

@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { parseUtc } from "@/lib/format";
 import { signOut } from "@/lib/session";
 import { useWorkspace } from "./AppContext";
+import { Tx } from "./Tx";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
 type Member = { user_id: string; email: string; full_name: string; role: string; persona: string | null; joined_at: string };
@@ -77,8 +78,8 @@ export function TeamPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Team</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Who can see {workspace.name}</h1>
-        <p className="mt-1 text-sm text-fg/70">Give people the least access they need. Roles can be changed or removed at any time.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.team" />: {workspace.name}</h1>
+        <p className="mt-1 text-sm text-fg/70"><Tx k="i.team" /></p>
       </header>
 
       {err && <ErrorNote message={err} />}

@@ -6,6 +6,7 @@ import { useApi } from "@/lib/analytics";
 import { parseUtc } from "@/lib/format";
 import { useWorkspace } from "./AppContext";
 import { Card, EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
+import { Tx } from "./Tx";
 
 type Doc = { id: string; title: string; filename: string; kind: string; pages: number | null; chunks: number; min_role: string; created_at: string };
 type Hit = { document_id: string; title: string; page: number | null; section: string | null; text: string; score: number };
@@ -58,8 +59,8 @@ export function DocumentsPage() {
     <div className="space-y-6">
       <header>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">Documents</p>
-        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Your papers, searchable</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg/70">Add policies, supplier terms and procedures. Ask in English, हिन्दी or Hinglish and get the exact passage with where it came from. Search reads your files on this server only.</p>
+        <h1 className="font-serif text-3xl tracking-tight sm:text-4xl"><Tx k="h.documents" /></h1>
+        <p className="mt-1 max-w-2xl text-sm text-fg/70"><Tx k="i.documents" /></p>
       </header>
 
       {err && <ErrorNote message={err} />}

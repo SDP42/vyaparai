@@ -72,6 +72,8 @@ class Membership(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base
             validate_strings=True,
         )
     )
+    # The job in the shop (see services/personas.py). None keeps plain role-based access.
+    persona: Mapped[str | None] = mapped_column(String(20), default=None)
 
     workspace: Mapped[Workspace] = relationship(back_populates="memberships")
     user: Mapped["User"] = relationship(back_populates="memberships")

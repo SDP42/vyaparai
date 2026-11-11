@@ -6,11 +6,11 @@ from collections.abc import Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.errors import ConflictError, NotFoundError, PermissionDeniedError
+from app.core.errors import AppError, ConflictError, NotFoundError, PermissionDeniedError
 from app.models.user import User
 from app.models.workspace import Membership, Workspace, WorkspaceRole
 from app.schemas.workspace import MemberAdd, MemberRead, WorkspaceCreate, WorkspaceUpdate
-from app.services import audit
+from app.services import audit, personas
 from app.services.auth import get_user_by_email
 
 
@@ -87,10 +87,20 @@ def list_members(db: Session, workspace_id: uuid.UUID) -> list[MemberRead]:
     )
     return [
         MemberRead(
-            user_id=u.id, email=u.email, full_name=u.full_name, role=m.role, joined_at=m.created_at
+            user_id=u.id,
+            email=u.email,
+            full_name=u.full_name,
+            role=m.role,
+            persona=m.persona,
+            joined_at=m.created_at,
         )
         for m, u in db.execute(stmt).all()
     ]
+
+
+def check_persona(persona: str | None, role: WorkspaceRole) -> None:
+    if persona is not None and not personas.valid_for_role(persona, role):
+        raise AppError(f"The persona '{persona}' does not fit the {role.value} role")
 
 
 def add_member(
@@ -103,7 +113,10 @@ def add_member(
         raise NotFoundError("No registered user with that email")
     if get_membership(db, workspace.id, user.id) is not None:
         raise ConflictError("User is already a member of this workspace")
-    membership = Membership(workspace_id=workspace.id, user_id=user.id, role=data.role)
+    check_persona(data.persona, data.role)
+    membership = Membership(
+        workspace_id=workspace.id, user_id=user.id, role=data.role, persona=data.persona
+    )
     db.add(membership)
     audit.record(
         db,
@@ -120,5 +133,6 @@ def add_member(
         email=user.email,
         full_name=user.full_name,
         role=membership.role,
+        persona=membership.persona,
         joined_at=membership.created_at,
     )

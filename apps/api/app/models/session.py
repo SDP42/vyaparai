@@ -37,6 +37,7 @@ class Invitation(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         Uuid, ForeignKey("workspaces.id", ondelete="CASCADE"), index=True
     )
     role: Mapped[str] = mapped_column(String(20))
+    persona: Mapped[str | None] = mapped_column(String(20), default=None)
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

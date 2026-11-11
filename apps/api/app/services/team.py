@@ -17,8 +17,8 @@ from app.models.session import Invitation
 from app.models.user import User
 from app.models.workspace import Membership, Workspace, WorkspaceRole
 from app.schemas.workspace import InvitationRead, MemberRead
-from app.services import audit
-from app.services.workspaces import get_membership
+from app.services import audit, personas
+from app.services.workspaces import check_persona, get_membership
 
 INVITE_DAYS = 7
 
@@ -56,6 +56,8 @@ def change_role(
     actor_role: WorkspaceRole,
     user_id: uuid.UUID,
     role: WorkspaceRole,
+    persona: str | None = None,
+    persona_given: bool = False,
 ) -> MemberRead:
     m = get_membership(db, workspace.id, user_id)
     if m is None:
@@ -67,6 +69,11 @@ def change_role(
         raise ConflictError("A workspace needs at least one owner")
     before = m.role
     m.role = role
+    if persona_given:
+        check_persona(persona, role)
+        m.persona = persona
+    elif m.persona is not None and not personas.valid_for_role(m.persona, role):
+        m.persona = None
     audit.record(
         db, action="workspace.member_role_changed", actor_user_id=actor.id,
         workspace_id=workspace.id, entity_type="user", entity_id=user_id,
@@ -77,7 +84,12 @@ def change_role(
     if u is None:
         raise NotFoundError("User not found")
     return MemberRead(
-        user_id=u.id, email=u.email, full_name=u.full_name, role=m.role, joined_at=m.created_at
+        user_id=u.id,
+        email=u.email,
+        full_name=u.full_name,
+        role=m.role,
+        persona=m.persona,
+        joined_at=m.created_at,
     )
 
 
@@ -113,7 +125,11 @@ def _status(inv: Invitation) -> str:
 
 def _read(inv: Invitation) -> InvitationRead:
     return InvitationRead(
-        id=inv.id, role=WorkspaceRole(inv.role), expires_at=inv.expires_at, status=_status(inv)
+        id=inv.id,
+        role=WorkspaceRole(inv.role),
+        persona=inv.persona,
+        expires_at=inv.expires_at,
+        status=_status(inv),
     )
 
 
@@ -123,11 +139,13 @@ def create_invitation(
     actor: User,
     actor_role: WorkspaceRole,
     role: WorkspaceRole,
+    persona: str | None = None,
 ) -> tuple[InvitationRead, str]:
     _check_may_manage(actor_role, role)
+    check_persona(persona, role)
     token = secrets.token_urlsafe(32)
     inv = Invitation(
-        workspace_id=workspace.id, role=role.value, token_hash=_hash(token),
+        workspace_id=workspace.id, role=role.value, persona=persona, token_hash=_hash(token),
         expires_at=_now() + timedelta(days=INVITE_DAYS), created_by_id=actor.id,
     )  # fmt: skip
     db.add(inv)
@@ -175,7 +193,11 @@ def accept_invitation(db: Session, user: User, token: str) -> Workspace:
         raise NotFoundError("This invitation is not valid any more")
     if get_membership(db, ws.id, user.id) is not None:
         raise ConflictError("You are already a member of this workspace")
-    db.add(Membership(workspace_id=ws.id, user_id=user.id, role=WorkspaceRole(inv.role)))
+    db.add(
+        Membership(
+            workspace_id=ws.id, user_id=user.id, role=WorkspaceRole(inv.role), persona=inv.persona
+        )
+    )
     inv.used_at = _now()
     audit.record(
         db, action="workspace.invitation_accepted", actor_user_id=user.id,

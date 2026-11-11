@@ -42,6 +42,7 @@ class WorkspaceWithRole(WorkspaceRead):
 class MemberAdd(BaseModel):
     email: EmailStr
     role: WorkspaceRole = WorkspaceRole.VIEWER
+    persona: str | None = None
 
     @field_validator("email")
     @classmethod
@@ -54,20 +55,24 @@ class MemberRead(BaseModel):
     email: str
     full_name: str
     role: WorkspaceRole
+    persona: str | None = None
     joined_at: datetime
 
 
 class MemberRoleUpdate(BaseModel):
     role: WorkspaceRole
+    persona: str | None = None  # omit to keep (cleared if it no longer fits the role)
 
 
 class InvitationCreate(BaseModel):
     role: WorkspaceRole = WorkspaceRole.VIEWER
+    persona: str | None = None
 
 
 class InvitationRead(BaseModel):
     id: uuid.UUID
     role: WorkspaceRole
+    persona: str | None = None
     expires_at: datetime
     status: str  # pending | used | revoked | expired
 

@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Query, Response, status
 
@@ -60,6 +60,27 @@ def update_workspace(data: WorkspaceUpdate, ctx: AdminCtx, db: DbSession) -> Wor
     return workspace_service.update_workspace(db, ctx.workspace, ctx.user, data)
 
 
+@router.get("/{workspace_id}/me")
+def my_view(
+    ctx: ViewerCtx, lang: Annotated[str, Query(pattern="^(en|hinglish|hi)$")] = "en"
+) -> dict[str, Any]:
+    """Who the caller is here: role, persona, what they may ask and which pages they see."""
+    p = ctx.persona
+    base = {"role": ctx.role.value, "user": {"name": ctx.user.full_name, "email": ctx.user.email}}
+    if p is None:
+        return {**base, "persona": None, "restricted": False}
+    return {
+        **base, "restricted": True,
+        "persona": {
+            "key": p.key,
+            "label": p.label.get(lang, p.label["en"]),
+            "about": p.about.get(lang, p.about["en"]),
+            "home": p.home, "nav": sorted(p.nav), "capabilities": sorted(p.capabilities),
+            "suggestions": list(p.suggestions.get(lang, p.suggestions["en"])),
+        },
+    }  # fmt: skip
+
+
 @router.get("/{workspace_id}/members", response_model=list[MemberRead])
 def list_members(ctx: ViewerCtx, db: DbSession) -> list[MemberRead]:
     return workspace_service.list_members(db, ctx.workspace_id)
@@ -88,7 +109,16 @@ def list_audit_logs(
 def change_member_role(
     user_id: uuid.UUID, data: MemberRoleUpdate, ctx: AdminCtx, db: DbSession
 ) -> MemberRead:
-    return team.change_role(db, ctx.workspace, ctx.user, ctx.role, user_id, data.role)
+    return team.change_role(
+        db,
+        ctx.workspace,
+        ctx.user,
+        ctx.role,
+        user_id,
+        data.role,
+        data.persona,
+        "persona" in data.model_fields_set,
+    )
 
 
 @router.delete("/{workspace_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -108,7 +138,9 @@ def list_invitations(ctx: AdminCtx, db: DbSession) -> list[InvitationRead]:
     status_code=status.HTTP_201_CREATED,
 )
 def create_invitation(data: InvitationCreate, ctx: AdminCtx, db: DbSession) -> InvitationCreated:
-    inv, token = team.create_invitation(db, ctx.workspace, ctx.user, ctx.role, data.role)
+    inv, token = team.create_invitation(
+        db, ctx.workspace, ctx.user, ctx.role, data.role, data.persona
+    )
     return InvitationCreated(**inv.model_dump(), token=token)
 
 

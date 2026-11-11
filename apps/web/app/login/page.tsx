@@ -5,63 +5,71 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent, type PointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Logo } from "@/components/landing/Nav";
-import { PERSONAS, type Persona } from "@/lib/personas";
-import { loginWithPassword, registerAccount, saveSession } from "@/lib/session";
+import { demoPersonas, loginDemo, loginWithPassword, registerAccount, saveSession, type DemoPersona } from "@/lib/session";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+/** Look and a line in each person's own words (display only; what they may see is decided by the server). */
+const LOOK: Record<string, { accent: string; quote: string; focus: string[]; greeting: string }> = {
+  owner: { accent: "var(--color-sindoor)", quote: "I want to know where my profit went this month.", focus: ["Profit and margin", "Who owes me", "Festival prep"], greeting: "Namaste Meera" },
+  ops_manager: { accent: "var(--color-haldi)", quote: "Tell me what will run out before it does.", focus: ["Stock-out risk", "What to order", "Dead stock"], greeting: "Namaste Arjun" },
+  analyst: { accent: "var(--color-mor)", quote: "Show me the drivers, not just the totals.", focus: ["Why sales moved", "Customers", "Margins"], greeting: "Namaste Zoya" },
+  accountant: { accent: "var(--color-neel)", quote: "I need clean numbers that match the books.", focus: ["Sales and margin", "Credit ageing", "Reports"], greeting: "Namaste Kabir" },
+  cashier: { accent: "var(--color-sindoor)", quote: "Is it in stock? What is the price?", focus: ["Stock and price", "What sells", "Return rules"], greeting: "Namaste Sunita" },
+};
+const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
 export default function LoginPage() {
   const router = useRouter();
   const reduce = useReducedMotion();
-  const [chosen, setChosen] = useState<Persona | null>(null);
+  const [people, setPeople] = useState<DemoPersona[] | null>(null);
+  const [chosen, setChosen] = useState<DemoPersona | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // "/login?mode=account" (used by the demo's Sign in links) opens the real account form straight away.
   useEffect(() => {
+    demoPersonas().then((p) => {
+      setPeople(p);
+      if (p.length === 0) setShowForm(true); // no sample accounts here: the account form is the only way in
+    });
+    // "/login?mode=account" opens the account form straight away.
     if (new URLSearchParams(window.location.search).get("mode") === "account") setShowForm(true);
   }, []);
 
-  const choose = (p: Persona) => {
+  const choose = async (p: DemoPersona) => {
     if (chosen) return;
-    saveSession({ kind: "persona", personaId: p.id });
+    setError(null);
     setChosen(p);
-    router.prefetch("/app");
-    window.setTimeout(() => router.push("/app"), reduce ? 50 : 900);
+    try {
+      saveSession(await loginDemo(p.key));
+      router.prefetch("/app");
+      window.setTimeout(() => router.push("/app"), reduce ? 50 : 900);
+    } catch (e) {
+      setChosen(null);
+      setError(e instanceof Error && e.message !== "Failed to fetch" ? e.message : "Could not reach the API. Is it running on port 8000?");
+    }
   };
 
   return (
     <div className="grain relative min-h-dvh overflow-hidden bg-canvas">
       <div className="grid min-h-dvh lg:grid-cols-[0.9fr_1.1fr]">
-        {/* Left: brand panel */}
         <aside className="relative hidden flex-col justify-between overflow-hidden border-r border-line bg-surface p-10 lg:flex">
           <Link href="/" aria-label="Back to home">
             <Logo />
           </Link>
           <div className="ledger-rules -mx-10 px-10 py-10">
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: EASE }}
-              className="pl-16 font-deva text-[8rem] leading-[0.9] text-sindoor"
-              aria-hidden
-            >
+            <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: EASE }} className="pl-16 font-deva text-[8rem] leading-[0.9] text-sindoor" aria-hidden>
               स्वागत
             </motion.p>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 1 }}
-              className="mt-6 max-w-sm pl-16 font-serif text-3xl italic leading-tight text-fg/80"
-            >
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 1 }} className="mt-6 max-w-sm pl-16 font-serif text-3xl italic leading-tight text-fg/80">
               Welcome back. Choose a seat at the counter.
             </motion.p>
           </div>
           <p className="max-w-xs text-sm text-fg/40">
-            Demo personas use synthetic data and map to real workspace roles: owner, admin, analyst and viewer.
+            Each person sees only what their job needs, and the assistant answers only their kind of questions. The sample shop uses synthetic data.
           </p>
         </aside>
 
-        {/* Right: persona chooser */}
         <main className="relative flex flex-col justify-center px-5 py-16 sm:px-12">
           <div className="mb-10 flex items-center justify-between lg:hidden">
             <Link href="/" aria-label="Back to home">
@@ -69,57 +77,51 @@ export default function LoginPage() {
             </Link>
           </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi-deep">Sign in · demo</p>
-            <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Who&apos;s minding the shop today?</h1>
-            <p className="mt-3 max-w-lg text-fg/60">Pick a persona to open their workspace. No password needed for the demo.</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-haldi-deep">{people && people.length ? "Sign in · sample shop" : "Sign in"}</p>
+            <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">{people && people.length ? "Who is at the counter today?" : "Welcome back"}</h1>
+            {people && people.length > 0 && <p className="mt-3 max-w-lg text-fg/60">Pick a person to open the shop as them. No password for the sample shop.</p>}
           </motion.div>
 
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2" role="list">
-            {PERSONAS.map((p, i) => (
-              <motion.li
-                key={p.id}
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: chosen && chosen.id !== p.id ? 0.25 : 1, y: 0 }}
-                transition={{ delay: 0.15 + i * 0.07, duration: 0.7, ease: EASE }}
-              >
-                <PersonaCard persona={p} onChoose={choose} active={chosen?.id === p.id} />
-              </motion.li>
-            ))}
-          </ul>
+          {error && (
+            <p role="alert" className="mt-6 text-sm text-sindoor">
+              {error}
+            </p>
+          )}
+
+          {people && people.length > 0 && (
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2" role="list">
+              {people.map((p, i) => (
+                <motion.li key={p.key} initial={{ opacity: 0, y: 40 }} animate={{ opacity: chosen && chosen.key !== p.key ? 0.25 : 1, y: 0 }} transition={{ delay: 0.15 + i * 0.07, duration: 0.7, ease: EASE }}>
+                  <PersonaCard person={p} onChoose={choose} active={chosen?.key === p.key} />
+                </motion.li>
+              ))}
+            </ul>
+          )}
 
           <div className="mt-10 max-w-md">
-            <button
-              type="button"
-              onClick={() => setShowForm((v) => !v)}
-              className="text-sm text-fg/60 underline decoration-line underline-offset-4 transition-colors hover:text-fg"
-              aria-expanded={showForm}
-            >
-              {showForm ? "Hide email sign-in" : "Use your own data: sign in or create an account"}
-            </button>
+            {people && people.length > 0 && (
+              <button type="button" onClick={() => setShowForm((v) => !v)} className="text-sm text-fg/60 underline decoration-line underline-offset-4 transition-colors hover:text-fg" aria-expanded={showForm}>
+                {showForm ? "Hide email sign-in" : "Use your own data: sign in or create an account"}
+              </button>
+            )}
             <AnimatePresence initial={false}>{showForm && <EmailForm onDone={() => router.push(sessionStorage.getItem("vyapar.invite") ? "/join" : "/app")} />}</AnimatePresence>
           </div>
         </main>
       </div>
 
-      {/* Persona transition: the chosen colour floods the screen, then we route */}
       <AnimatePresence>
         {chosen && (
           <motion.div
             key="flood"
             className="fixed inset-0 z-[80] flex items-center justify-center"
-            style={{ background: chosen.accent }}
+            style={{ background: LOOK[chosen.key]?.accent ?? "var(--color-haldi)" }}
             initial={{ clipPath: "circle(0% at 50% 50%)" }}
             animate={{ clipPath: "circle(150% at 50% 50%)" }}
             transition={{ duration: reduce ? 0 : 0.85, ease: [0.65, 0, 0.35, 1] }}
             aria-live="polite"
           >
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5 }}
-              className="text-center text-ink"
-            >
-              <span className="block font-serif text-5xl italic sm:text-7xl">{chosen.greeting}</span>
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }} className="text-center text-ink">
+              <span className="block font-serif text-5xl italic sm:text-7xl">{LOOK[chosen.key]?.greeting ?? "Namaste"}</span>
               <span className="mt-3 block font-mono text-xs uppercase tracking-[0.2em]">Opening your ledger…</span>
             </motion.p>
           </motion.div>
@@ -129,9 +131,10 @@ export default function LoginPage() {
   );
 }
 
-function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onChoose: (p: Persona) => void; active: boolean }) {
+function PersonaCard({ person: p, onChoose, active }: { person: DemoPersona; onChoose: (p: DemoPersona) => void; active: boolean }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const reduce = useReducedMotion();
+  const look = LOOK[p.key] ?? LOOK.owner;
   const onMove = (e: PointerEvent<HTMLButtonElement>) => {
     if (reduce) return;
     const r = e.currentTarget.getBoundingClientRect();
@@ -147,42 +150,33 @@ function PersonaCard({ persona: p, onChoose, active }: { persona: Persona; onCho
       animate={{ rotateX: tilt.x, rotateY: tilt.y, scale: active ? 1.03 : 1 }}
       transition={{ type: "spring", stiffness: 220, damping: 20 }}
       whileTap={{ scale: 0.98 }}
-      style={{ transformPerspective: 900, ["--accent" as string]: p.accent }}
+      style={{ transformPerspective: 900, ["--accent" as string]: look.accent }}
       className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface p-6 text-left transition-colors duration-300 hover:border-[var(--accent)]"
-      aria-label={`Continue as ${p.name}, ${p.title}`}
+      aria-label={`Continue as ${p.name}, ${p.label.en}`}
     >
-      <span
-        aria-hidden
-        className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-40"
-        style={{ background: p.accent }}
-      />
+      <span aria-hidden className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-40" style={{ background: look.accent }} />
       <div className="flex items-center gap-4">
-        <span
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-mono text-sm font-bold text-ink"
-          style={{ background: p.accent }}
-          aria-hidden
-        >
-          {p.initials}
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl font-mono text-sm font-bold text-ink" style={{ background: look.accent }} aria-hidden>
+          {initials(p.name)}
         </span>
         <div className="min-w-0">
           <p className="font-semibold leading-tight">{p.name}</p>
-          <p className="mt-0.5 text-xs text-fg/50">{p.title}</p>
+          <p className="mt-0.5 text-xs text-fg/50">
+            {p.label.en} · <span lang="hi">{p.label.hi}</span>
+          </p>
         </div>
-        <span className="ml-auto self-start rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">
-          {p.role}
-        </span>
       </div>
-      <p className="mt-5 font-serif text-xl italic leading-snug text-fg/85">“{p.quote}”</p>
-      <p className="mt-2 text-xs text-fg/45">{p.business}</p>
+      <p className="mt-5 font-serif text-xl italic leading-snug text-fg/85">“{look.quote}”</p>
+      <p className="mt-2 text-xs text-fg/45">{p.about.en}</p>
       <ul className="mt-5 flex flex-wrap gap-1.5">
-        {p.focus.map((f) => (
+        {look.focus.map((f) => (
           <li key={f} className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] text-fg/70">
             {f}
           </li>
         ))}
       </ul>
-      <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: p.accent }}>
-        Enter workspace
+      <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: look.accent }}>
+        Enter the shop
         <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
       </span>
     </motion.button>

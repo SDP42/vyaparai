@@ -5,12 +5,13 @@ import {
   MessagesSquare, Microscope, Newspaper, Package, ReceiptText, Store, Tag, Target, TrendingUp, Users, UsersRound, Wallet, X, Ellipsis, LogOut, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Logo } from "@/components/landing/Nav";
 import { api } from "@/lib/api";
 import { LANGS, useT, type Key } from "@/lib/i18n";
 import { useWorkspace } from "./AppContext";
+import { allowedPath, usePersona } from "./PersonaContext";
 
 type Item = { href: string; key: Key; icon: LucideIcon; exact?: boolean };
 type Group = { key: Key; items: Item[] };
@@ -50,7 +51,7 @@ const GROUPS: Group[] = [
   ] },
 ];
 const ALL = GROUPS.flatMap((g) => g.items);
-const TABS: Item[] = [ALL[0], ALL[1], ALL[2], ALL[4]]; // Command center, Ask, Next steps, Alerts; the fifth tab is "More"
+const TABS: Item[] = [ALL[0], ALL[1], ALL[2], ALL[4]]; // Command center, Ask, Next steps, Alerts; the last tab is "More"
 
 /** Open alerts that need a look (high and medium), refreshed when alerts change. */
 function useAlertBadge(wsId: string): number {
@@ -96,8 +97,17 @@ function WorkspaceSelect({ className = "" }: { className?: string }) {
 export function AppShell({ name, onSignOut, children }: { name: string; onSignOut: () => void; children: ReactNode }) {
   const path = usePathname();
   const { t } = useT();
+  const router = useRouter();
   const { workspace } = useWorkspace();
+  const { persona, ready } = usePersona();
   const alerts = useAlertBadge(workspace.id);
+  // A persona sees only its own pages; the rest are hidden, and a typed address goes home.
+  const groups = GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => allowedPath(persona, n.href)) })).filter((g) => g.items.length);
+  const allowed = groups.flatMap((g) => g.items);
+  const tabs = [...TABS.filter((n) => allowed.includes(n)), ...allowed.filter((n) => !TABS.includes(n))].slice(0, 4);
+  useEffect(() => {
+    if (ready && persona && !allowedPath(persona, path)) router.replace(persona.home);
+  }, [ready, persona, path, router]);
   const [more, setMore] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -116,7 +126,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
   // keep the current page's link in view when the long menu is scrolled
   useEffect(() => { navRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: "nearest" }); }, [path]);
 
-  const inMore = !TABS.some(active) && ALL.some(active);
+  const inMore = !tabs.some(active) && allowed.some(active);
   const initials = name.slice(0, 2).toUpperCase();
 
   return (
@@ -130,12 +140,12 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
           <div className="mt-5 hidden rounded-xl border border-line bg-canvas p-3 lg:block">
             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">{t("shell.workspace")}</p>
             <WorkspaceSelect className="mt-1 w-full rounded-md border border-line bg-surface px-1.5 py-1 text-sm" />
-            <p className="mt-1 font-mono text-[10px] text-muted">{workspace.role} · {workspace.currency}</p>
+            <p className="mt-1 font-mono text-[10px] text-muted">{persona ? persona.label : workspace.role} · {workspace.currency}</p>
           </div>
         </div>
 
         <nav ref={navRef} aria-label="App" className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-3 [scrollbar-color:var(--color-line)_transparent] [scrollbar-width:thin] lg:px-3">
-          {GROUPS.map((g, gi) => (
+          {groups.map((g, gi) => (
             <div key={g.key} className={gi ? "mt-4" : ""}>
               <p className="mb-1 hidden px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted lg:block">{t(g.key)}</p>
               {gi > 0 && <div aria-hidden className="mx-3 mb-2 border-t border-line lg:hidden" />}
@@ -163,7 +173,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
           <label className="hidden text-[11px] text-muted lg:block">{t("shell.language")}<LanguageSelect className="mt-1 w-full rounded-md border border-line bg-canvas px-1.5 py-1 text-sm" /></label>
           <div className="flex items-center justify-center gap-3 lg:justify-start">
             <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-fg font-mono text-xs font-bold text-canvas">{initials}</span>
-            <p className="hidden min-w-0 flex-1 truncate text-sm font-medium lg:block">{name}</p>
+            <p className="hidden min-w-0 flex-1 text-sm font-medium lg:block"><span className="block truncate">{name}</span>{persona && <span className="block truncate text-[11px] font-normal text-muted">{persona.label}</span>}</p>
             <button type="button" onClick={onSignOut} title={t("shell.signOut")} className="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-muted hover:bg-surface-2 hover:text-fg lg:inline-flex"><LogOut aria-hidden className="h-3.5 w-3.5" />{t("shell.signOut")}</button>
           </div>
           <button type="button" onClick={onSignOut} aria-label={t("shell.signOut")} title={t("shell.signOut")} className="mx-auto grid h-9 w-9 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-fg md:flex lg:hidden"><LogOut aria-hidden className="h-4 w-4" /></button>
@@ -182,8 +192,8 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
 
       {/* ---------------------------------------------------------------- phone: bottom bar and the full menu */}
       <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <ul className="mx-auto grid max-w-md grid-cols-5">
-          {TABS.map((n) => {
+        <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}>
+          {tabs.map((n) => {
             const on = active(n);
             const Icon = n.icon;
             return (
@@ -213,7 +223,7 @@ export function AppShell({ name, onSignOut, children }: { name: string; onSignOu
               <p className="font-serif text-2xl">{workspace.name}</p>
               <button ref={closeRef} type="button" onClick={() => setMore(false)} aria-label={t("shell.close")} className="grid h-10 w-10 place-items-center rounded-full border border-line"><X aria-hidden className="h-4 w-4" /></button>
             </div>
-            {GROUPS.map((g) => (
+            {groups.map((g) => (
               <section key={g.key} className="mt-4" aria-label={t(g.key)}>
                 <h2 className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted">{t(g.key)}</h2>
                 <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4">

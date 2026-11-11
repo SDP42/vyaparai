@@ -17,7 +17,7 @@ export class ApiError extends Error {
 
 async function token(): Promise<string | null> {
   const s = loadSession();
-  return s && s.kind === "account" ? ensureToken() : null;
+  return s ? ensureToken() : null;
 }
 
 function expired(): never {

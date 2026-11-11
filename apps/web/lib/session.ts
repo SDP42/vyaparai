@@ -1,7 +1,5 @@
 "use client";
 
-import type { PersonaId } from "./personas";
-
 /**
  * What the browser remembers about who is signed in (name and email only, no secrets).
  * The access token lives in memory; the long-lived refresh token is an HttpOnly cookie
@@ -9,9 +7,7 @@ import type { PersonaId } from "./personas";
  */
 const KEY = "vyapar.session";
 
-export type Session =
-  | { kind: "persona"; personaId: PersonaId }
-  | { kind: "account"; email: string; name: string };
+export type Session = { kind: "account"; email: string; name: string };
 
 export function saveSession(s: Session) {
   try {
@@ -24,7 +20,8 @@ export function saveSession(s: Session) {
 export function loadSession(): Session | null {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Session) : null;
+    const s = raw ? (JSON.parse(raw) as { kind?: string }) : null;
+    return s?.kind === "account" ? (s as Session) : null; // an old demo-persona session is dropped
   } catch {
     return null;
   }
@@ -126,4 +123,43 @@ export async function registerAccount(fullName: string, email: string, password:
     throw new Error(detail ? `${data?.error?.message}: ${detail}` : (data?.error?.message ?? "Could not create the account"));
   }
   return loginWithPassword(email, password);
+}
+
+export type DemoPersona = {
+  key: string;
+  name: string;
+  label: Record<string, string>;
+  about: Record<string, string>;
+  home: string;
+};
+
+/** The one-tap sample sign-ins this server offers (empty when demo sign-in is off). */
+export async function demoPersonas(): Promise<DemoPersona[]> {
+  try {
+    const res = await fetch(`${API_URL}/auth/demo-status`);
+    if (!res.ok) return [];
+    const d = (await res.json()) as { enabled: boolean; personas: DemoPersona[] };
+    return d.enabled ? d.personas : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Sign in as one of the sample people; they are real accounts with the matching persona. */
+export async function loginDemo(persona: string): Promise<Session> {
+  const res = await fetch(`${API_URL}/auth/demo-login`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-Requested-With": "vyapar" },
+    body: JSON.stringify({ persona }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error?.message ?? "Demo sign-in failed");
+  }
+  const { access_token } = (await res.json()) as { access_token: string };
+  accessToken = access_token;
+  const me = await fetch(`${API_URL}/auth/me`, { headers: { Authorization: `Bearer ${access_token}` } });
+  const user = me.ok ? ((await me.json()) as { email: string; full_name: string }) : { email: persona, full_name: persona };
+  return { kind: "account", email: user.email, name: user.full_name };
 }

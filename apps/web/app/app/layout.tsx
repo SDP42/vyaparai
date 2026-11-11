@@ -5,13 +5,13 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AnalyticsProvider, WorkspaceProvider } from "@/components/app/AppContext";
 import { AppShell } from "@/components/app/AppShell";
 import { LanguageProvider } from "@/lib/i18n";
+import { PersonaProvider } from "@/components/app/PersonaContext";
 import { PwaRegister } from "@/components/app/PwaRegister";
 import { loadSession, signOut as endSession, type Session } from "@/lib/session";
 
 /**
  * Gate for everything under /app.
  *  - no session        → /login
- *  - persona (demo)    → the page renders alone (illustrative data)
  *  - real account      → workspace + analytics providers and the app shell
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -25,8 +25,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }, [router]);
 
   if (!session) return <div className="min-h-dvh bg-canvas" aria-busy="true" />;
-  if (session.kind === "persona") return <>{children}</>;
-
   const signOut = () => {
     void endSession().finally(() => router.push("/login"));
   };
@@ -34,11 +32,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <LanguageProvider>
     <WorkspaceProvider>
       <PwaRegister />
-      <AnalyticsProvider>
-        <AppShell name={session.name} onSignOut={signOut}>
-          {children}
-        </AppShell>
-      </AnalyticsProvider>
+      <PersonaProvider>
+        <AnalyticsProvider>
+          <AppShell name={session.name} onSignOut={signOut}>
+            {children}
+          </AppShell>
+        </AnalyticsProvider>
+      </PersonaProvider>
     </WorkspaceProvider>
     </LanguageProvider>
   );

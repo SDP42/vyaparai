@@ -8,8 +8,20 @@ import { signOut } from "@/lib/session";
 import { useWorkspace } from "./AppContext";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
-type Member = { user_id: string; email: string; full_name: string; role: string; joined_at: string };
-type Invite = { id: string; role: string; expires_at: string; status: string };
+type Member = { user_id: string; email: string; full_name: string; role: string; persona: string | null; joined_at: string };
+type Invite = { id: string; role: string; persona: string | null; expires_at: string; status: string };
+
+const RANK: Record<string, number> = { viewer: 0, analyst: 1, admin: 2, owner: 3 };
+/** The job in the shop. It narrows what a person sees and may ask; the role still decides what they may change. */
+const JOBS = [
+  { key: "owner", label: "Store owner", min: "owner" },
+  { key: "ops_manager", label: "Operations manager", min: "admin" },
+  { key: "analyst", label: "Data analyst", min: "analyst" },
+  { key: "accountant", label: "Accountant (view only)", min: "viewer" },
+  { key: "cashier", label: "Counter staff", min: "viewer" },
+];
+/** Same rule as the server: an owner is only the owner persona, and nobody gets more than their role allows. */
+const jobsFor = (role: string) => JOBS.filter((j) => (role === "owner" ? j.key === "owner" : j.key !== "owner" && RANK[j.min] <= RANK[role]));
 
 const ROLES = [
   { key: "viewer", label: "Viewer", note: "Sees dashboards and reports" },
@@ -26,6 +38,7 @@ export function TeamPage() {
   const [version, setVersion] = useState(0);
   const [err, setErr] = useState<string | null>(null);
   const [role, setRole] = useState("viewer");
+  const [job, setJob] = useState("");
   const [link, setLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const members = useApi<Member[]>(`${base}/members`, [version]);
@@ -44,7 +57,7 @@ export function TeamPage() {
 
   const createInvite = () =>
     run(async () => {
-      const r = await api<Invite & { token: string }>(`${base}/invitations`, { method: "POST", body: JSON.stringify({ role }) });
+      const r = await api<Invite & { token: string }>(`${base}/invitations`, { method: "POST", body: JSON.stringify({ role, persona: job || null }) });
       // The token sits after "#" so it is never sent to a server or written to a log.
       setLink(`${window.location.origin}/join#${r.token}`);
       setCopied(false);
@@ -85,6 +98,17 @@ export function TeamPage() {
                   <p className="truncate text-sm text-muted">{m.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <label className="sr-only" htmlFor={`j-${m.user_id}`}>Job of {m.full_name}</label>
+                  <select
+                    id={`j-${m.user_id}`}
+                    value={m.persona ?? ""}
+                    disabled={locked}
+                    onChange={(e) => run(() => api(`${base}/members/${m.user_id}`, { method: "PATCH", body: JSON.stringify({ role: m.role, persona: e.target.value || null }) }))}
+                    className="rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-sm disabled:opacity-60"
+                  >
+                    <option value="">Any job (role only)</option>
+                    {jobsFor(m.role).map((j) => <option key={j.key} value={j.key}>{j.label}</option>)}
+                  </select>
                   <label className="sr-only" htmlFor={`r-${m.user_id}`}>Role of {m.full_name}</label>
                   <select
                     id={`r-${m.user_id}`}
@@ -118,8 +142,15 @@ export function TeamPage() {
           <div className="mt-4 flex flex-wrap items-end gap-3">
             <div>
               <label htmlFor="invite-role" className="block font-mono text-[10px] uppercase tracking-wider text-muted">Role</label>
-              <select id="invite-role" value={role} onChange={(e) => setRole(e.target.value)} className="mt-1 rounded-lg border border-line bg-canvas px-3 py-2 text-sm">
+              <select id="invite-role" value={role} onChange={(e) => { setRole(e.target.value); setJob(""); }} className="mt-1 rounded-lg border border-line bg-canvas px-3 py-2 text-sm">
                 {assignable.map((r) => <option key={r.key} value={r.key}>{r.label}: {r.note}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="invite-job" className="block font-mono text-[10px] uppercase tracking-wider text-muted">Job in the shop</label>
+              <select id="invite-job" value={job} onChange={(e) => setJob(e.target.value)} className="mt-1 rounded-lg border border-line bg-canvas px-3 py-2 text-sm">
+                <option value="">Any (role only)</option>
+                {jobsFor(role).map((j) => <option key={j.key} value={j.key}>{j.label}</option>)}
               </select>
             </div>
             <button onClick={createInvite} className="rounded-full bg-fg px-5 py-2 text-sm font-semibold text-canvas hover:bg-sindoor">Create link</button>

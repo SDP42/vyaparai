@@ -17,9 +17,15 @@ export function Hero() {
   useLayoutEffect(() => {
     const el = root.current;
     if (!el) return;
+    let cleanup = () => {};
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+      // wait for the cloth to drop before the hero speaks
+      const locked = document.documentElement.dataset.gate === "locked";
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" }, paused: locked });
+      const onGate = (e: Event) => !(e as CustomEvent<{ locked: boolean }>).detail.locked && tl.play();
+      window.addEventListener("vyapar:gate", onGate);
+      cleanup = () => window.removeEventListener("vyapar:gate", onGate);
       tl.from("[data-hero-word]", { yPercent: 110, rotate: 4, duration: 1.1, stagger: 0.06 }, 0.1)
         .from("[data-hero-fade]", { opacity: 0, y: 24, duration: 0.9, stagger: 0.08 }, 0.5)
         .from("[data-hero-card]", { opacity: 0, y: 80, rotateX: 18, duration: 1.4 }, 0.35);
@@ -43,7 +49,10 @@ export function Hero() {
         scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
       });
     });
-    return () => mm.revert();
+    return () => {
+      cleanup();
+      mm.revert();
+    };
   }, []);
 
   const words = ["Your", "business", "deserves", "more", "than"];

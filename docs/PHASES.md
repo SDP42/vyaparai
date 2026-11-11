@@ -72,13 +72,9 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
       zoom reveal, features, principles, CTA
 - [x] One token source; Bricolage + Instrument Serif typography
 - [x] Responsive at desktop, tablet and mobile; reduced-motion paths; production build passes
-- [x] Key-and-lock opening with HDRI + CC0 PBR textures, slatted shutter, brass padlock, cut key, sound, skip
+- [x] Opening (replaced 2026-11-11): the shop is closed under a woven cloth tied with a satin ribbon and bow; tap it, the bow comes undone, the ribbon is pulled away and the cloth drops from the middle outward, then the page scrolls. Drawn in code, once per visit, Esc/Skip, none under reduced motion. (The earlier 3D key-and-lock scene was removed.)
 - [x] Religious motifs removed
-- [x] Realism polish: depth of field, bloom, vignette, film grain, detailed interior goods
-- [x] Scroll-scrubbed, reversible unlock (0–20–45–60–75–100 %)
-- [x] Shop interior (labelled goods, jars, sacks, counter) and ambience; sounds synced to scroll
-- [ ] Recorded (not synthesized) audio
-- [x] Shop → Vyapar.ai hand-off (captions, cream fade, brand reveal, hero)
+- [x] Hero text waits for the cloth to drop, then animates in
 - [ ] Short-viewport polish for pinned sections; full visitor-journey test
 
 ## Phase 1 — Data ingestion & quality ✅

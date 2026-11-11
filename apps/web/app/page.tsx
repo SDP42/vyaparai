@@ -6,7 +6,7 @@ import { Features } from "@/components/landing/Features";
 import { Principles } from "@/components/landing/Principles";
 import { Cta } from "@/components/landing/Cta";
 import { SmoothScroll } from "@/components/landing/SmoothScroll";
-import { CinematicOpening } from "@/components/opening/CinematicOpening";
+import { ClothOpening } from "@/components/opening/ClothOpening";
 
 export default function LandingPage() {
   return (
@@ -18,7 +18,7 @@ export default function LandingPage() {
         >
           Skip to content
         </a>
-        <CinematicOpening />
+        <ClothOpening />
         <Nav />
         <main>
           <Hero />

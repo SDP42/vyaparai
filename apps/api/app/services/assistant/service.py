@@ -7,6 +7,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api import masking
 from app.models.commerce import Product
 from app.models.workspace import Workspace, WorkspaceRole
 from app.services import personas
@@ -223,6 +224,9 @@ def ask(
         )
     t1 = time.perf_counter()
     res = _run(db, workspace, u, product)
+    if res is not None and persona is not None and not persona.can("margin"):
+        res.facts = masking.scrub(res.facts)  # product answers quote a margin: not for this job
+        res.rows = masking.scrub(res.rows)
     steps.append(
         {
             "step": "tool",

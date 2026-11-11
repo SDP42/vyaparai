@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Annotated
 
-from fastapi import Depends, Path
+from fastapi import Depends, Path, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -64,7 +64,10 @@ class WorkspaceContext:
 
 
 def get_workspace_context(
-    workspace_id: Annotated[uuid.UUID, Path()], db: DbSession, user: CurrentUser
+    request: Request,
+    workspace_id: Annotated[uuid.UUID, Path()],
+    db: DbSession,
+    user: CurrentUser,
 ) -> WorkspaceContext:
     """Resolve the workspace and the caller's membership.
 
@@ -74,9 +77,11 @@ def get_workspace_context(
     workspace = db.get(Workspace, workspace_id) if membership else None
     if membership is None or workspace is None:
         raise NotFoundError("Workspace not found")
-    return WorkspaceContext(
+    ctx = WorkspaceContext(
         workspace=workspace, user=user, role=membership.role, persona_key=membership.persona
     )
+    request.state.persona = ctx.persona  # read by api/masking.py on the way out
+    return ctx
 
 
 def require_capability(capability: str) -> Callable[..., None]:

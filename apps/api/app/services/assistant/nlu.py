@@ -394,6 +394,97 @@ class Understood:
     scores: dict[str, float] = field(default_factory=dict)
 
 
+# Other ways spoken Hindi gets written down by speech recognition (Devanagari spellings of English words
+# shopkeepers say, and spelling variants). Typed questions benefit too.
+_HEARD_AS = {
+    "sales": ["सेल्स", "सेल", "सेल्ज़", "सेलिंग"],
+    "why": ["क्यो", "क्यूं", "क्यु", "कयो"],
+    "festival": ["त्यौहार", "त्योंहार", "त्यौंहार", "तेहवार", "त्योहर", "फेस्टिवल", "उत्सव"],
+    "top_products": ["ज़्यादा", "जादा", "ज़्यादातर"],
+    "udhaar": ["लेना", "लिना", "देना", "उधारी"],
+    "margin": ["प्रॉफिट", "प्रोफिट", "मार्जिन", "लाभ"],
+    "stock": ["खत्म", "ख़त्म", "खतम", "बचा", "बचाहे"],
+}
+for _intent, _words in _HEARD_AS.items():
+    INTENTS[_intent] |= set(_words)
+PHRASES.extend(
+    [
+        (r"नहीं\s*बिक|बिक\s*नहीं|बिकता\s*नहीं", "slow_products"),
+        (r"पैसा\s*(?:लेना|लिना|देना|बाकी)|पैसे\s*(?:लेने|लेना|देने|बाकी)", "udhaar"),
+    ]
+)
+
+
+# --- Spoken Hindi comes back from speech recognition spelt by ear ("मुनाफ़" for "मुनाफा", "कुन सा" for "कौन
+# सा"). Matching on the consonant skeleton and allowing one slip makes the keywords tolerant of that without
+# touching typed text: typed words still have to match exactly first. ---
+_DEVA = re.compile(r"[\u0900-\u097F]")
+_SAME = str.maketrans(dict(zip("खघछझठढथधफभवशष", "कगचजटडतदपबबसस", strict=True)))
+_MATRA = re.compile(r"[\u093E-\u094D\u0900-\u0903\u093C\u0962\u0963]")
+
+
+def skeleton(word: str) -> str:
+    """Consonants only, with look-alike sounds merged (ख/क, फ/प, व/ब...) and vowel signs dropped."""
+    w = unicodedata.normalize("NFD", word)  # splits nukta forms (ड़ -> ड + ़)
+    w = _MATRA.sub("", w).translate(_SAME)
+    return re.sub(r"[अआइईउऊएऐओऔ]", "", w) if len(w) > 3 else w
+
+
+def _edit1(a: str, b: str) -> bool:
+    """Whether a and b differ by at most one insertion, deletion or substitution."""
+    if abs(len(a) - len(b)) > 1:
+        return False
+    if len(a) > len(b):
+        a, b = b, a
+    i = j = 0
+    slip = False
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            i += 1
+            j += 1
+            continue
+        if slip:
+            return False
+        slip = True
+        if len(a) == len(b):
+            i += 1
+        j += 1
+    return True
+
+
+_SKEL: dict[str, set[str]] | None = None
+
+
+def _skel_index() -> dict[str, set[str]]:
+    global _SKEL
+    if _SKEL is None:
+        idx: dict[str, set[str]] = {}
+        for intent, words in INTENTS.items():
+            for w in words:
+                if _DEVA.search(w) and len(skeleton(w)) >= 3:
+                    idx.setdefault(skeleton(w), set()).add(intent)
+        _SKEL = idx
+    return _SKEL
+
+
+def fuzzy_hits(toks: list[str]) -> dict[str, float]:
+    """Intent scores from Devanagari tokens that match no keyword exactly but sound like one."""
+    idx = _skel_index()
+    out: dict[str, float] = {}
+    for tok in toks:
+        if not _DEVA.search(tok) or any(tok in w for w in INTENTS.values()):
+            continue
+        sk = skeleton(tok)
+        if len(sk) < 3:
+            continue
+        hit = idx.get(sk)
+        if hit is None and len(sk) >= 4:
+            hit = next((i for k, i in idx.items() if len(k) >= 4 and _edit1(sk, k)), None)
+        for intent in hit or ():
+            out[intent] = out.get(intent, 0.0) + 1.0
+    return out
+
+
 def tokens(text: str) -> list[str]:
     t = unicodedata.normalize("NFC", text).lower()
     return _TOKEN.findall(t)
@@ -465,6 +556,8 @@ def route(text: str, today: date) -> Understood:
     for pat, intent in PHRASES:
         if re.search(pat, t):
             scores[intent] = scores.get(intent, 0) + 3.0
+    for intent, w in fuzzy_hits(toks).items():
+        scores[intent] = scores.get(intent, 0) + w
     if scores.get("festival"):
         scores["festival"] += 1.5  # "Diwali ke liye kya stock" is about the festival
     # words that only make sense with a partner intent

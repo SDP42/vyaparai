@@ -269,3 +269,23 @@ def test_stream_sends_steps_then_answer(client: TestClient, shop) -> None:
     assert names[0] == "step"
     assert names[-3:] == ["answer", "evidence", "done"]
     assert names.count("step") >= 3
+
+
+# What speech recognition returns for spoken Hindi: close to the right words but spelt by ear.
+HEARD = {
+    "मुनाफ़ कितना है": "margin",
+    "कुन सा माल कहत्म होने वाला है?": "stock",
+    "अजकी बिक्री कितनी हुए": "sales",
+    "सब सी ज्यादा क्या बिक्ता है?": "top_products",
+}
+NOT_ABOUT_SHOP = ["आपका नाम क्या है", "मौसम कैसा है आज", "कल मैं बाज़ार जाऊँगा", "तुम कहाँ रहते हो"]
+
+
+@pytest.mark.parametrize(("text", "intent"), list(HEARD.items()))
+def test_speech_spelling_of_hindi_still_routes(text: str, intent: str) -> None:
+    assert nlu.route(text, date(2026, 11, 11)).intent == intent
+
+
+@pytest.mark.parametrize("text", NOT_ABOUT_SHOP)
+def test_fuzzy_matching_does_not_invent_intents(text: str) -> None:
+    assert nlu.route(text, date(2026, 11, 11)).intent in {"unknown", "help"}

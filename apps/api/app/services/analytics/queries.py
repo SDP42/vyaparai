@@ -418,3 +418,44 @@ def transactions(
         for r in rows
     ]
     return out, int(total or 0), money(net)
+
+
+# ---------------------------------------------------------------- staff
+
+
+def per_staff(db: Session, ws: uuid.UUID, f: Filters) -> list[dict[str, Any]]:
+    """Sales by the person on the bill. Orders with no name are grouped as 'Unspecified'."""
+    stmt = _lines(
+        [
+            Order.staff,
+            func.sum(LINE_GROSS),
+            func.sum(OrderItem.discount_amount),
+            func.sum(OrderItem.quantity),
+            func.count(distinct(Order.id)),
+            func.sum(case((HAS_COST, OrderItem.quantity * OrderItem.unit_cost_snapshot), else_=0)),
+            func.sum(case((HAS_COST, LINE_NET), else_=0)),
+        ],
+        ws,
+        f,
+    ).group_by(Order.staff)
+    out: list[dict[str, Any]] = []
+    for name, gross, disc, units, orders, cogs, covered in db.execute(stmt).all():
+        g, d, c, cn = money(gross), money(disc), money(cogs), money(covered)
+        net, n = g - d, int(orders)
+        out.append(
+            {
+                "staff": name if name is not None else UNSPECIFIED,
+                "orders": n,
+                "units": dec(units),
+                "net": net,
+                "avg_bill": (net / n) if n else None,
+                "items_per_bill": (dec(units) / n) if n else None,
+                "discount_rate": (d / g * 100) if g else None,
+                "margin_pct": ((cn - c) / cn * 100) if cn else None,
+            }
+        )
+    total = sum((r["net"] for r in out), money(0))
+    for r in out:
+        r["share"] = (r["net"] / total * 100) if total else None
+    out.sort(key=lambda r: r["net"], reverse=True)
+    return out

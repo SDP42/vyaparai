@@ -30,6 +30,7 @@ from app.services.analytics.metrics import (
 )
 from app.services.analytics.text import pct
 from app.services.analytics.types import (
+    UNSPECIFIED,
     ZERO,
     CompareMode,
     Dimension,
@@ -502,4 +503,20 @@ def transactions(
         "limit": limit,
         "offset": offset,
         "items": rows,
+    }
+
+
+def staff(db: Session, ws: Workspace, f: Filters, only: str | None = None) -> dict[str, Any]:
+    """Sales by cashier or salesperson. `only` keeps one person (counter staff: their own)."""
+    rows = q.per_staff(db, ws.id, f)
+    named = [r for r in rows if r["staff"] != UNSPECIFIED]
+    if only is not None:
+        rows = [r for r in rows if r["staff"].casefold() == only.casefold()]
+    return {
+        "meta": {"date_from": f.date_from, "date_to": f.date_to},
+        "has_staff": bool(named),
+        "rows": rows,
+        "note": None
+        if named
+        else "No bills carry a cashier or salesperson name. Map that column when you import.",
     }

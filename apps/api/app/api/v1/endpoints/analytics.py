@@ -14,6 +14,7 @@ from fastapi import APIRouter, Query
 
 from app.api.deps import DbSession, ViewerCtx
 from app.api.masking import MaskedRoute
+from app.core.errors import PermissionDeniedError
 from app.schemas.analytics import (
     DriversResponse,
     FilterOptions,
@@ -60,6 +61,34 @@ def overview(
         categories=category, channels=channel, regions=region, skus=sku,
     )  # fmt: skip
     return service.overview(db, ctx.workspace, f, compare, granularity)
+
+
+@router.get("/analytics/staff")
+def staff(
+    ctx: ViewerCtx,
+    db: DbSession,
+    date_from: DateFrom = None,
+    date_to: DateTo = None,
+) -> dict[str, object]:
+    """Sales by cashier or salesperson. Counter staff see only the name linked to their account."""
+    p = ctx.persona
+    only: str | None = None
+    if p is not None and p.key == "cashier":
+        if not ctx.staff_name:
+            return {
+                "meta": None,
+                "has_staff": False,
+                "rows": [],
+                "own_only": True,
+                "needs_link": True,
+                "note": "Ask the owner to link your name on the bills to your account.",
+            }
+        only = ctx.staff_name
+    elif p is not None and not p.can("staff"):
+        raise PermissionDeniedError(f"Not part of the {p.label['en'].lower()} view.")
+    f = service.resolve_filters(db, ctx.workspace_id, date_from, date_to)
+    out = service.staff(db, ctx.workspace, f, only)
+    return {**out, "own_only": only is not None, "needs_link": False}
 
 
 @router.get("/analytics/drivers", response_model=DriversResponse)

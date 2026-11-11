@@ -24,6 +24,11 @@ const en = {
   "udhaar.title": "Who owes you, and for how long", "udhaar.intro": "Payments are counted against the oldest udhaar first, so the age of what is still owed is honest. Reminders are drafts you send yourself.",
   "udhaar.total": "Total owed", "udhaar.old": "Older than 30 days", "udhaar.notPaying": "Not paying", "udhaar.first": "Who to chase first", "udhaar.draft": "Draft reminders",
   "udhaar.write": "Write an entry", "udhaar.gave": "Gave udhaar", "udhaar.got": "Got payment", "udhaar.save": "Save entry", "udhaar.name": "Name", "udhaar.amount": "Amount (₹)",
+  "voice.tap": "Tap and speak", "voice.stop": "Tap to finish", "voice.listening": "Listening… speak your question", "voice.working": "Understanding what you said…",
+  "voice.heard": "I heard:", "voice.ask": "Yes, ask this", "voice.again": "Speak again", "voice.edit": "Fix the words if needed",
+  "voice.none": "I could not hear you. Hold the phone closer and try again.", "voice.denied": "The microphone is blocked. Allow it in the browser, or type your question.",
+  "voice.unsupported": "Voice is not available in this browser. Please type.", "voice.privacy": "Your voice is turned into words on our server and is not saved.",
+  "voice.low": "I am not sure I heard that right. Please check the words.", "voice.readAloud": "Read answers aloud", "voice.listen": "Listen", "voice.noVoice": "This phone has no voice for this language, so the answer is only in text.", "voice.unavailable": "Voice is not set up on this server. Please type.",
 } as const;
 export type Key = keyof typeof en;
 type Dict = Record<Key, string>;
@@ -44,6 +49,11 @@ const hinglish: Dict = {
   "udhaar.title": "Kis par kitna aur kab se baaki hai", "udhaar.intro": "Payment sabse purane udhaar mein pehle jodi jaati hai, isliye baaki ki umar sahi dikhti hai. Reminder sirf draft hain, bhejna aapko hai.",
   "udhaar.total": "Kul baaki", "udhaar.old": "30 din se purana", "udhaar.notPaying": "Nahi de rahe", "udhaar.first": "Pehle kise yaad dilayein", "udhaar.draft": "Reminder draft karein",
   "udhaar.write": "Entry likhein", "udhaar.gave": "Udhaar diya", "udhaar.got": "Payment mili", "udhaar.save": "Entry save karein", "udhaar.name": "Naam", "udhaar.amount": "Raqam (₹)",
+  "voice.tap": "Dabaiye aur boliye", "voice.stop": "Poora hone par dabaiye", "voice.listening": "Sun raha hoon… apna sawaal boliye", "voice.working": "Aapki baat samajh raha hoon…",
+  "voice.heard": "Maine suna:", "voice.ask": "Haan, yeh poochho", "voice.again": "Phir se boliye", "voice.edit": "Zaroorat ho to shabd theek karein",
+  "voice.none": "Aawaz nahi aayi. Phone paas laakar phir koshish kijiye.", "voice.denied": "Microphone band hai. Browser mein allow kijiye, ya sawaal likhiye.",
+  "voice.unsupported": "Is browser mein voice nahi chalti. Kripya likhiye.", "voice.privacy": "Aapki aawaz hamare server par shabdon mein badalti hai aur save nahi hoti.",
+  "voice.low": "Pakka nahi hoon ki sahi suna. Shabd check kar lijiye.", "voice.readAloud": "Jawab bolkar sunao", "voice.listen": "Sunein", "voice.noVoice": "Is phone mein is bhasha ki aawaz nahi hai, isliye jawab sirf likha hua hai.", "voice.unavailable": "Is server par voice shuru nahi hai. Kripya likhiye.",
 };
 
 const hi: Dict = {
@@ -62,6 +72,11 @@ const hi: Dict = {
   "udhaar.title": "किस पर कितना और कब से बाकी है", "udhaar.intro": "भुगतान सबसे पुराने उधार में पहले जोड़ा जाता है, इसलिए बाकी की उम्र सही दिखती है। रिमाइंडर सिर्फ़ ड्राफ्ट हैं, भेजना आपको है।",
   "udhaar.total": "कुल बाकी", "udhaar.old": "30 दिन से पुराना", "udhaar.notPaying": "नहीं दे रहे", "udhaar.first": "पहले किसे याद दिलाएँ", "udhaar.draft": "रिमाइंडर ड्राफ्ट करें",
   "udhaar.write": "एंट्री लिखें", "udhaar.gave": "उधार दिया", "udhaar.got": "भुगतान मिला", "udhaar.save": "एंट्री सेव करें", "udhaar.name": "नाम", "udhaar.amount": "रकम (₹)",
+  "voice.tap": "दबाइए और बोलिए", "voice.stop": "पूरा होने पर दबाइए", "voice.listening": "सुन रहा हूँ… अपना सवाल बोलिए", "voice.working": "आपकी बात समझ रहा हूँ…",
+  "voice.heard": "मैंने सुना:", "voice.ask": "हाँ, यह पूछो", "voice.again": "फिर से बोलिए", "voice.edit": "ज़रूरत हो तो शब्द ठीक करें",
+  "voice.none": "आवाज़ नहीं आई। फ़ोन पास लाकर फिर कोशिश कीजिए।", "voice.denied": "माइक्रोफ़ोन बंद है। ब्राउज़र में अनुमति दीजिए, या सवाल लिखिए।",
+  "voice.unsupported": "इस ब्राउज़र में आवाज़ नहीं चलती। कृपया लिखिए।", "voice.privacy": "आपकी आवाज़ हमारे सर्वर पर शब्दों में बदलती है और सेव नहीं होती।",
+  "voice.low": "पक्का नहीं हूँ कि सही सुना। शब्द जाँच लीजिए।", "voice.readAloud": "जवाब बोलकर सुनाओ", "voice.listen": "सुनें", "voice.noVoice": "इस फ़ोन में इस भाषा की आवाज़ नहीं है, इसलिए जवाब सिर्फ़ लिखा हुआ है।", "voice.unavailable": "इस सर्वर पर आवाज़ चालू नहीं है। कृपया लिखिए।",
 };
 
 export type Lang = "en" | "hinglish" | "hi";

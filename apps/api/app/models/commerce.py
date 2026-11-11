@@ -89,6 +89,9 @@ class Order(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base):
         default=OrderStatus.COMPLETED,
     )
     channel: Mapped[str | None] = mapped_column(String(50))
+    staff: Mapped[str | None] = mapped_column(
+        String(80)
+    )  # the cashier or salesperson on the bill, as typed
     currency: Mapped[str] = mapped_column(String(3), default="INR")
     shipping_amount: Mapped[Decimal] = mapped_column(Money, default=Decimal("0"))
     tax_amount: Mapped[Decimal] = mapped_column(Money, default=Decimal("0"))

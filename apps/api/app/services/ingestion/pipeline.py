@@ -122,6 +122,13 @@ def inspect_file(path: Path, file_type: str, max_rows: int) -> dict[str, Any]:
 # ---------------------------------------------------------------- validation
 
 
+def _staff(name: str | None) -> str | None:
+    """A person's name on a bill: spaces tidied, case kept, at most 80 characters."""
+    if not name:
+        return None
+    return " ".join(name.split())[:80] or None
+
+
 @dataclass(slots=True)
 class Line:
     row: int
@@ -138,6 +145,7 @@ class Line:
     region: str | None
     city: str | None
     channel: str | None
+    staff: str | None
     status: OrderStatus
     tax_amount: Decimal
 
@@ -332,6 +340,7 @@ def validate_file(path: Path, file_type: str, mapping: dict[str, Any], max_rows:
                 region=text(row, "region"),
                 city=text(row, "city"),
                 channel=text(row, "channel"),
+                staff=_staff(text(row, "staff")),
                 status=status,
                 tax_amount=tax,
             )
@@ -465,6 +474,7 @@ def import_lines(
                 business_date=business_date,
                 status=ln.status,
                 channel=ln.channel,
+                staff=ln.staff,
                 currency=currency,
                 tax_amount=Decimal("0"),
             )

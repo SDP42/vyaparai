@@ -145,7 +145,7 @@ export function AskPage() {
         </div>
       )}
 
-      <form onSubmit={submit} className="sticky bottom-3 flex items-center gap-2 rounded-full border border-line bg-surface p-1.5 shadow-sm">
+      <form onSubmit={submit} className="sticky bottom-20 flex md:bottom-3 items-center gap-2 rounded-full border border-line bg-surface p-1.5 shadow-sm">
         <label htmlFor="ask" className="sr-only">Your question</label>
         <input id="ask" value={text} maxLength={300} onChange={(e) => setText(e.target.value)} placeholder={tr("ask.placeholder")} className="min-w-0 flex-1 bg-transparent px-4 py-2 text-sm outline-none" autoComplete="off" />
         {voice && (

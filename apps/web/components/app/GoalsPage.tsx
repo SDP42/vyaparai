@@ -60,7 +60,7 @@ export function GoalsPage() {
         <p className="mt-1 max-w-2xl text-sm text-fg/70">Set a target for the month or week. You see your pace, the amount needed each remaining day, and a range for where you will likely finish, not a single promise.</p>
       </header>
       {err && <ErrorNote message={err} />}
-      <div className="grid items-start gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[1.5fr_1fr] [&>*]:min-w-0">
         <section aria-label="Goals" className="space-y-3">
           {list.error && <ErrorNote message={list.error} />}
           {!list.data && list.loading && <Skeleton className="h-40" />}

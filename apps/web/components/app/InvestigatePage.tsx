@@ -56,7 +56,7 @@ function Result({ run }: { run: Run }) {
         <p className="mt-3 rounded-lg bg-haldi/15 px-3 py-2 text-xs">{r.caveat}</p>
         {r.notes.length > 0 && <ul className="mt-3 list-disc pl-5 text-xs text-muted">{r.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       </Card>
-      <div className="grid items-start gap-5 lg:grid-cols-[1.2fr_1fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-[1.2fr_1fr] [&>*]:min-w-0">
         <section aria-label="Findings" className="space-y-3">
           <h2 className="font-semibold">Findings, strongest first</h2>
           {r.findings.map((f, i) => (

@@ -175,7 +175,7 @@ export function CampaignRunsPage() {
       {tab === "contacts" && <Contacts base={base} canEdit={canEdit} />}
       {tab === "runs" && open && <RunView base={base} run={open} onBack={() => setOpen(null)} />}
       {tab === "runs" && !open && (
-        <div className="grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid items-start gap-6 lg:grid-cols-[1.4fr_1fr] [&>*]:min-w-0">
           <section className="rounded-2xl border border-line bg-surface" aria-label="Campaigns">
             <h2 className="border-b border-line px-5 py-3 font-semibold">Your campaigns</h2>
             {runs.loading && !runs.data && <Skeleton className="m-4 h-20" />}

@@ -164,7 +164,7 @@ export function UdhaarPage() {
         </>
       )}
 
-      <div className="grid items-start gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[1.4fr_1fr] [&>*]:min-w-0">
         <div className="space-y-6">
           {panel === "remind" && <Remind base={base} onClose={() => setPanel(null)} />}
           {panel && panel !== "remind" && <LedgerView base={base} k={panel} onClose={() => setPanel(null)} />}

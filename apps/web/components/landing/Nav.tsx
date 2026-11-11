@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export function Logo({ className = "" }: { className?: string }) {
+export function Logo({ className = "", compact = false }: { className?: string; compact?: boolean }) {
+  if (compact)
+    return (
+      <span className={`inline-flex items-center ${className}`}>
+        <span aria-hidden className="inline-block h-4 w-4 rotate-45 bg-sindoor" />
+        <span className="sr-only">Vyapar AI</span>
+      </span>
+    );
   return (
     <span className={`inline-flex items-baseline gap-1.5 font-display text-lg font-bold tracking-tight ${className}`}>
       <span aria-hidden className="relative top-[1px] inline-block h-3 w-3 rotate-45 bg-sindoor" />

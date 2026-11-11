@@ -37,12 +37,12 @@ export function PwaRegister() {
   return (
     <>
       {(offline || saved) && (
-        <div role="status" className="fixed inset-x-0 bottom-0 z-40 bg-fg px-4 py-2 text-center text-sm text-canvas">
+        <div role="status" className="fixed inset-x-0 bottom-16 z-40 bg-fg px-4 py-2 text-center text-sm text-canvas md:bottom-0">
           {saved ? "You are offline. These are the numbers saved on this phone." : "You are offline. Saved numbers will open; new data needs a connection."}
         </div>
       )}
       {install && (
-        <button type="button" onClick={async () => { await install.prompt(); setInstall(null); }} className="fixed bottom-4 right-4 z-40 rounded-full bg-fg px-5 py-3 text-sm font-semibold text-canvas shadow-lg hover:bg-sindoor">
+        <button type="button" onClick={async () => { await install.prompt(); setInstall(null); }} className="fixed bottom-20 right-4 z-40 md:bottom-4 rounded-full bg-fg px-5 py-3 text-sm font-semibold text-canvas shadow-lg hover:bg-sindoor">
           Install the app
         </button>
       )}

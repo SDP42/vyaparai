@@ -42,7 +42,7 @@ export function ReportsPage() {
         <p className="mt-1 max-w-2xl text-sm text-fg/70">Sales and what changed, products, customers, stock, udhaar, the forecast and suggested actions, as a PDF for your accountant or partner, or a CSV. A saved report stays exactly as it was made.</p>
       </header>
       {err && <ErrorNote message={err} />}
-      <div className="grid items-start gap-6 lg:grid-cols-[1fr_1.4fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[1fr_1.4fr] [&>*]:min-w-0">
         {canImport ? (
           <Card title="Make a report" subtitle="It is compared with the period of the same length before.">
             <div className="flex flex-wrap items-end gap-3">

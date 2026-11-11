@@ -237,8 +237,8 @@ function RegionCard({ base, info, canEdit, onSaved }: { base: string; info: Regi
           )}
         </p>
         {canEdit && (
-          <div className="flex items-center gap-2">
-            <select aria-label="Your state" value={pick} onChange={(e) => setPick(e.target.value)} className="rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-sm">
+          <div className="flex min-w-0 items-center gap-2">
+            <select aria-label="Your state" value={pick} onChange={(e) => setPick(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-sm sm:flex-none">
               <option value="">{info.state ? "Change state" : "Choose your state"}</option>
               {info.states.map((s) => (
                 <option key={s.state} value={s.state}>
@@ -246,7 +246,7 @@ function RegionCard({ base, info, canEdit, onSaved }: { base: string; info: Regi
                 </option>
               ))}
             </select>
-            <button type="button" onClick={save} disabled={!pick || busy} className="rounded-full bg-fg px-4 py-1.5 text-xs font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">
+            <button type="button" onClick={save} disabled={!pick || busy} className="shrink-0 rounded-full bg-fg px-4 py-1.5 text-xs font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">
               {busy ? "Saving…" : "Save"}
             </button>
           </div>

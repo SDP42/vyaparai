@@ -70,7 +70,7 @@ export function TeamPage() {
 
       {err && <ErrorNote message={err} />}
 
-      <div className="grid items-start gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[1.3fr_1fr] [&>*]:min-w-0">
       <section aria-labelledby="people" className="rounded-2xl border border-line bg-surface">
         <h2 id="people" className="border-b border-line px-5 py-3 font-semibold">People</h2>
         {members.loading && !members.data && <Skeleton className="m-5 h-24" />}

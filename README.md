@@ -44,6 +44,8 @@ Hinglish text, WhatsApp-style messages, and tools that run on a laptop for free.
 | **Udhaar** | Credit ledger with FIFO ageing, who to chase first, and reminder drafts in Hinglish, English or Hindi for you to send ([UDHAAR](docs/UDHAAR.md)) |
 | **Purchase bills** | Photo or PDF of a supplier bill read by OCR, checked by a person, then costs and supplier price rises tracked ([BILLS](docs/BILLS.md)) |
 | **Reviews** | Import reviews; language, sentiment and themes for English, Hindi and Hinglish with the phrase behind each claim |
+| **Personas** | Five jobs (owner, operations manager, analyst, accountant, counter staff): each sees its own pages, the assistant answers only that job's questions and refuses the rest in the asker's language, and sensitive data needs the matching capability ([PERSONAS](docs/PERSONAS.md)) |
+| **Voice** | Speak a question in Hindi, Hinglish or English; a free multilingual Whisper model on your own server turns it into words you confirm, and answers can be read aloud. Audio is never stored ([VOICE](docs/VOICE.md)) |
 | **Teams and security** | Workspaces with owner, admin, analyst and viewer roles; invitation links; HttpOnly cookie sessions with rotation and reuse detection; throttled sign-in; audit log |
 
 The end-to-end journey (sign up → import → numbers → forecast → alerts → digest → stock advice → invite a teammate)
@@ -93,6 +95,12 @@ npm run dev
 
 From the repository root: `make api`, `make web`, `make test`, `make lint`.
 
+### Try each job with one tap
+
+Set `DEMO_LOGIN_ENABLED=true` in `apps/api/.env` (development only; the API refuses it in production). The sign-in page
+then offers the five people, each a real account with its own persona. For voice, the first spoken question downloads
+the Whisper `medium` weights (about 1.5 GB, MIT) unless you set `STT_MODEL=small`; see [VOICE](docs/VOICE.md).
+
 ### Try it with sample data
 
 1. Open <http://localhost:3000> and choose **Sign in → Create account**.
@@ -125,6 +133,7 @@ disallowed licence enters the dependency tree. A project licence has not been ch
 | Doc | What it covers |
 |---|---|
 | [ROADMAP](docs/ROADMAP.md) · [PHASES](docs/PHASES.md) | **Start here.** Status, what is next, checklists per phase |
+| [PERSONAS](docs/PERSONAS.md) · [VOICE](docs/VOICE.md) | Who sees and asks what; speaking questions in Hindi, Hinglish or English |
 | [MVP](docs/MVP.md) | Release checklist and known gaps |
 | [ARCHITECTURE](docs/ARCHITECTURE.md) · [API](docs/API.md) · [DATA_DICTIONARY](docs/DATA_DICTIONARY.md) | How it is built and how to call it |
 | [METRICS](docs/METRICS.md) | Canonical metric definitions |
@@ -136,8 +145,9 @@ disallowed licence enters the dependency tree. A project licence has not been ch
 
 ## Roadmap
 
-Next: campaign consent and sending, pricing advice, multi-store, and hardening for deployment. Later phases are in the
-[roadmap](docs/ROADMAP.md).
+All planned phases have a first version. What is left is mostly proof rather than features: testing with real shopkeepers
+(voice, personas, review and bill accuracy), native review of the Hindi/Hinglish wording, a rehearsed deployment, and
+the open decisions in the [roadmap](docs/ROADMAP.md).
 
 ## Engineering principles
 

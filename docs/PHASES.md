@@ -245,6 +245,16 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ---
 
+## Phase 20 — Personas and voice ✅ first version ([personas](PERSONAS.md), [voice](VOICE.md), [research](research/PERSONAS-VOICE.md))
+- [x] Five personas stored on membership and invitation, validated against the role, chosen on the Team page
+- [x] Assistant answers only the persona's questions, in the asker's language; every intent is classified for every persona (tested)
+- [x] Sensitive routes guarded by capability; navigation and redirects follow the persona; `GET /workspaces/{id}/me`
+- [x] One-tap sample sign-ins as real persona accounts (development only); the old static demo dashboard removed
+- [x] Voice: faster-whisper + Whisper medium on the server, audio never stored, silence and hallucination guards, confirm-the-words step, read-aloud with the device voice
+- [x] Speech-tolerant Hindi keyword matching
+- [ ] Test with real shopkeepers and recorded shop audio; Marathi/Gujarati/Tamil/Bengali; spoken-number parsing; product-name matching from speech
+- [ ] Confirm persona definitions with real shop owners; per-field masking on mixed pages
+
 ## Definition of done
 
 A change is done when it is **implemented, tested, documented and demonstrable**:

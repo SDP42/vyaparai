@@ -19,6 +19,7 @@ A fixed set of 66 questions (en/hinglish/hi) in `tests/test_assistant.py` routes
 - Keyword routing can be pulled the wrong way by a stray business word; policy-style words route to the documents first to reduce this.
 - Products are found by their distinctive words (all words for short names, 60% for long ones, at least one of 4+ letters); an unusual spelling or a Hindi product name is not matched.
 - Forecast accuracy is quoted from the stored backtest, including when it is poor.
+- With a persona assigned, the assistant only answers that job's questions and refuses the rest ([PERSONAS](PERSONAS.md)); questions can also be spoken ([VOICE](VOICE.md)). Spoken Hindi arrives spelt by ear, so Devanagari words are also matched on their consonant skeleton with one slip allowed.
 
 ## Product questions, follow-ups, evidence and streaming
 

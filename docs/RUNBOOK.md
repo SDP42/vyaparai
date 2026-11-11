@@ -20,7 +20,7 @@ TLS, the domain and routing `/api` to the API and everything else to the web app
 1. `cp .env.production.example .env` and fill in `POSTGRES_PASSWORD`, `JWT_SECRET_KEY` (48+ random characters), `PUBLIC_URL` (https), `PUBLIC_API_URL`.
 2. `docker compose up -d --build`. The API refuses to start if production settings are unsafe (short secret, SQLite, non-https origins).
 3. Check `curl -s http://127.0.0.1:8000/api/v1/health/ready` returns 200, then open the site and register the first owner account.
-4. The first document search or bill read downloads the search model (about 220 MB) once.
+4. The first document search or bill read downloads the search model (about 220 MB) once. The first spoken question downloads the Whisper weights into the same `models` volume (about 1.5 GB for `medium`; the API loads them at start-up when it can). Voice needs roughly 2 GB of free memory with `medium`; on a smaller server set `STT_MODEL=small` or `VOICE_ENABLED=false`. Never set `DEMO_LOGIN_ENABLED` here: the API refuses to start with it on.
 
 ## Everyday checks
 

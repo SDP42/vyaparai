@@ -2,6 +2,12 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-11 · Personas and voice
+
+**Personas.** Five jobs (owner, operations manager, analyst, accountant, counter staff), each with its own pages, the questions the assistant will answer, and the data it may open ([PERSONAS.md](PERSONAS.md)). A persona is stored on the membership and the invitation, must fit the member's role, and is enforced on the server: the assistant refuses out-of-remit questions before running any tool, the credit book, cost, pricing, supplier-bill and report routes require a capability, and the navigation shows only the persona's pages. The sign-in page now signs in as real sample accounts (development only, refused in production) instead of the old static demo dashboard, which was removed.
+
+**Voice.** Speak a question in Hindi, Hinglish or English ([VOICE.md](VOICE.md)). The browser records and turns the clip into 16 kHz WAV; our server transcribes it with faster-whisper and the Whisper medium weights (MIT), discards the audio, and the person confirms or edits the words before the question is asked. Answers can be read aloud with the phone's own voice. On synthetic speech, medium got the right intent on 17 of 17 clean and 15 of 17 noisy questions (small: 15 and 13) and invented no words from silence or noise; these are optimistic and need a test with real shopkeepers. Findings worth keeping: Whisper spells Hindi by ear, so the question understanding now matches on a consonant skeleton and knows Devanagari spellings of English words; and PyAV (a faster-whisper dependency) bundles GPL codecs, so it is excluded and stubbed rather than installed.
+
 ## 2026-11-10 · Copilot, agents, recommendations and reports
 
 **Copilot.** Added product questions, follow-ups that reuse the last question's context, an evidence list on every answer, and a streaming endpoint whose steps are the real recorded ones ([ASSISTANT.md](ASSISTANT.md)). Routing is 100% on 73 questions but keywords were added for misses, so that is a development figure.

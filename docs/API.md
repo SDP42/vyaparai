@@ -114,3 +114,16 @@ coverage, excluded orders by status). Invalid ranges return `422 invalid_range`.
 | 4 | `POST /workspaces/{id}/forecasts` · `GET …/forecasts/{id}` |
 | 7 | `GET /workspaces/{id}/documents/search` |
 | 8 | `POST /workspaces/{id}/copilot/runs` · `GET …/copilot/runs/{id}` |
+
+## Personas and voice
+
+| Method | Path | Role | Notes |
+|---|---|---|---|
+| GET | `/auth/demo-status` | public | `{enabled, personas[]}`; empty unless `DEMO_LOGIN_ENABLED=true` (never in production) |
+| POST | `/auth/demo-login` | public | `{persona}` signs in as that sample person (CSRF header required, throttled); 404 when off |
+| GET | `/workspaces/{id}/me?lang=` | viewer | The caller's role and persona: pages, capabilities, suggestions in `en`, `hinglish` or `hi` |
+| POST | `/workspaces/{id}/invitations` | admin | Accepts `persona` beside `role`; 400 if the persona does not fit the role |
+| PATCH | `/workspaces/{id}/members/{user}` | admin | `{role, persona?}`; omit `persona` to keep it (cleared if it no longer fits) |
+| POST | `/workspaces/{id}/assistant/voice` | viewer | Multipart `audio` (16-bit PCM WAV, up to 15 s and about 1 MB) and `language` (`hi`, `en`, `mr`, `gu`); returns `{text, language, seconds, ms, reason, confidence}`; audio is not stored |
+
+Routes for the credit book, costs, pricing, supplier bills and reports answer 403 to a persona without the matching capability ([PERSONAS](PERSONAS.md)).

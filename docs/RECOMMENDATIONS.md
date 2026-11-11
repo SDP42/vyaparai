@@ -28,7 +28,7 @@ Every item shows its basis and assumptions; assumptions that are not measured on
 
 A business summary for a period: key measures with change, what changed (price, volume, mix, discounts), top and lowest products, customers, stock, udhaar, the forecast with its past error, suggested actions, and notes and limits. Saved as a frozen snapshot, rendered as PDF (reportlab) or a sectioned CSV.
 
-**Limits**: PDFs are English with amounts as "Rs" (the built-in fonts have no rupee sign or Devanagari). The snapshot stores numbers, not the charts' source data beyond the net-sales trend.
+**Limits**: PDFs are set in Noto Sans so amounts print with ₹, but stay English: the PDF library cannot shape Devanagari (vowel signs and conjuncts would come out wrong), so Hindi is not attempted. The snapshot stores numbers, not the charts' source data beyond the net-sales trend.
 
 ## API
 

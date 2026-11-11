@@ -18,7 +18,7 @@ A store is its own workspace: its own data, team, roles, settings and audit trai
 
 ## Not built
 
-- **Staff-level targets and sales per cashier.** Sales files do not say who rang up a sale, so staff performance cannot be measured; shop-level targets are on the Goals page.
+- **Staff-level targets.** Sales per cashier or salesperson is on the Staff page when the sales file has a Cashier/Staff column (average bill and items per bill are fairer comparisons than totals, because shifts differ). Per-person targets are not built; shop-level targets are on the Goals page.
 - Stock transfers between shops, shared product catalogues, and combined customer lists across shops.
 - Consolidated reports across shops (each shop reports on its own).
 

@@ -32,7 +32,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 15 | Connectors and scheduled imports | ✅ | Remembered column mappings, connected Google Sheet or shared-file links, scheduled and deduplicated |
 | 15B | Cost history and margin-leak tracking | ✅ | Cost history from every sale, margin leaks with a suggested price; purchase-bill photo/PDF import done ([BILLS](BILLS.md), [plan](research/COST-TRACKING.md)) |
 | 16 | Pricing and promotion advisor | ✅ | Which discounts paid off (vs the same weekday, profit after discount), small safe price trials ([PRICING](PRICING.md)) |
-| 17 | Multi-store and staff | ✅ stores | Side-by-side comparison, needs-attention flags, add a shop; per-staff attribution not possible without a cashier column ([STORES](STORES.md)) |
+| 17 | Multi-store and staff | ✅ | Side-by-side comparison, needs-attention flags, add a shop; sales by cashier or salesperson when the sales file has that column ([STORES](STORES.md)) |
 | 18 | Mobile-first and Hinglish/Hindi | ✅ app · 🟡 language | Installable PWA with offline reading and Hinglish/Hindi for navigation, Ask, Next steps, Udhaar and every page's headline and intro; page bodies English ([MOBILE](MOBILE.md)) |
 | 19 | Benchmarks and goals | ✅ goals | Targets with pace and a likely-finish range, benchmarks from your own history; no peer data exists ([GOALS](GOALS.md)) |
 | 20 | Personas and voice | ✅ first version | Five jobs (owner, operations manager, analyst, accountant, counter staff) with their own pages, assistant remit and data guards, one-tap sample sign-ins; ask by voice in Hindi, Hinglish or English with a free Whisper model and a confirm-the-words step ([PERSONAS](PERSONAS.md), [VOICE](VOICE.md)) |

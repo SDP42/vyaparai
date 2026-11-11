@@ -60,4 +60,4 @@ role, persona, pages, suggestions in the chosen language).
 - A persona narrows access; it never widens it. Role checks still apply on top.
 - The persona descriptions come from general knowledge of Indian retail, not from interviews. They should be
   confirmed with real shop owners.
-- Counter staff cannot see "own sales only" because the data has no cashier column yet.
+- Counter staff see only their own sales on the Staff page, matched by the name linked to their account on the Team page (a cashier column on the sales file is needed; without one the page says so).

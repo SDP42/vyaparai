@@ -250,6 +250,7 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] Voice: faster-whisper + Whisper medium on the server, audio never stored, silence and hallucination guards, confirm-the-words step, read-aloud with the device voice
 - [x] Speech-tolerant Hindi keyword matching
 - [x] Spoken-number parsing (Hindi, Hinglish, English; lakh/crore/डेढ़/सवा/साढ़े) and product-name matching from Hindi speech (glossary + sound classes, "did you mean")
+- [x] Staff attribution: optional Cashier/Staff column on import, sales by person (bills, average bill, items per bill, discount, margin), counter staff see only their own, linked by name on the Team page
 - [ ] Test with real shopkeepers and recorded shop audio; Marathi/Gujarati/Tamil/Bengali speech (needs IndicWhisper or similar, see VOICE.md)
 - [x] Per-field masking of cost and margin for personas without the margin capability; customer routes need the customers capability
 - [ ] Confirm persona definitions with real shop owners

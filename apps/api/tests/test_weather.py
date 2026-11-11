@@ -116,6 +116,8 @@ def test_production_refuses_the_free_tier_without_a_key() -> None:
         "app_env": "production",
         "jwt_secret_key": "x" * 40,
         "database_url": "postgresql://u:p@h/d",
+        "cors_origins": ["https://app.example.in"],
+        "app_url": "https://app.example.in",
     }
     assert Settings(**prod).weather_allowed is False  # type: ignore[arg-type]
     assert Settings(**prod, open_meteo_api_key="k").weather_allowed is True  # type: ignore[arg-type]

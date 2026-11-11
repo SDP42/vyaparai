@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.core.config import get_settings
 from app.models.session import RefreshToken
 from tests.conftest import PASSWORD
 
@@ -33,7 +34,10 @@ def test_login_sets_httponly_cookie_scoped_to_auth(client: TestClient, user: str
     assert "httponly" in cookie
     assert "samesite=lax" in cookie
     assert "path=/api/v1/auth" in cookie
-    assert r.json()["expires_in"] == 15 * 60
+    assert (
+        r.json()["expires_in"] == get_settings().access_token_expire_minutes * 60
+    )  # short-lived whatever .env says
+    assert get_settings().access_token_expire_minutes <= 30
 
 
 def test_refresh_rotates_and_issues_new_access_token(client: TestClient, user: str) -> None:

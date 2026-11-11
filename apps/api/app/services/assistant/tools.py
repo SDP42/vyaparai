@@ -20,6 +20,7 @@ from app.services import credit, events_insight, inventory
 from app.services.analytics import intelligence
 from app.services.analytics import queries as q
 from app.services.analytics import service as analytics
+from app.services.assistant import translit
 from app.services.assistant.nlu import Period
 from app.services.bills import service as bills
 from app.services.forecasting import service as forecasting
@@ -340,15 +341,19 @@ def _stem(t: str) -> str:
     return t[:-1] if len(t) > 4 and t.endswith("s") else t
 
 
-def find_product_in_text(db: Session, ws: uuid.UUID, text: str) -> Product | None:
-    """A product named in the question: its distinctive words must all (or mostly) appear."""
+def _rank_products(db: Session, ws: uuid.UUID, text: str) -> list[tuple[float, int, Product]]:
+    """Products whose distinctive words appear in the text, best first. Devanagari words count through the
+    retail glossary and by how they sound (see translit.py), so "चावल" and "बासमती राइस" find Basmati Rice."""
     import re
 
-    qt = {_stem(t) for t in re.findall(r"[a-z0-9]+", text.lower())}
-    best: tuple[float, int, Product] | None = None
+    low = text.lower()
+    qt = {_stem(t) for t in re.findall(r"[a-z0-9]+", low)}
+    spoken_words, spoken_sounds = translit.expand(text)
+    qt |= {_stem(w) for w in spoken_words}
+    ranked: list[tuple[float, int, Product]] = []
     for p in db.scalars(select(Product).where(Product.workspace_id == ws)):
-        if p.sku.lower() in text.lower().split():
-            return p
+        if p.sku.lower() in low.split():
+            return [(2.0, 9, p)]
         words = [
             _stem(t)
             for t in re.findall(r"[a-z0-9]+", p.name.lower())
@@ -356,14 +361,38 @@ def find_product_in_text(db: Session, ws: uuid.UUID, text: str) -> Product | Non
         ]
         if not words:
             continue
-        hit = [w for w in words if w in qt]
-        frac = len(hit) / len(words)
-        if not hit or max(len(w) for w in hit) < 4:
+        hit = [
+            w
+            for w in words
+            if w in qt or (len(w) >= 3 and translit.sound_class(w) in spoken_sounds)
+        ]
+        if not hit or max(len(w) for w in hit) < 3:
             continue
-        need = 1.0 if len(words) <= 2 else 0.6
-        if frac >= need and (best is None or (frac, len(hit)) > best[:2]):
-            best = (frac, len(hit), p)
-    return best[2] if best else None
+        ranked.append((len(hit) / len(words), len(hit), p))
+    ranked.sort(key=lambda r: (r[0], r[1]), reverse=True)
+    return ranked
+
+
+def find_product_in_text(db: Session, ws: uuid.UUID, text: str) -> Product | None:
+    """A product named in the question: its distinctive words must all (or mostly) appear."""
+    ranked = _rank_products(db, ws, text)
+    if not ranked:
+        return None
+    frac, _, best = ranked[0]
+    words = [t for t in best.name.lower().split() if t not in _NAME_STOP and not t.isdigit()]
+    need = 1.0 if len(words) <= 2 else 0.6
+    if translit.has_devanagari(text):
+        need = 0.5  # a shopkeeper says "आटा", not "Wheat Atta 5 kg"; a clear winner is enough
+    if translit.has_devanagari(text) and frac < 1.0 and len(ranked) > 1:
+        return None  # "चावल" with two kinds of rice on the shelf: ask, do not guess
+    if frac >= need and (len(ranked) == 1 or ranked[1][:2] != ranked[0][:2]):
+        return best
+    return None
+
+
+def product_candidates(db: Session, ws: uuid.UUID, text: str, limit: int = 3) -> list[str]:
+    """Names to offer as buttons when the question names a product but not clearly one: "did you mean"."""
+    return [p.name for _, _, p in _rank_products(db, ws, text)[:limit]]
 
 
 def product_sales(db: Session, workspace: Workspace, period: Period | None, p: Product) -> Result:

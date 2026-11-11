@@ -1,4 +1,4 @@
-.PHONY: install api web test lint format migrate up down backup
+.PHONY: install api web test lint format migrate up down backup gen-api
 
 install:      ## Install backend and frontend dependencies
 	cd apps/api && uv sync
@@ -12,6 +12,10 @@ web:          ## Run the web app on :3000
 
 migrate:      ## Apply database migrations
 	cd apps/api && uv run alembic upgrade head
+
+gen-api:      ## Re-export the OpenAPI description and regenerate the web types
+	cd apps/api && .venv/bin/python scripts/export_openapi.py
+	cd apps/web && npm run gen:api
 
 test:         ## Run backend tests
 	cd apps/api && uv run pytest

@@ -174,7 +174,7 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 ## Phase F2 — App shell hardening
 
 - [x] HttpOnly, SameSite cookie session with refresh-token rotation; CSRF protection; logout everywhere
-- [ ] Typed API client generated from OpenAPI (`openapi-typescript`) replacing the hand-written types (in progress)
+- [x] Types generated from the API's OpenAPI description (`make gen-api`; `apps/api/openapi.json` is checked by a test so it cannot go stale). Shared shapes (workspace, jobs, data summary) now come from it; older page-specific types are replaced as pages are touched
 - [x] Workspace switcher and member invites (owner/admin)
 - [x] Remove the persona demo: the sign-in page now signs in as real sample accounts (Phase 20)
 - [ ] Consistent empty / loading / error states; mobile layouts for every table

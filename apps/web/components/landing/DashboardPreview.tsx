@@ -30,7 +30,7 @@ export function DashboardPreview() {
                 <KpiValue value={k.value} format={k.format} />
               </p>
               <p className={`mt-1 truncate font-mono text-[11px] ${k.delta >= 0 ? "text-mor" : "text-sindoor"}`}>
-                {k.delta >= 0 ? "▲" : "▼"} {formatPct(k.delta)} <span className="text-muted">vs prev. 30d</span>
+                {k.delta >= 0 ? "▲" : "▼"} {formatPct(k.delta)} <span className="hidden text-muted @lg:inline">vs prev. 30d</span>
               </p>
             </div>
           ))}

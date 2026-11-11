@@ -2,7 +2,7 @@
 
 import {
   Bell, Boxes, CalendarDays, ChartNoAxesColumn, CheckCheck, ClipboardList, Database, FileText, Gauge, Goal, HandCoins, Home, LineChart, Megaphone, MessageCircleQuestion,
-  MessagesSquare, Microscope, Newspaper, Package, ReceiptText, Store, Tag, Target, TrendingUp, Users, UsersRound, Wallet, X, Ellipsis, LogOut, type LucideIcon,
+  MessagesSquare, Microscope, Newspaper, Package, ReceiptText, Store, Tag, Target, TrendingUp, Users, UsersRound, UserRound, Wallet, X, Ellipsis, LogOut, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ const GROUPS: Group[] = [
   { key: "group.sales", items: [
     { href: "/app/sales", key: "nav.sales", icon: ChartNoAxesColumn },
     { href: "/app/customers", key: "nav.customers", icon: Users },
+    { href: "/app/staff", key: "nav.staff", icon: UserRound },
     { href: "/app/products", key: "nav.products", icon: Package },
     { href: "/app/pricing", key: "nav.pricing", icon: Tag },
     { href: "/app/reviews", key: "nav.reviews", icon: MessagesSquare },

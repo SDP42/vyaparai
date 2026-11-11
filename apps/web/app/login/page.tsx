@@ -175,9 +175,9 @@ function PersonaCard({ person: p, onChoose, active }: { person: DemoPersona; onC
           </li>
         ))}
       </ul>
-      <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: look.accent }}>
+      <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-fg">
         Enter the shop
-        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1" style={{ color: look.accent }}>→</span>
       </span>
     </motion.button>
   );

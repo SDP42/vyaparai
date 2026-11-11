@@ -46,7 +46,7 @@ function Spark({ pts }: { pts: number[] }) {
 
 function Stars({ n }: { n: number | null }) {
   if (n == null) return null;
-  return <span aria-label={`${n} out of 5 stars`} className="font-mono text-xs tracking-tight text-haldi">{"★".repeat(n)}<span className="text-line">{"★".repeat(5 - n)}</span></span>;
+  return <span role="img" aria-label={`${n} out of 5 stars`} className="font-mono text-xs tracking-tight text-haldi-deep"><span aria-hidden>{"★".repeat(n)}<span className="text-line">{"★".repeat(5 - n)}</span></span></span>;
 }
 
 function ThemeChips({ themes }: { themes: Theme[] }) {

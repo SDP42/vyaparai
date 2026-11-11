@@ -47,7 +47,7 @@ export function PricingPage() {
               <ul className="space-y-3">
                 {d.data.items.map((i) => (
                   <li key={i.sku} className="rounded-2xl border border-line bg-surface p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-2"><h3 className="font-semibold">{i.name}</h3><span className={`rounded-full px-2.5 py-0.5 text-xs ${V[i.verdict][1]}`}>{V[i.verdict][0]}</span></div>
+                    <div className="flex flex-wrap items-start justify-between gap-2"><h2 className="font-semibold">{i.name}</h2><span className={`rounded-full px-2.5 py-0.5 text-xs ${V[i.verdict][1]}`}>{V[i.verdict][0]}</span></div>
                     <p className="mt-1 text-sm text-fg/75">{i.promo_days} discount days at about {i.avg_discount_pct}% off. Sales {i.lift_pct >= 0 ? "rose" : "fell"} {Math.abs(i.lift_pct).toFixed(0)}% against a normal {i.promo_days === 1 ? "day" : "days"} of the same weekdays ({i.extra_units >= 0 ? "+" : ""}{i.extra_units.toFixed(0)} units).</p>
                     <dl className="mt-3 flex flex-wrap gap-2 text-xs">
                       <div className="rounded-lg bg-canvas px-2.5 py-1"><dt className="font-mono uppercase tracking-wider text-muted">Discount given</dt><dd className="text-sm font-semibold">{formatINR(i.discount_given)}</dd></div>
@@ -72,7 +72,7 @@ export function PricingPage() {
               <h2 className="font-semibold">Worth a one-week trial</h2>
               {m.data.suggestions.map((s) => (
                 <article key={s.sku} className="rounded-2xl border border-line bg-surface p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2"><h3 className="font-semibold">{s.name}: {formatINR(s.price)} → {formatINR(s.suggested_price)} (+{s.step_pct}%)</h3><span className="text-right text-sm"><b className="text-lg">{formatINR(s.profit_change_month.expected)}</b><span className="block text-[11px] text-muted">a month, between {formatINR(s.profit_change_month.low)} and {formatINR(s.profit_change_month.high)}</span></span></div>
+                  <div className="flex flex-wrap items-start justify-between gap-2"><h2 className="font-semibold">{s.name}: {formatINR(s.price)} → {formatINR(s.suggested_price)} (+{s.step_pct}%)</h2><span className="text-right text-sm"><b className="text-lg">{formatINR(s.profit_change_month.expected)}</b><span className="block text-[11px] text-muted">a month, between {formatINR(s.profit_change_month.low)} and {formatINR(s.profit_change_month.high)}</span></span></div>
                   <p className="mt-1 text-sm text-fg/75">{s.why} Margin is {s.margin_pct}%.</p>
                   <p className="mt-2 text-xs text-muted">{s.measured ? "Based on how this product's volume reacted to its own earlier price change." : s.assumption}</p>
                 </article>

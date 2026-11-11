@@ -8,45 +8,66 @@ gsap.registerPlugin(ScrollTrigger);
 
 const FEATURES = [
   {
-    tag: "P0",
+    tag: "Numbers",
     title: "Command center",
-    body: "Net sales, margin, orders and AOV, each with its definition, period, filters and data freshness.",
+    body: "Net sales, margin, orders and average bill, each with its definition, period and when the data was last updated.",
     span: "sm:col-span-2 lg:col-span-4",
     art: <BarsArt />,
   },
   {
-    tag: "P0",
+    tag: "Forecast",
     title: "Festival-aware forecasts",
-    body: "Baselines first, honest intervals, and Diwali and wedding season built in.",
+    body: "Starts from last week's pattern, adds Diwali and wedding season only when it helps, and shows how wrong it has been.",
     span: "lg:col-span-2",
     art: <WaveArt />,
   },
   {
-    tag: "P0",
-    title: "Customer RFM",
-    body: "New, repeat and lapsed customers using rules you can read.",
+    tag: "Udhaar",
+    title: "Who owes you, and since when",
+    body: "Payments settle the oldest udhaar first. You see whom to call first, with a reminder you send yourself.",
     span: "lg:col-span-2",
-    art: <DotsArt />,
+    art: <UdhaarArt />,
   },
   {
-    tag: "P1",
-    title: "Reorder simulator",
-    body: "Lead time, safety stock and demand sliders. Purchase orders stay drafts until you approve them.",
+    tag: "Stock",
+    title: "What to order before it runs out",
+    body: "Days of cover from the forecast, and the cash sitting in stock that has stopped moving.",
     span: "lg:col-span-2",
     art: <StockArt />,
   },
   {
-    tag: "P1",
-    title: "Hinglish reviews",
-    body: "“delivery late tha but quality ekdum mast” becomes delivery −, quality +.",
+    tag: "Reviews",
+    title: "Hinglish reviews, read properly",
+    body: "“delivery late tha but quality ekdum mast” becomes delivery −, quality +, with the phrase behind each.",
     span: "lg:col-span-2",
     art: <QuoteArt />,
   },
   {
-    tag: "P1",
-    title: "Copilot with citations",
-    body: "Ask in plain words. Numbers come from the metric layer and every claim links to its source.",
-    span: "sm:col-span-2 lg:col-span-6",
+    tag: "Voice",
+    title: "Ask by speaking",
+    body: "Say it in Hindi, Hinglish or English. You check the words, then the answer comes back, and can be read out loud.",
+    span: "sm:col-span-2 lg:col-span-3",
+    art: <VoiceArt />,
+  },
+  {
+    tag: "Your team",
+    title: "Everyone sees their own shop",
+    body: "The counter does not see profit and the accountant cannot change anything. The assistant answers only the questions of the job.",
+    span: "sm:col-span-2 lg:col-span-3",
+    art: <JobsArt />,
+  },
+  {
+    tag: "Bills",
+    title: "Supplier bills, read from a photo",
+    body: "A person checks every line before it counts. Then you see when a supplier quietly raised a price.",
+    span: "lg:col-span-2",
+    art: <BillArt />,
+  },
+  {
+    tag: "Ask",
+    title: "Answers that show their working",
+    body: "Every number comes from your own data and links back to where you can check it. If it cannot answer, it says so.",
+    span: "sm:col-span-2 lg:col-span-4",
     art: <CopilotArt />,
   },
 ];
@@ -83,8 +104,7 @@ export function Features() {
           <br /> not the boardroom.
         </h2>
         <p className="max-w-sm text-fg/60">
-          Each capability ships only when it is tested, documented and can explain itself. The P0/P1 labels follow
-          our public roadmap.
+          Every figure shows the numbers behind it, and every page says what it does not know.
         </p>
       </div>
       <div className="grid gap-4 [perspective:1200px] sm:grid-cols-2 lg:grid-cols-6">
@@ -107,7 +127,7 @@ export function Features() {
               <span className="w-fit rounded-full border border-line px-2.5 py-1 font-mono text-[10px] tracking-[0.18em] text-muted">
                 {f.tag}
               </span>
-              <div className="my-8 flex min-h-28 items-center">{f.art}</div>
+              <div className="my-8 flex min-h-28 flex-1 items-center">{f.art}</div>
               <h3 className="text-2xl font-bold tracking-tight">{f.title}</h3>
               <p className="mt-2 max-w-xl text-fg/60">{f.body}</p>
             </div>
@@ -196,13 +216,84 @@ function CopilotArt() {
         Why did sales dip last Tuesday?
       </div>
       <div className="rounded-2xl rounded-tl-sm border border-line bg-canvas p-4 text-sm text-fg/80">
-        Net sales were <b className="text-fg">₹41,200</b> (−18% vs. the previous 4 Tuesdays). 72% of the drop came from{" "}
-        <b className="text-fg">Staples</b>, mostly fewer orders rather than lower prices.
+        Net sales were <b className="text-fg">₹41,200</b> (18% below the last four Tuesdays). Most of the drop came from{" "}
+        <b className="text-fg">Staples</b>: fewer bills, not lower prices. That is what the numbers show; they cannot say why customers stayed away.
         <div className="mt-3 flex flex-wrap gap-2 font-mono text-[10px]">
-          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">[1] metric:net_sales v1</span>
-          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">[2] drivers: volume/price/mix</span>
+          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">Net sales · 4 Tuesdays</span>
+          <span className="rounded border border-line px-2 py-0.5 text-haldi-deep">Volume, price, mix</span>
         </div>
       </div>
+    </div>
+  );
+}
+
+function UdhaarArt() {
+  const rows = [
+    ["0–30 days", "₹38,400", 42],
+    ["31–60 days", "₹21,900", 24],
+    ["Over 60", "₹31,150", 34],
+  ] as const;
+  return (
+    <div className="w-full space-y-2.5 font-mono text-[11px]" aria-hidden>
+      {rows.map(([label, amt, w], i) => (
+        <div key={label}>
+          <div className="mb-1 flex justify-between text-fg/60">
+            <span>{label}</span>
+            <span className={i === 2 ? "text-sindoor" : "text-fg/80"}>{amt}</span>
+          </div>
+          <div className="h-1.5 rounded-full bg-line">
+            <div className={`h-full rounded-full transition-all duration-700 ${i === 2 ? "bg-sindoor/80" : "bg-fg/40"} group-hover:bg-sindoor`} style={{ width: `${w * 2}%` }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function VoiceArt() {
+  return (
+    <div className="flex w-full items-center gap-4" aria-hidden>
+      <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-fg text-canvas transition-colors group-hover:bg-sindoor">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="9" y="3" width="6" height="12" rx="3" />
+          <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+        </svg>
+      </span>
+      <div className="min-w-0 space-y-2 text-sm">
+        <p className="font-deva text-lg leading-snug">आज की बिक्री कितनी हुई?</p>
+        <p className="rounded-xl border border-line bg-canvas px-3 py-2 text-fg/75">Aaj ₹46,820 hui, kal se 6% zyada.</p>
+      </div>
+    </div>
+  );
+}
+
+function JobsArt() {
+  const jobs = ["Owner", "Operations", "Analyst", "Accountant", "Counter"];
+  return (
+    <div className="flex flex-wrap gap-2" aria-hidden>
+      {jobs.map((j, i) => (
+        <span key={j} className={`rounded-full border px-3.5 py-1.5 text-sm ${i === 4 ? "border-sindoor/40 bg-sindoor/10 text-sindoor" : "border-line bg-canvas text-fg/75"}`}>
+          {j}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BillArt() {
+  return (
+    <div className="w-full space-y-1.5 font-mono text-[11px]" aria-hidden>
+      {[
+        ["Atta 5kg × 20", "₹5,160"],
+        ["Sugar 1kg × 40", "₹1,720"],
+        ["Ghee 1L × 12", "₹7,080"],
+      ].map(([n, v], i) => (
+        <div key={n} className={`flex justify-between rounded-md px-2 py-1 ${i === 2 ? "bg-haldi/20 text-fg" : "bg-canvas text-fg/70"}`}>
+          <span>{n}</span>
+          <span>{v}</span>
+        </div>
+      ))}
+      <p className="pt-1 text-[10px] text-muted">Ghee: ₹590 → ₹615 since March</p>
     </div>
   );
 }

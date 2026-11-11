@@ -16,14 +16,14 @@
   /* Text */
   --color-fg: #1b1612;
   --color-ink: #1b1612;
-  --color-muted: #776a59;
+  --color-muted: #6a5e4e;
 
   /* Brand — sindoor red, haldi turmeric, mor peacock, neel indigo */
-  --color-sindoor: #d9362b;
+  --color-sindoor: #bf2b21;
   --color-sindoor-deep: #a3241c;
   --color-haldi: #f2a71b;
-  --color-haldi-deep: #9c5d00;
-  --color-mor: #0f7a6f;
+  --color-haldi-deep: #8c5400;
+  --color-mor: #0c6f64;
   --color-neel: #3346a8;
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;

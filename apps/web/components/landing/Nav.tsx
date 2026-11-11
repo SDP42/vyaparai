@@ -59,9 +59,9 @@ export function Nav() {
         <ul className="hidden items-center gap-8 md:flex">
           {LINKS.map((l) => (
             <li key={l.href}>
-              <a href={l.href} className="group relative text-sm text-fg/70 transition-colors hover:text-fg">
+              <a href={l.href} className="group relative inline-block py-2 text-sm text-fg/70 transition-colors hover:text-fg">
                 {l.label}
-                <span className="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-haldi transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100" />
+                <span className="absolute bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-haldi transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100" />
               </a>
             </li>
           ))}

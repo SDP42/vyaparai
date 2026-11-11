@@ -80,9 +80,9 @@ export function TrendChart({ points, compareLabel }: { points: TrendPoint[]; com
                 </linearGradient>
               </defs>
               <CartesianGrid stroke="#dccfb8" strokeDasharray="3 6" vertical={false} />
-              <XAxis dataKey="label" tick={{ fill: "#776a59", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} />
+              <XAxis dataKey="label" tick={{ fill: "#6a5e4e", fontSize: 11 }} tickLine={false} axisLine={false} minTickGap={24} />
               <YAxis
-                tick={{ fill: "#776a59", fontSize: 11 }}
+                tick={{ fill: "#6a5e4e", fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 width={58}
@@ -98,7 +98,7 @@ export function TrendChart({ points, compareLabel }: { points: TrendPoint[]; com
                 }}
               />
               <Area type="monotone" dataKey="net" stroke="#1b1612" strokeWidth={2} fill="url(#netFill)" activeDot={{ r: 4 }} />
-              {compareLabel && <Line type="monotone" dataKey="previous" stroke="#776a59" strokeWidth={1.8} strokeDasharray="5 5" dot={false} connectNulls />}
+              {compareLabel && <Line type="monotone" dataKey="previous" stroke="#6a5e4e" strokeWidth={1.8} strokeDasharray="5 5" dot={false} connectNulls />}
             </ComposedChart>
           </ResponsiveContainer>
         </div>

@@ -1,6 +1,6 @@
 # Roadmap & status
 
-_Last updated: 2026-11-08_
+_Last updated: 2026-11-11_
 
 Legend: ✅ done · 🟡 in progress · ⬜ not started · ⏸ blocked / needs a decision
 
@@ -37,81 +37,82 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | 19 | Benchmarks and goals | ✅ goals | Targets with pace and a likely-finish range, benchmarks from your own history; no peer data exists ([GOALS](GOALS.md)) |
 | 20 | Personas and voice | ✅ first version | Five jobs (owner, operations manager, analyst, accountant, counter staff) with their own pages, assistant remit and data guards, one-tap sample sign-ins; ask by voice in Hindi, Hinglish or English with a free Whisper model and a confirm-the-words step ([PERSONAS](PERSONAS.md), [VOICE](VOICE.md)) |
 
-**MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app).
-Phases 5–10 are P1/P2 and follow the MVP.
+**MVP boundary:** phases 0–4 + F2 (upload → trusted metrics → forecast in a usable app). Every later phase has since
+been built to a first version; what remains is proof, not features.
 
 ## 2. What is done
 
-### Backend (`apps/api`): 116 tests, strict mypy, ruff clean
-- FastAPI app factory, `/api/v1`, uniform error envelope, request IDs, JSON logs, health probes
-- Auth (Argon2id + JWT), workspaces with owner/admin/analyst/viewer roles, audit log
-- 404-on-non-member tenancy, tested; production settings guards
-- Models for users, workspaces, memberships, datasets, jobs, audit logs, products, customers,
-  orders, order items; Alembic migrations with a drift test
-- **Analytics (Phase 2):** versioned metric registry (16 metrics), period comparison (previous period or same weekdays last year), trend (gap-filled), category/channel/region mixes, top/bottom products, price-volume-mix drivers that sum exactly, contribution tables, drill-through to transactions, rule-based insights, coverage warnings; 61 new tests
-- **Ingestion:** CSV/XLSX upload (size, rows, encoding, signature checks), SHA-256 duplicate
-  detection, header inspection and mapping suggestions, Indian-format parsing (₹, lakh commas,
-  day-first dates), row validation with error CSV, idempotent transactional import job
+### Backend (`apps/api`): 633 tests, strict mypy, ruff clean
+- FastAPI app factory, `/api/v1`, uniform error envelope, request IDs, JSON logs, health probes, hardening middleware
+- Auth (Argon2id, rotating HttpOnly refresh sessions with reuse detection), workspaces with four roles and five
+  personas, invitations, audit log, 404-on-non-member tenancy (tested), production settings guards
+- Ingestion with remembered mappings, connectors and scheduled imports; the metric layer; customers, products, staff
+- Forecasting with honest backtests and a ship gate; stock, costs, alerts, digest, pricing, goals, stores
+- Udhaar, supplier bills (OCR), campaigns with consent and uplift, reviews NLP, document search
+- The assistant (three languages, personas, voice, spoken numbers and product names), LangGraph investigations,
+  recommendations and PDF/CSV reports (₹ in Noto Sans)
+- `openapi.json` exported and tested for staleness; licence audit test; pip-audit clean on 2026-11-11
 
 ### Frontend (`apps/web`)
-- **Marketing:** scroll-driven key-and-lock opening (HDRI + PBR textures, depth of field, bloom,
-  synced sound, hand-off), then the landing page (simple hero, story scroll, zoom reveal, features,
-  principles, CTA); responsive; reduced-motion and no-WebGL fallbacks
-- **App:** real accounts get an app shell with a **Command center** (KPIs with comparison, trend, insights, mixes, top/bottom products, metric definitions on every KPI), a **Sales explorer** (drivers waterfall, contribution tables with drill-down, movers, filterable transactions) and a **Data** page (import wizard, upload history); the persona demo dashboard remains
+- **Marketing:** the closed-shop opening (cloth, ribbon, draggable scissors), then the landing page (hero with a
+  product card, story, zoom reveal, features that describe the real product, principles, call to action)
+- **App:** 24 pages behind a responsive shell (sidebar, tablet rail, phone bottom bar and sheet) filtered by the
+  member's persona; voice input with a confirm step; read-aloud; PWA with offline reading; Hinglish and Hindi
+  navigation, assistant, credit pages, and every page's headline and intro; types generated from the API
+- Accessibility audit of the landing, sign-in and all app pages with fixes ([ACCESSIBILITY](ACCESSIBILITY.md))
 
-### Repo & docs
-- README, ROADMAP, PHASES, ARCHITECTURE, API, DATA_DICTIONARY, METRICS, DESIGN_SYSTEM, THREAT_MODEL,
-  RESEARCH, ADRs, CONTRIBUTING, CHANGELOG, DEVLOG; GitHub Actions CI; demo-data generator
+### Repo and docs
+- README, ROADMAP, PHASES, ARCHITECTURE, API, DATA_DICTIONARY, METRICS, MODELS, THREAT_MODEL, RUNBOOK, MVP, one doc per
+  feature, research notes, eight ADRs, CONTRIBUTING, CHANGELOG, DEVLOG; GitHub Actions CI (lint, types, tests with
+  coverage, web build, Docker images, dependency audit)
 
-## 3. What is left (everything, in order)
+## 3. What is left
 
-Effort is in focused working days for one developer and is an estimate, not a promise.
+Not code, mostly: it needs real people, real data or a real server.
 
-| Phase | Remaining work | Effort | Depends on |
-|---|---|---|---|
-| 3B | Campaigns and retention automation | ✅ | Consent and opt-outs, a person-sent outbox, holdout-measured uplift with intervals ([CAMPAIGN-RUNS](CAMPAIGN-RUNS.md)) |
-| 4 | **4a** data, metrics, backtester, baselines (2 d) · **4b** ETS/ARIMA/Theta + Croston/SBA/TSB (2–3 d) · **4c** features + LightGBM + quantiles (2–3 d) · **4d** Optuna tuning, ensembles, conformal intervals, ship gate (3 d) · **4e** registry, job, API, forecast UI (3 d). See [ML plan](research/PHASE-4-ML-PLAN.md) | 12–14 | Phase 2 |
-| F2 | HttpOnly cookie + refresh tokens · CSRF · generated TypeScript API client · invite members UI · loading/empty/error states · accessibility pass | 3 | Phases 2–4 |
-| 5 | Stock snapshots import · stock cover and reorder point · slow movers · scenario sliders · draft purchase orders needing approval | 4 | Phase 4 |
-| 6 | Review import · normalisation · TF-IDF baseline vs multilingual transformer · aspect themes · review explorer | 4–5 | Phase 1 |
-| 7 | PDF/DOCX/TXT ingestion · chunking · embeddings + FAISS · permission-filtered retrieval · citations · evaluation set | 5 | Phase 1 |
-| 8 | Typed tools over the metric layer · intent router · streaming UI · evidence panel · evaluation questions | 4–5 | Phases 2, 4, 7 |
-| 9 | LangGraph analyst workflow · bounded retries · trace storage and viewer | 3–4 | Phase 8 |
-| 10 | Recommendation schema and ranking · approval states · PDF/CSV reports · saved analyses | 4 | Phases 2–9 |
-| 11 | Hardening, deployment, launch | ✅ code | Shared rate limits, security headers, size limits, PostgreSQL timeouts, Docker stack, backups, runbook; not yet rehearsed on a server ([RUNBOOK](RUNBOOK.md)) |
-| M | Recorded (not synthesized) opening audio · short-viewport polish · Lighthouse/accessibility pass | 1–2 | Decision F-A |
+| Item | Why it is not done | Next step |
+|---|---|---|
+| Test voice and personas with real shopkeepers | Needs people and recorded audio; our speech tests are synthetic | Record 50–100 real questions in a real shop and re-run `scripts/eval_voice.py` logic on them |
+| Confirm the five persona definitions | They come from general knowledge, not interviews | Short interviews with shop owners and counter staff |
+| Native review of Hinglish and Hindi wording; translate page bodies | Needs a native speaker | Review `lib/i18n.tsx`; then translate the cards and tables |
+| Marathi, Gujarati, Tamil, Bengali speech | Whisper medium is weak there; IndicWhisper needs conversion and a licence check of the exact checkpoint | See [VOICE](VOICE.md) |
+| Measure review, OCR, search and pricing accuracy on real shop files | Current numbers are on small self-written sets | One consenting shop's export |
+| Deployment rehearsal and restore test | Needs a real server | Follow [RUNBOOK](RUNBOOK.md) on a small VM |
+| Real phone and screen-reader tests | Needs devices | Install the PWA, try microphone and read-aloud; VoiceOver or TalkBack pass |
+| Hindi PDF reports | The PDF library cannot shape Devanagari | Pick a shaping engine or render Hindi reports another way |
+| Per-person targets | Not built | After real staff data exists |
+| Demo video and interview walkthrough | People-made | |
+| Automated visitor-journey (browser) test | Not written | Playwright against the landing, opening and sign-in |
 
-**Total remaining to MVP (phases 4, F2):** about 15–18 working days.
-**Total remaining to full blueprint:** about 49 working days.
+## 4. Next up
 
-## 4. Next up (this session)
-
-1. **Phases 2 and 3 are done** (research: [PHASE-2](research/PHASE-2-RESEARCH.md), [PHASE-3](research/PHASE-3-RESEARCH.md)).
-2. **Next: Phase 4 (forecasting and the ML platform)**, starting with 4a (longer synthetic data, metrics, backtester, baselines), the largest and riskiest phase.
-   The ML plan, tuning protocol and model catalogue are written: [ML plan](research/PHASE-4-ML-PLAN.md), [MODELS.md](MODELS.md).
+1. Real-shop voice and persona tests (above), because they decide whether those features are usable.
+2. Native review of the Hindi and Hinglish wording, then translating page bodies.
+3. A deployment rehearsal with a restore test.
 
 ## 5. Open decisions
 
-| # | Decision | Options | Recommendation |
+| # | Decision | Options | State |
 |---|---|---|---|
-| F-A | Opening audio | You download CC0 clips · I source Pixabay CC0 · keep synthesized | Recorded CC0 clips |
-| F-C | Demo persona routes | Keep the persona demo dashboard · remove it once real data is in | Keep until Phase 2 ships, then remove |
-| D1 | Starter dataset for tests and demos | Synthetic only · add UCI Online Retail II (CC BY 4.0) | Synthetic plus one public dataset for forecasting benchmarks |
-| D2 | Product name | Keep "Vyapar AI" · rename | Check trademark: "Vyapar" is an existing billing app |
-| D3 | LLM provider for the Copilot | Ollama local · hosted API · both behind an interface | Provider-agnostic interface; Ollama for local dev |
-| D4 | Background jobs | Keep in-process tasks · RQ/arq + Redis | In-process until Phase 4 training needs a queue |
-| D5 | Hosting | Render/Railway/Fly + Neon/Supabase; Vercel for web | Decide in Phase 11 |
-| D7 | ML compute | Laptop CPU only · add a GPU/cloud worker later | CPU only; deep models stay optional |
-| D6 | Returns handling | Add a `returns` table in Phase 3 · keep rejecting negative quantities | Add `returns` (net sales needs it) |
+| D2 | Product name | Keep "Vyapar AI" · rename | **Open, the owner's call.** "Vyapar" is an existing Indian billing app; fine privately, check trademark before going public |
+| D8 | Project licence | MIT · Apache-2.0 · AGPL · proprietary | **Open, the owner's call.** Dependencies are all permissive |
+| D1 | Benchmark data | Synthetic only · add a public set | **Decided**: synthetic in the repo; see [ADR 0008](adr/0008-benchmark-data.md) |
+| D3 | LLM for the assistant | Hosted · local · none | **Decided: none.** Answers come from tested tools; this is a safeguard as well as a limit |
+| F-A | Opening audio | Recorded clips · synthesized | **Closed**: the new opening has no audio |
+| F-C | Demo persona routes | Keep · remove | **Closed**: replaced by real sample accounts (dev only) |
+| D4 | Background jobs | In-process · queue | In-process; revisit if several workers are needed |
+| D5 | Hosting | Render, Railway, Fly, a VM | Open until the first rehearsal |
+| D6 | Returns | Reject negatives · add a table | Negatives are still rejected; `returned` orders are excluded from net sales |
+| D7 | ML compute | CPU only · GPU worker | CPU only; deep models stay optional |
 
 ## 6. Known limitations
 
 - Returns (negative quantities) are rejected at import; `returned` orders are excluded from net sales.
 - A rejected line inside a multi-line order leaves the rest of that order imported.
-- Changing a workspace timezone does not yet recompute stored business dates.
-- `/app` ships Recharts (276 kB first load); lazy-loading charts is a Phase F2 item.
+- Changing a workspace timezone does not recompute stored business dates.
 - Import progress jumps 10 → 100 because the import is one transaction.
-- Opening audio is synthesized in the browser; the 3D opening needs a visible browser tab.
-- Rate-limit counters are shared through Redis when `REDIS_URL` is set; without it they are per process.
-- SQLite is the development default; production requires PostgreSQL.
-- The persona dashboard shows illustrative data, not API data.
+- Rate-limit counters are per process unless `REDIS_URL` is set.
+- Voice needs about 2 GB of free memory with `medium` and a few seconds per question on a CPU; first use downloads
+  about 1.5 GB.
+- Cost and margin hiding works on field names; a sentence that mentions a margin is not rewritten.
+- The Hinglish and Hindi wording has not been reviewed by a native speaker.

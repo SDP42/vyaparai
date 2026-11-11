@@ -4379,6 +4379,17 @@
      "role": {
       "$ref": "#/components/schemas/WorkspaceRole"
      },
+     "staff_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Staff Name"
+     },
      "user_id": {
       "format": "uuid",
       "title": "User Id",
@@ -4410,6 +4421,18 @@
      },
      "role": {
       "$ref": "#/components/schemas/WorkspaceRole"
+     },
+     "staff_name": {
+      "anyOf": [
+       {
+        "maxLength": 80,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Staff Name"
      }
     },
     "required": [
@@ -10746,6 +10769,125 @@
     "summary": "Products Export",
     "tags": [
      "intelligence"
+    ]
+   }
+  },
+  "/api/v1/workspaces/{workspace_id}/analytics/staff": {
+   "get": {
+    "description": "Sales by cashier or salesperson. Counter staff see only the name linked to their account.",
+    "operationId": "staff_api_v1_workspaces__workspace_id__analytics_staff_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "workspace_id",
+      "required": true,
+      "schema": {
+       "format": "uuid",
+       "title": "Workspace Id",
+       "type": "string"
+      }
+     },
+     {
+      "description": "First business day, inclusive",
+      "in": "query",
+      "name": "from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "First business day, inclusive",
+       "title": "From"
+      }
+     },
+     {
+      "description": "Last business day, inclusive",
+      "in": "query",
+      "name": "to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "format": "date",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Last business day, inclusive",
+       "title": "To"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Staff Api V1 Workspaces  Workspace Id  Analytics Staff Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unprocessable Entity"
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "summary": "Staff",
+    "tags": [
+     "analytics"
     ]
    }
   },

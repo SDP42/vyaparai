@@ -537,6 +537,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{workspace_id}/analytics/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Staff
+         * @description Sales by cashier or salesperson. Counter staff see only the name linked to their account.
+         */
+        get: operations["staff_api_v1_workspaces__workspace_id__analytics_staff_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{workspace_id}/analytics/transactions": {
         parameters: {
             query?: never;
@@ -3798,6 +3818,8 @@ export interface components {
             /** Persona */
             persona?: string | null;
             role: components["schemas"]["WorkspaceRole"];
+            /** Staff Name */
+            staff_name?: string | null;
             /**
              * User Id
              * Format: uuid
@@ -3809,6 +3831,8 @@ export interface components {
             /** Persona */
             persona?: string | null;
             role: components["schemas"]["WorkspaceRole"];
+            /** Staff Name */
+            staff_name?: string | null;
         };
         /** Meta */
         Meta: {
@@ -6748,6 +6772,71 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    staff_api_v1_workspaces__workspace_id__analytics_staff_get: {
+        parameters: {
+            query?: {
+                /** @description First business day, inclusive */
+                from?: string | null;
+                /** @description Last business day, inclusive */
+                to?: string | null;
+            };
+            header?: never;
+            path: {
+                workspace_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
             };
             /** @description Unauthorized */
             401: {

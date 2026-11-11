@@ -25,6 +25,7 @@ dependencies = [
     "reportlab>=5.1.0",
     "redis>=8.1.0",
     "pg8000>=1.31.6",
+    "faster-whisper>=1.2.1",
 ]
 
 [dependency-groups]
@@ -40,6 +41,10 @@ dev = [
 
 [tool.uv]
 package = false
+# faster-whisper lists PyAV only to decode audio *files*; we hand it raw samples and never call it. The PyAV
+# wheels bundle GPL codecs (x264/x265), which our permissive-licence rule excludes, so it is left out and a
+# stub stands in at import time (see app/services/voice.py).
+override-dependencies = ["av; sys_platform == 'never'"]
 
 [tool.ruff]
 line-length = 100
@@ -57,7 +62,7 @@ known-third-party = ["alembic"]
 classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106"]
+"tests/**" = ["S101", "S105", "S106", "PT018"]
 # Research scripts (not product code): long table lines, pickled local results, seeded random.
 "app/services/campaigns.py" = ["E501"]
 "app/services/digest.py" = ["E501"]
@@ -69,6 +74,8 @@ classmethod-decorators = ["sqlalchemy.orm.declared_attr", "declared_attr"]
 "app/services/events.py" = ["E501"]
 "app/services/bills/*.py" = ["E501"]
 "app/services/assistant/*.py" = ["E501"]
+"app/services/personas.py" = ["E501"]
+"app/services/voice.py" = ["E501", "N818"]
 "app/services/docs/*.py" = ["E501"]
 "app/services/credit.py" = ["E501"]
 "app/services/goals.py" = ["E501"]
@@ -124,5 +131,5 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error::DeprecationWarning:app.*"]
 
 [[tool.mypy.overrides]]
-module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*", "langgraph", "langgraph.*", "reportlab", "reportlab.*", "redis", "redis.*"]
+module = ["lightgbm", "lightgbm.*", "rapidocr_onnxruntime", "pypdfium2", "fastembed", "fastembed.*", "langgraph", "langgraph.*", "reportlab", "reportlab.*", "redis", "redis.*", "faster_whisper", "faster_whisper.*"]
 ignore_missing_imports = true

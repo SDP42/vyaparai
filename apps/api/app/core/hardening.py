@@ -17,7 +17,7 @@ from app.core.errors import error_body
 from app.core.ratelimit import Limiter, RateLimitedError, make_limiter
 
 HEAVY = re.compile(
-    r"/(documents(/search)?|bills|assistant/(ask|stream)|agents/runs|reports|reviews/import|udhaar/import|"
+    r"/(documents(/search)?|bills|assistant/(ask|stream|voice)|agents/runs|reports|reviews/import|udhaar/import|"
     r"campaigns/contacts/import|datasets|inventory/import|sources)$"
 )
 EXEMPT = ("/api/v1/health", "/docs", "/openapi.json", "/redoc")
@@ -69,11 +69,14 @@ def make_middleware(
             return resp
         declared = request.headers.get("content-length")
         if declared and declared.isdigit():
-            limit = (
-                settings.max_upload_body_mb * 1024 * 1024
-                if "multipart" in request.headers.get("content-type", "")
-                else settings.max_json_body_kb * 1024
-            )
+            if path.endswith("/assistant/voice"):
+                limit = (
+                    settings.voice_max_audio_kb + 64
+                ) * 1024  # a few seconds of speech, no more
+            elif "multipart" in request.headers.get("content-type", ""):
+                limit = settings.max_upload_body_mb * 1024 * 1024
+            else:
+                limit = settings.max_json_body_kb * 1024
             if int(declared) > limit:
                 resp = JSONResponse(
                     status_code=413,

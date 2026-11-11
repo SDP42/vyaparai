@@ -12,7 +12,7 @@ import { VoiceInput } from "./VoiceInput";
 type Answer = {
   intent: string; language: "en" | "hinglish" | "hi"; question: string; answer: string;
   rows: Record<string, string | number | null>[]; link: string | null; note: string | null;
-  grounded: boolean; suggestions: string[]; period: { label: string } | null; follow_up?: boolean;
+  grounded: boolean; suggestions: string[]; candidates?: { name: string; question: string }[]; period: { label: string } | null; follow_up?: boolean;
   context?: Record<string, unknown>; evidence: Evidence[]; steps: Step[];
 };
 type Step = { step: string; detail?: string; tool?: string; ms?: number; empty?: boolean };
@@ -143,6 +143,12 @@ export function AskPage() {
         <div ref={end} />
       </div>
 
+      {last?.candidates && last.candidates.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={tr("ask.didYouMean")}>
+          <span className="text-sm text-muted">{tr("ask.didYouMean")}</span>
+          {last.candidates.map((c) => <button key={c.name} type="button" disabled={busy} onClick={() => ask(c.question)} className="rounded-full border border-fg/30 bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-2 disabled:opacity-50">{c.name}</button>)}
+        </div>
+      )}
       {last && (
         <div className="flex flex-wrap gap-2">
           {last.suggestions.map((s) => <button key={s} type="button" disabled={busy} onClick={() => ask(s)} className="rounded-full border border-line px-3 py-1.5 text-xs hover:bg-surface-2 disabled:opacity-50">{s}</button>)}

@@ -46,6 +46,7 @@ Hinglish text, WhatsApp-style messages, and tools that run on a laptop for free.
 | **Reviews** | Import reviews; language, sentiment and themes for English, Hindi and Hinglish with the phrase behind each claim |
 | **Personas** | Five jobs (owner, operations manager, analyst, accountant, counter staff): each sees its own pages, the assistant answers only that job's questions and refuses the rest in the asker's language, and sensitive data needs the matching capability ([PERSONAS](docs/PERSONAS.md)) |
 | **Voice** | Speak a question in Hindi, Hinglish or English; a free multilingual Whisper model on your own server turns it into words you confirm, and answers can be read aloud. Audio is never stored ([VOICE](docs/VOICE.md)) |
+| **Staff** | Sales by cashier or salesperson from an optional column on the sales file; counter staff see only their own ([PERSONAS](docs/PERSONAS.md)) |
 | **Teams and security** | Workspaces with owner, admin, analyst and viewer roles; invitation links; HttpOnly cookie sessions with rotation and reuse detection; throttled sign-in; audit log |
 
 The end-to-end journey (sign up → import → numbers → forecast → alerts → digest → stock advice → invite a teammate)

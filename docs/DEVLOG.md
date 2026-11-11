@@ -2,6 +2,16 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-11 · Engineering follow-ups, a new opening, staff sales
+
+**Opening.** The 3D key-and-lock scene is gone. The page now opens on a closed shop: a woven cloth tied with a red satin ribbon and a paper tag, scissors beside it. Drag them to the dotted line (or tap them, or press Enter) and the ribbon is cut, the bow and tag fall, and the cloth drops in strips from the middle out. It is drawn in code (no images, models or sounds), shown once per visit, skippable, and absent under reduced motion. The landing dashboard preview no longer clips numbers (its layout follows its own width) and the features section describes what the product really does.
+
+**Speech and names.** Spoken amounts (lakh, crore, डेढ़, सवा, साढ़े) are read, and Hindi product names find English catalogue items through a glossary and sound matching, with "did you mean" buttons when unclear. Personas hide cost and margin per field for jobs without the margin capability.
+
+**Staff.** An optional Cashier or Staff column is read on import; the Staff page shows bills, average bill, items per bill, discount and margin per person, and counter staff see only the name linked to their account.
+
+**Housekeeping.** OpenAPI is exported and checked by a test, and the web types are generated from it. PDF reports use Noto Sans, so amounts print with ₹. An accessibility audit of the landing, sign-in and all app pages found low-contrast text colours, small targets and heading jumps; all fixed ([ACCESSIBILITY](ACCESSIBILITY.md)). Every page headline and intro now exists in Hinglish and Hindi. Dependency audit: no known Python vulnerabilities; PostCSS inside Next 15 is the one npm finding (accepted).
+
 ## 2026-11-11 · Personas and voice
 
 **Personas.** Five jobs (owner, operations manager, analyst, accountant, counter staff), each with its own pages, the questions the assistant will answer, and the data it may open ([PERSONAS.md](PERSONAS.md)). A persona is stored on the membership and the invitation, must fit the member's role, and is enforced on the server: the assistant refuses out-of-remit questions before running any tool, the credit book, cost, pricing, supplier-bill and report routes require a capability, and the navigation shows only the persona's pages. The sign-in page now signs in as real sample accounts (development only, refused in production) instead of the old static demo dashboard, which was removed.

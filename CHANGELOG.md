@@ -5,6 +5,28 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### 2026-11-11
+**Added**
+- **Personas:** five jobs with their own pages, assistant remit, capability-guarded routes and per-field hiding of cost and margin; one-tap sample sign-in (development only); Team page job and bill-name selectors.
+- **Voice:** spoken questions in Hindi, Hinglish and English, transcribed on the server with faster-whisper and Whisper medium; confirm-the-words step; read-aloud answers; spoken-number and Hindi product-name understanding with "did you mean".
+- **Staff:** optional Cashier/Staff column on import, sales by person, counter staff see only their own.
+- **Web:** closed-shop opening (cloth, ribbon, draggable scissors); generated API types (`make gen-api`); headline and intro of every page in Hinglish and Hindi.
+- **API:** `openapi.json` export with a staleness test; ₹ in PDF reports (bundled Noto Sans, SIL OFL).
+- **Docs:** PERSONAS, VOICE, ACCESSIBILITY, ADR 0008, research on personas and voice; README, ROADMAP, ARCHITECTURE, THREAT_MODEL, MODELS, DATA_DICTIONARY, MVP and others rewritten for the current system.
+
+**Changed**
+- Text colours darkened to pass WCAG AA; small targets and heading order fixed.
+- Landing: the dashboard preview no longer clips numbers; features describe the real product.
+- CI: pushes to main are no longer cancelled by the next push; the search model is cached.
+
+**Removed**
+- The 3D key-and-lock opening, three.js and its assets; the static demo-persona dashboard.
+
+**Security**
+- PyAV is excluded (its wheels bundle GPL codecs); `pip-audit` clean; the demo sign-in is refused in production.
+
+### Earlier work (before 2026-11-08)
+
 ### Added
 - **API:** Phase 2 analytics: metric registry (v1, 16 metrics), `/metrics`, `/analytics/{filters,overview,drivers,transactions}`;
   period comparison, price-volume-mix drivers, insights, coverage warnings; migration `46f90922b2e7` (`orders.business_date`). 61 new tests.

@@ -124,6 +124,8 @@ coverage, excluded orders by status). Invalid ranges return `422 invalid_range`.
 | GET | `/workspaces/{id}/me?lang=` | viewer | The caller's role and persona: pages, capabilities, suggestions in `en`, `hinglish` or `hi` |
 | POST | `/workspaces/{id}/invitations` | admin | Accepts `persona` beside `role`; 400 if the persona does not fit the role |
 | PATCH | `/workspaces/{id}/members/{user}` | admin | `{role, persona?}`; omit `persona` to keep it (cleared if it no longer fits) |
+| GET | `/workspaces/{id}/analytics/staff` | viewer | Sales by cashier or salesperson (`from`, `to`); counter staff get only the name linked to their account; needs the staff capability for other personas |
+| PATCH | `/workspaces/{id}/members/{user}` | admin | Also accepts `staff_name`, the name on this person's bills |
 | POST | `/workspaces/{id}/assistant/voice` | viewer | Multipart `audio` (16-bit PCM WAV, up to 15 s and about 1 MB) and `language` (`hi`, `en`, `mr`, `gu`); returns `{text, language, seconds, ms, reason, confidence}`; audio is not stored |
 
 Routes for the credit book, costs, pricing, supplier bills and reports answer 403 to a persona without the matching capability ([PERSONAS](PERSONAS.md)).

@@ -5,18 +5,17 @@ paid plan, a hidden key or a licence we cannot meet. New dependencies are checke
 (`apps/api/tests/test_licenses.py`) reads the installed Python packages and the web lockfile and fails the build on GPL, AGPL, SSPL,
 Commons Clause or proprietary terms, and on any unreviewed LGPL or custom licence.
 
-_Audit of 2026-11-10: 87 Python packages and 173 web packages, read offline from package metadata and `package-lock.json`._
+_Audit of 2026-11-11: 136 Python distributions installed (production and development tools) and 182 packages in the web lock file, read offline from package metadata and `package-lock.json`. A test fails if a disallowed licence enters either tree._
 
-## Python (87)
+## Python (136)
 
-MIT 48, Apache-2.0 14, BSD 17, ISC 2, PSF-2.0 1, MIT-0, 0BSD, Unlicense 1 each, and two MPL-2.0 packages (file-level copyleft; used unmodified,
-so it does not reach our code). Notable: FastAPI, Pydantic, SQLAlchemy, Alembic, Uvicorn (BSD/MIT), **numpy and scipy (BSD)**, **LightGBM (MIT)**,
-openpyxl (MIT), argon2 (MIT/Apache), PyJWT (MIT). Nothing is GPL or AGPL.
+About 66 MIT (including MIT-0), 28 BSD (2- and 3-clause), 27 Apache-2.0 or Apache-style, 2 MPL-2.0 packages (file-level copyleft; used unmodified, so it does not reach our code), 1 ISC and a few dual-licensed (Apache OR MIT, Apache OR BSD).
+Notable: FastAPI, Pydantic, SQLAlchemy, Alembic, Uvicorn, **numpy (BSD)**, **LightGBM (MIT)**, **faster-whisper and CTranslate2 (MIT)**, LangGraph (MIT), fastembed (Apache-2.0), RapidOCR (Apache-2.0), reportlab (BSD), openpyxl (MIT), PyJWT (MIT), pwdlib and argon2 (MIT/Apache). Nothing is GPL or AGPL. PyAV is deliberately excluded (see the voice row below).
 
-## Web (173)
+## Web (182)
 
-MIT 105, Apache-2.0 16+, ISC 15, MPL-2.0 12 (Tailwind's CSS engine, unmodified), BSD-3 5, 0BSD 2, Zlib 1, CC-BY-4.0 1 (browser-support data; attribution only).
-Notable: Next.js, React (MIT), Recharts (MIT), Motion (MIT), Lenis (MIT).
+Mostly MIT, with Apache-2.0, ISC, MPL-2.0 (Tailwind's CSS engine, unmodified), BSD-3, 0BSD, Zlib and CC-BY-4.0 (browser-support data; attribution only).
+Notable: Next.js, React (MIT), Recharts (MIT), Motion (MIT), Lenis (MIT), lucide-react (ISC), openapi-typescript (MIT, development only). three.js, React Three Fiber and postprocessing were removed on 2026-11-11 with the 3D opening.
 
 ### Reviewed exceptions
 

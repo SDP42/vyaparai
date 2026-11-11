@@ -9,8 +9,10 @@ from sqlalchemy.orm import Session
 
 from app.models.commerce import Product
 from app.models.workspace import Workspace, WorkspaceRole
+from app.services import personas
 from app.services.assistant import evidence, nlu, replies, tools
 from app.services.docs import service as docs
+from app.services.personas import Persona
 
 SUGGESTIONS = {
     "en": ["Sales last week", "Why did sales drop?", "What should I order?", "Any alerts?"],
@@ -130,6 +132,7 @@ def ask(
     role: WorkspaceRole = WorkspaceRole.VIEWER,
     today: date | None = None,
     context: dict[str, Any] | None = None,
+    persona: Persona | None = None,
 ) -> dict[str, Any]:
     t0 = time.perf_counter()
     u = nlu.route(question, today or date.today())
@@ -170,6 +173,14 @@ def ask(
         out["steps"].append({"step": "done", "ms": round((time.perf_counter() - t0) * 1000)})
         return out
 
+    if persona is not None and not persona.allows(u.intent):
+        who = personas.refusal(persona, lang, u.intent)
+        base["suggestions"] = list(persona.suggestions.get(lang, persona.suggestions["en"]))
+        steps.append({"step": "persona", "detail": persona.key, "allowed": False})
+        return finish({**base, "answer": who, "rows": [],
+                       "link": None, "note": None, "grounded": False, "refused": True})  # fmt: skip
+    if persona is not None:
+        base["suggestions"] = list(persona.suggestions.get(lang, persona.suggestions["en"]))
     if u.intent not in {"help", "unknown"} and DOC_CUES & set(nlu.tokens(question)):
         found = _from_documents(db, workspace, role, question, lang, base)
         if found is not None and not found["answer"].startswith(

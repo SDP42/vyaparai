@@ -25,7 +25,7 @@ function Card({ r, onAct, canAct, busy }: { r: Rec; onAct: (a: string, id: strin
   return (
     <article className="rounded-2xl border border-line bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h3 className="max-w-3xl font-semibold leading-snug">{r.title}</h3>
+        <h2 className="max-w-3xl font-semibold leading-snug">{r.title}</h2>
         <div className="text-right">
           {i.expected != null ? (
             <>

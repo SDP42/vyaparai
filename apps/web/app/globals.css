@@ -170,3 +170,13 @@ html.lenis body {
   flex: 1 1 var(--min, 12rem);
   min-width: 0;
 }
+
+/* Small text buttons and links still get a 24px-high target (WCAG 2.2 target size); inline links in a sentence are exempt. */
+main button {
+  min-height: 1.5rem;
+}
+main :not(p) > a.text-xs,
+main a.inline-block {
+  display: inline-block;
+  min-height: 1.5rem;
+}

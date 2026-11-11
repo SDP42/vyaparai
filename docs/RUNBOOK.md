@@ -56,6 +56,10 @@ TLS, the domain and routing `/api` to the API and everything else to the web app
 
 Only in `.env` on the server (not in git). Rotation: edit `.env`, `docker compose up -d`. SMTP credentials are optional and only used to email digests and reminders.
 
+## Dependency audit
+
+Run before each release: `uv export --no-hashes --no-dev > r.txt && uvx pip-audit --disable-pip --no-deps -r r.txt` and `npm audit --omit=dev` in `apps/web`. On 2026-11-11 the Python set had no known vulnerabilities; `npm audit` listed PostCSS inside Next 15 (it processes our own stylesheets at build time, not user input), accepted until Next 16.
+
 ## Security posture and known gaps
 
 - Headers on every API response (no sniffing, no framing, CSP `default-src 'none'`, HSTS in production); the web app sets a strict CSP, no framing and HSTS. Request bodies over the limit are refused before they are read; chunked bodies without a length are bounded by the server and proxy limits.

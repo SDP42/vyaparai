@@ -57,9 +57,9 @@ review validation → command center → sales investigation → forecast → gr
 - [x] Request IDs, structured JSON logs, uniform error envelope, health/readiness probes
 - [x] Tests for health, auth, tenancy boundaries, security and migrations
 - [x] CI (lint, format, type-check, tests), PR/issue templates
-- [ ] Decide on a public benchmark dataset + licence (see [RESEARCH.md](RESEARCH.md#3-starter-datasets)); synthetic data is already in use
-- [ ] Wireframes for the command center and sales explorer (done in code during Phase 2)
-- [ ] Decide product name/trademark question (see [RESEARCH.md](RESEARCH.md#naming-risk))
+- [x] Benchmark data decided: synthetic only in the repo, a permissive public set only for outside runs ([ADR 0008](adr/0008-benchmark-data.md))
+- [x] Command center and sales explorer designed directly in code during Phase 2 (no separate wireframes)
+- [ ] Product name/trademark: **owner decision**, see [RESEARCH.md](RESEARCH.md#naming-risk). "Vyapar" is an existing Indian billing app; fine privately, check before going public
 
 **Exit:** migrations run cleanly; protected-API tests prove tenant boundaries. ✅
 
@@ -75,7 +75,7 @@ Driven by the two-page master prompt; detailed plan in [frontend/PHASE-1-REPORT.
 - [x] Opening (replaced 2026-11-11): the shop is closed under a woven cloth tied with a satin ribbon and bow; drag the scissors to the dotted line (or tap them, or press Enter) and the ribbon is snipped, the bow and tag fall and the cloth drops from the middle outward, then the page scrolls. Drawn in code, once per visit, Esc/Skip, none under reduced motion. (The earlier 3D key-and-lock scene was removed.)
 - [x] Religious motifs removed
 - [x] Hero text waits for the cloth to drop, then animates in
-- [ ] Short-viewport polish for pinned sections; full visitor-journey test
+- [ ] Short-viewport polish for pinned sections; full visitor-journey test (in progress)
 
 ## Phase 1 — Data ingestion & quality ✅
 
@@ -174,9 +174,9 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 ## Phase F2 — App shell hardening
 
 - [x] HttpOnly, SameSite cookie session with refresh-token rotation; CSRF protection; logout everywhere
-- [ ] Typed API client generated from OpenAPI (`openapi-typescript`) replacing the hand-written types
+- [ ] Typed API client generated from OpenAPI (`openapi-typescript`) replacing the hand-written types (in progress)
 - [x] Workspace switcher and member invites (owner/admin)
-- [ ] Remove the persona demo once real data is the default (decision F-C)
+- [x] Remove the persona demo: the sign-in page now signs in as real sample accounts (Phase 20)
 - [ ] Consistent empty / loading / error states; mobile layouts for every table
 - [ ] Accessibility pass (keyboard, focus, screen-reader labels, contrast) and Lighthouse check
 
@@ -206,17 +206,17 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ## Phase 7 — Document intelligence & RAG ✅ ([how it works](DOCUMENTS.md))
 
-- [ ] PDF/DOCX/TXT ingestion with page/section metadata
-- [ ] Versioned Sentence-Transformers embeddings + FAISS; permission filter *before* retrieval
-- [ ] Citations to document/page/section; abstain when evidence is insufficient
-- [ ] Evaluation set: Recall@K, MRR, citation correctness; prompt-injection test documents
+- [x] PDF/DOCX/TXT/Markdown ingestion with page and heading metadata (scanned PDFs are refused with a message)
+- [x] Multilingual embeddings (fastembed, MiniLM) stored with each passage, fused with BM25; permission filter *before* scoring. Changed from plan: no FAISS, since a shop's passages fit in memory (index capped at 20,000)
+- [x] Citations to document, page and section; "none" returns nothing and "possible" is labelled (refusal is imperfect, see DOCUMENTS.md)
+- [x] Evaluation set: Recall@3 and MRR on 57 labelled questions plus 6 out-of-scope; a prompt-injection document test. Small and self-written: optimistic
 
 ## Phase 8 — Vyapar Copilot ✅ ([how it works](ASSISTANT.md))
 
-- [ ] Intent routing: metric, comparison, forecast, customer, inventory, document, unsupported
-- [ ] Typed tools (`get_sales_summary`, `compare_periods`, `top_products`, `forecast_demand`, `search_documents`)
-- [ ] Numbers only from the metric layer — the LLM never does arithmetic
-- [ ] Streaming UI with tool activity + evidence panel; fixed evaluation question set
+- [x] Intent routing (23 intents incl. documents and unsupported) in three languages; 79-question set, a development set
+- [x] Typed read-only tools over the existing services (sales, drivers, top products, stock, forecast, document search and more; names differ from the plan)
+- [x] Numbers only from the metric layer; there is no language model in the loop at all
+- [x] Streaming steps and an evidence list on every answer; fixed question set in `tests/test_assistant.py`
 
 ## Phase 9 — Agent workflows
 
@@ -235,9 +235,10 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 
 ## Phase 11 — Hardening, deployment & launch
 
-- [ ] Rate limits, upload fuzzing, SQL-safety and prompt-injection tests, dependency audit
-- [ ] PostgreSQL deploy, migrations on release, backups, runbook
-- [ ] Architecture diagrams, model cards, demo video, interview walkthrough
+- [x] Rate limits (per address, shared via Redis), hostile-upload and injection-string tests, ORM-only queries; dependency audit run 2026-11-11: `pip-audit` finds no known vulnerabilities in the production Python set; `npm audit` reports PostCSS inside Next 15 (build-time only, accepted until Next 16)
+- [x] PostgreSQL settings and guards, migrations on release, backup and restore scripts, runbook, Docker stack. **Not yet rehearsed on a real server** (see RUNBOOK)
+- [x] Architecture diagram ([ARCHITECTURE](ARCHITECTURE.md)) and model cards ([MODELS](MODELS.md))
+- [ ] Demo video and interview walkthrough (people-made, not code)
 
 ---
 
@@ -248,8 +249,10 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] One-tap sample sign-ins as real persona accounts (development only); the old static demo dashboard removed
 - [x] Voice: faster-whisper + Whisper medium on the server, audio never stored, silence and hallucination guards, confirm-the-words step, read-aloud with the device voice
 - [x] Speech-tolerant Hindi keyword matching
-- [ ] Test with real shopkeepers and recorded shop audio; Marathi/Gujarati/Tamil/Bengali; spoken-number parsing; product-name matching from speech
-- [ ] Confirm persona definitions with real shop owners; per-field masking on mixed pages
+- [x] Spoken-number parsing (Hindi, Hinglish, English; lakh/crore/डेढ़/सवा/साढ़े) and product-name matching from Hindi speech (glossary + sound classes, "did you mean")
+- [ ] Test with real shopkeepers and recorded shop audio; Marathi/Gujarati/Tamil/Bengali speech (needs IndicWhisper or similar, see VOICE.md)
+- [x] Per-field masking of cost and margin for personas without the margin capability; customer routes need the customers capability
+- [ ] Confirm persona definitions with real shop owners
 
 ## Definition of done
 

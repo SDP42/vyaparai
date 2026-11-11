@@ -15,11 +15,13 @@ and haldi (turmeric) yellow highlights, with a teal for good news. No religious 
 | `surface` / `surface-2` | `#FFFAF1` / `#EFE4D0` | Cards, raised areas |
 | `line` | `#DCCFB8` | Borders and rules |
 | `fg` / `ink` | `#1B1612` | Text and dark buttons |
-| `muted` | `#776A59` | Secondary text |
-| `sindoor` / `sindoor-deep` | `#D9362B` / `#A3241C` | Accent, negative change, hover on dark buttons |
-| `haldi` / `haldi-deep` | `#F2A71B` / `#9C5D00` | Highlights, warnings, focus colour |
-| `mor` | `#0F7A6F` | Positive change, success |
+| `muted` | `#6A5E4E` | Secondary text (5.5:1 on canvas) |
+| `sindoor` / `sindoor-deep` | `#BF2B21` / `#A3241C` | Accent, negative change, hover on dark buttons (4.9:1 on canvas, 4.5:1 on `surface-2`) |
+| `haldi` / `haldi-deep` | `#F2A71B` / `#8C5400` | Highlights and fills; `haldi-deep` for small text |
+| `mor` | `#0C6F64` | Positive change, success |
 | `neel` | `#3346A8` | Rare accent (information) |
+
+The four text colours were darkened on 2026-11-11 to pass WCAG AA at small sizes ([ACCESSIBILITY](ACCESSIBILITY.md)). `haldi` itself is a fill, never text.
 
 Status is never shown by colour alone: deltas always carry ▲/▼ and screen-reader text.
 All tokens live in `apps/web/app/globals.css` (`@theme`); components never hard-code colours.
@@ -41,26 +43,30 @@ Indian number formatting everywhere: ₹12,34,567 and compact ₹4.2L / ₹1.3Cr
 |---|---|---|
 | Smooth scroll | Lenis | Marketing page only; the app uses native scroll |
 | Scroll scenes | GSAP ScrollTrigger | Scrubbed, pinned, reversible; never trap scrolling |
-| 3D opening | React Three Fiber | PBR + HDRI, depth of field, bloom; low-power tier drops post-effects |
+| Opening | GSAP, SVG, CSS | A cloth tied with a ribbon; draggable scissors; cloth drops in strips. No images, models or sounds |
 | UI transitions | Motion | 150–300 ms; entrances play on first load only |
 | Reduced motion | all | Opening is skipped; scenes become static; marquee and grain stop |
 
 ## The marketing site
 
-### 1. Cinematic opening (`components/opening/`)
-A closed Indian shopfront at night. Click the key and it flies into the brass padlock. Then **scroll
-drives a paused GSAP timeline**: settle (0–20 %) → turn clockwise (20–45 %) → release (45–60 %) →
-padlock opens and falls (60–75 %) → shutter rises slat by slat (75–100 %) → the camera walks in.
-Everything is reversible. Realism comes from a CC0 night-street HDRI, CC0 PBR textures (painted steel,
-plaster, concrete), physically-based brass/nickel/steel, soft shadows, auto-focus depth of field,
-bloom on the practical lights, vignette and grain. Sounds are synthesized and fire on scroll
-thresholds; a shop ambience loops inside. Captions: "Your business is open." → "Now, let's make it
-intelligent." → fade to cream → **VYAPAR.ai** → hero. Assets and licences: `public/assets/opening/`.
+### 1. The closed shop (`components/opening/ClothOpening.tsx`)
+The shop is closed. A woven cotton cloth in turmeric yellow hangs over the front, tied with a red satin ribbon and
+bow, and a paper tag reads "vyapar.ai". A pair of scissors rests beside the ribbon with a dotted "cut here" line
+across it. **Drag the scissors to the line** (or tap them, or press Enter): the blades snip, the lower length of
+ribbon and the scissors fall, the bow and tag slip down, and the cloth lets go in twelve strips from the middle
+outward, each slightly out of step, leaving the page to scroll. The hero text starts after the drop.
+
+It is drawn entirely in code. The weave is two generated noise tiles (warp and weft threads) under three layers of
+soft folds of different widths so the pattern never visibly repeats; the top is gathered and the hem stitched. The
+ribbon is a CSS gradient band split at the cut line; the bow is an SVG with satin gradients and a drop shadow.
+Once per visit (`?opening` shows it again), Esc or "Skip" opens it at once, and under reduced motion it is not
+shown. On short screens (below 520 px high) the bow is smaller and the caption moves out of the way of the cut line.
 
 ### 2. Landing page (`components/landing/`)
-Simple hero ("Your business deserves more than *guesswork.*") with the product card, then a pinned
-horizontal **story** (data enters → organised → insight → you approve), a **zoom-through** product
-reveal, a **feature bento**, a **ledger marquee with principles**, and a closing call to action.
+Simple hero ("Your business deserves more than *guesswork.*") with the product card (whose layout follows its own
+width, so numbers never clip), then a pinned horizontal **story** (data enters → organised → insight → you approve),
+a **zoom-through** product reveal, a **feature bento** that describes what the product really does (no roadmap
+labels), a **ledger marquee with principles**, and a closing call to action to try the sample shop.
 
 ## The product app (`app/app/`)
 Same tokens, calmer motion. Tables become stacked summaries on phones; every chart has a text

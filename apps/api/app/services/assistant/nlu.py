@@ -10,6 +10,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
+from app.services.assistant import numbers
 from app.services.reviews.analyzer import detect_language
 
 _TOKEN = re.compile(r"[ऀ-ॿ]+|[a-z0-9]+")
@@ -542,6 +543,10 @@ def find_period(text: str, today: date, intent: str) -> Period | None:
 def _top_n(t: str) -> int:
     m = re.search(r"\btop\s*(\d{1,2})\b|\b(\d{1,2})\s*(?:best|top|products)", t)
     n = int(next(g for g in (m[1], m[2]) if g)) if m else 5
+    if not m and re.search(r"\b(?:top|best|first)\b|टॉप|बेस्ट|सबसे|पहले|\btop\b", t):
+        spoken = numbers.first(t)  # "top पाँच", "top five", "paanch best"
+        if spoken:
+            n = spoken
     return max(1, min(n, 15))
 
 

@@ -52,9 +52,11 @@ role, persona, pages, suggestions in the chosen language).
 
 ## Limits
 
-- Pages that mix data (the command center, customer drill-downs) are hidden by navigation but are not all
-  capability-guarded on the API; the guarded ones are the sensitive routes listed above. A fuller per-field
-  mask is future work.
+- Cost and margin are hidden **per field**: for a persona without the `margin` capability (operations manager,
+  counter staff), every JSON field named like cost, margin or profit, and the gross-margin metric cards, come back
+  empty from the analytics, intelligence, inventory, forecast, alert, digest, recommendation, goal and campaign
+  routes (`app/api/masking.py`), and the assistant drops the margin from product answers. Customer routes need the
+  `customers` capability. Text that merely mentions a margin (a recommendation sentence) is not rewritten.
 - A persona narrows access; it never widens it. Role checks still apply on top.
 - The persona descriptions come from general knowledge of Indian retail, not from interviews. They should be
   confirmed with real shop owners.

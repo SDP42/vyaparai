@@ -118,6 +118,8 @@ def change_member_role(
         data.role,
         data.persona,
         "persona" in data.model_fields_set,
+        data.staff_name,
+        "staff_name" in data.model_fields_set,
     )
 
 

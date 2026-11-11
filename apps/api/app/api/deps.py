@@ -52,6 +52,7 @@ class WorkspaceContext:
     user: User
     role: WorkspaceRole
     persona_key: str | None = None
+    staff_name: str | None = None
 
     @property
     def persona(self) -> Persona | None:
@@ -78,7 +79,11 @@ def get_workspace_context(
     if membership is None or workspace is None:
         raise NotFoundError("Workspace not found")
     ctx = WorkspaceContext(
-        workspace=workspace, user=user, role=membership.role, persona_key=membership.persona
+        workspace=workspace,
+        user=user,
+        role=membership.role,
+        persona_key=membership.persona,
+        staff_name=membership.staff_name,
     )
     request.state.persona = ctx.persona  # read by api/masking.py on the way out
     return ctx

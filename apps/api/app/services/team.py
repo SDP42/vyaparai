@@ -58,6 +58,8 @@ def change_role(
     role: WorkspaceRole,
     persona: str | None = None,
     persona_given: bool = False,
+    staff_name: str | None = None,
+    staff_given: bool = False,
 ) -> MemberRead:
     m = get_membership(db, workspace.id, user_id)
     if m is None:
@@ -74,6 +76,8 @@ def change_role(
         m.persona = persona
     elif m.persona is not None and not personas.valid_for_role(m.persona, role):
         m.persona = None
+    if staff_given:
+        m.staff_name = " ".join(staff_name.split())[:80] or None if staff_name else None
     audit.record(
         db, action="workspace.member_role_changed", actor_user_id=actor.id,
         workspace_id=workspace.id, entity_type="user", entity_id=user_id,
@@ -89,6 +93,7 @@ def change_role(
         full_name=u.full_name,
         role=m.role,
         persona=m.persona,
+        staff_name=m.staff_name,
         joined_at=m.created_at,
     )
 

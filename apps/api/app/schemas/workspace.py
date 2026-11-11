@@ -56,12 +56,14 @@ class MemberRead(BaseModel):
     full_name: str
     role: WorkspaceRole
     persona: str | None = None
+    staff_name: str | None = None
     joined_at: datetime
 
 
 class MemberRoleUpdate(BaseModel):
     role: WorkspaceRole
     persona: str | None = None  # omit to keep (cleared if it no longer fits the role)
+    staff_name: str | None = Field(default=None, max_length=80)  # the name on this person's bills
 
 
 class InvitationCreate(BaseModel):

@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 
 from app.models.workspace import WorkspaceRole
 
-CAPABILITIES = ("credit", "margin", "supplier", "customers", "stock", "reports")
+CAPABILITIES = ("credit", "margin", "supplier", "customers", "stock", "reports", "staff")
 
 ALL_INTENTS = {
     "sales", "why", "top_products", "slow_products", "customers", "stock", "dead_stock", "forecast", "alerts", "margin", "supplier",
@@ -63,27 +63,27 @@ PERSONAS: dict[str, Persona] = {
                      "hi": ("इस हफ्ते क्या करना चाहिए?", "पिछले हफ्ते की बिक्री", "बिक्री क्यों गिरी?", "किस पर कितना उधार है?", "छूट से फायदा हुआ क्या?")},
     ),
     "ops_manager": _p(
-        key="ops_manager", default_role=WorkspaceRole.ADMIN, capabilities=("supplier", "stock", "credit", "reports"),
+        key="ops_manager", default_role=WorkspaceRole.ADMIN, capabilities=("supplier", "stock", "credit", "reports", "staff"),
         intents={"sales", "why", "top_products", "slow_products", "stock", "dead_stock", "forecast", "alerts", "supplier", "reviews", "festival",
                  "udhaar", "recommend", "goals", "product_sales", "product_stock", "product_forecast"},
         label={"en": "Operations manager", "hinglish": "Operations manager", "hi": "ऑपरेशंस मैनेजर"},
         about={"en": "Keeps shelves full and the shop running: stock, orders, suppliers, festivals.", "hinglish": "Shelf bhari rakhta hai aur dukaan chalata hai: stock, order, supplier, tyohar.", "hi": "शेल्फ भरी रखता है और दुकान चलाता है: स्टॉक, ऑर्डर, सप्लायर, त्योहार।"},
         owner_only_hint={"en": "the owner", "hinglish": "malik se", "hi": "मालिक से"},
         home="/app/inventory",
-        nav={"/app", "/app/ask", "/app/recommendations", "/app/goals", "/app/alerts", "/app/sales", "/app/products", "/app/forecasts", "/app/inventory", "/app/festivals", "/app/bills", "/app/udhaar", "/app/reviews", "/app/documents", "/app/reports", "/app/digest", "/app/investigate", "/app/team"},
+        nav={"/app", "/app/ask", "/app/recommendations", "/app/goals", "/app/alerts", "/app/sales", "/app/products", "/app/forecasts", "/app/inventory", "/app/festivals", "/app/bills", "/app/udhaar", "/app/reviews", "/app/documents", "/app/reports", "/app/digest", "/app/investigate", "/app/staff", "/app/team"},
         suggestions={"en": ("What should I order?", "What will run out first?", "Dead stock", "Next week forecast", "Which festival is coming?"),
                      "hinglish": ("Kya mangwana hai?", "Pehle kya khatam hoga?", "Dead stock kitna hai?", "Agle hafte ka forecast", "Kaun sa tyohar aa raha hai?"),
                      "hi": ("क्या मंगवाना है?", "पहले क्या खत्म होगा?", "डेड स्टॉक कितना है?", "अगले हफ्ते का अनुमान", "कौन सा त्योहार आ रहा है?")},
     ),
     "analyst": _p(
-        key="analyst", default_role=WorkspaceRole.ANALYST, capabilities=("margin", "supplier", "customers", "stock", "reports"),
+        key="analyst", default_role=WorkspaceRole.ANALYST, capabilities=("margin", "supplier", "customers", "stock", "reports", "staff"),
         intents={"sales", "why", "top_products", "slow_products", "customers", "stock", "dead_stock", "forecast", "alerts", "margin", "supplier",
                  "reviews", "festival", "recommend", "pricing", "goals", "product_sales", "product_stock", "product_forecast"},
         label={"en": "Data analyst", "hinglish": "Data analyst", "hi": "डेटा एनालिस्ट"},
         about={"en": "Finds patterns: why sales moved, which customers and products matter, how accurate forecasts are.", "hinglish": "Pattern dhoondhta hai: bikri kyun badli, kaun se grahak aur products zaroori hain.", "hi": "पैटर्न ढूँढता है: बिक्री क्यों बदली, कौन से ग्राहक और प्रोडक्ट ज़रूरी हैं।"},
         owner_only_hint={"en": "the owner", "hinglish": "malik se", "hi": "मालिक से"},
         home="/app/investigate",
-        nav={"/app", "/app/ask", "/app/recommendations", "/app/goals", "/app/alerts", "/app/investigate", "/app/sales", "/app/customers", "/app/products", "/app/pricing", "/app/reviews", "/app/forecasts", "/app/inventory", "/app/festivals", "/app/bills", "/app/costs", "/app/documents", "/app/reports", "/app/digest", "/app/data"},
+        nav={"/app", "/app/ask", "/app/recommendations", "/app/goals", "/app/alerts", "/app/investigate", "/app/sales", "/app/customers", "/app/products", "/app/pricing", "/app/reviews", "/app/forecasts", "/app/inventory", "/app/festivals", "/app/bills", "/app/costs", "/app/documents", "/app/reports", "/app/digest", "/app/data", "/app/staff"},
         suggestions={"en": ("Why did sales change?", "Top 5 products", "Customers who stopped coming", "What do customers complain about?", "What is my margin?"),
                      "hinglish": ("Bikri kyun badli?", "Top 5 products", "Kaun se grahak aana band hue?", "Reviews mein kya shikayat hai?", "Margin kaisa hai?"),
                      "hi": ("बिक्री क्यों बदली?", "टॉप 5 प्रोडक्ट", "कौन से ग्राहक आना बंद हुए?", "रिव्यू में क्या शिकायत है?", "मार्जिन कितना है?")},
@@ -107,7 +107,7 @@ PERSONAS: dict[str, Persona] = {
         about={"en": "Serves customers: is it in stock, what is the price, what sells best, what is the return rule.", "hinglish": "Grahak ko sambhalta hai: stock mein hai kya, daam kya hai, kya zyada bikta hai, return ka niyam kya hai.", "hi": "ग्राहकों को संभालता है: स्टॉक में है क्या, दाम क्या है, क्या ज़्यादा बिकता है, रिटर्न का नियम क्या है।"},
         owner_only_hint={"en": "the owner or manager", "hinglish": "malik ya manager se", "hi": "मालिक या मैनेजर से"},
         home="/app/ask",
-        nav={"/app/ask", "/app/inventory", "/app/products", "/app/documents", "/app/festivals"},
+        nav={"/app/ask", "/app/inventory", "/app/products", "/app/documents", "/app/festivals", "/app/staff"},
         suggestions={"en": ("Is Basmati rice in stock?", "What sells the most?", "Today's sales", "Return policy", "Which festival is coming?"),
                      "hinglish": ("Basmati rice stock mein hai?", "Sabse zyada kya bikta hai?", "Aaj ki bikri", "Return ka niyam kya hai?", "Kaun sa tyohar aa raha hai?"),
                      "hi": ("बासमती चावल स्टॉक में है?", "सबसे ज़्यादा क्या बिकता है?", "आज की बिक्री", "रिटर्न का नियम क्या है?", "कौन सा त्योहार आ रहा है?")},

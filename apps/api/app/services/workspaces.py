@@ -92,6 +92,7 @@ def list_members(db: Session, workspace_id: uuid.UUID) -> list[MemberRead]:
             full_name=u.full_name,
             role=m.role,
             persona=m.persona,
+            staff_name=m.staff_name,
             joined_at=m.created_at,
         )
         for m, u in db.execute(stmt).all()
@@ -134,5 +135,6 @@ def add_member(
         full_name=user.full_name,
         role=membership.role,
         persona=membership.persona,
+        staff_name=membership.staff_name,
         joined_at=membership.created_at,
     )

@@ -9,7 +9,7 @@ import { useWorkspace } from "./AppContext";
 import { Tx } from "./Tx";
 import { EmptyNote, ErrorNote, Skeleton } from "./analytics/parts";
 
-type Member = { user_id: string; email: string; full_name: string; role: string; persona: string | null; joined_at: string };
+type Member = { user_id: string; email: string; full_name: string; role: string; persona: string | null; staff_name: string | null; joined_at: string };
 type Invite = { id: string; role: string; persona: string | null; expires_at: string; status: string };
 
 const RANK: Record<string, number> = { viewer: 0, analyst: 1, admin: 2, owner: 3 };
@@ -99,6 +99,16 @@ export function TeamPage() {
                   <p className="truncate text-sm text-muted">{m.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <label className="sr-only" htmlFor={`n-${m.user_id}`}>Name on the bills for {m.full_name}</label>
+                  <input
+                    id={`n-${m.user_id}`}
+                    defaultValue={m.staff_name ?? ""}
+                    disabled={locked}
+                    maxLength={80}
+                    placeholder="Name on bills"
+                    onBlur={(e) => e.target.value.trim() !== (m.staff_name ?? "") && run(() => api(`${base}/members/${m.user_id}`, { method: "PATCH", body: JSON.stringify({ role: m.role, staff_name: e.target.value.trim() || null }) }))}
+                    className="w-32 rounded-lg border border-line bg-canvas px-2.5 py-1.5 text-sm disabled:opacity-60"
+                  />
                   <label className="sr-only" htmlFor={`j-${m.user_id}`}>Job of {m.full_name}</label>
                   <select
                     id={`j-${m.user_id}`}

@@ -57,6 +57,17 @@ class Settings(BaseSettings):
     # Weather signal (docs/research/EXTERNAL-FACTORS.md). Open-Meteo's free endpoint is for
     # non-commercial use only, so production refuses it unless a paid key is configured.
     weather_enabled: bool = True
+    # Voice (speech to text on this server; audio is never stored)
+    voice_enabled: bool = True
+    voice_warm_start: bool = (
+        True  # load the speech model at startup so the first question is not slow
+    )
+    stt_model: str = "medium"  # Whisper size or a local folder: tiny, base, small, medium
+    stt_compute_type: str = "int8"
+    stt_cpu_threads: int = 4
+    stt_local_files_only: bool = False  # true on a server that must never fetch weights
+    voice_max_seconds: int = 15
+    voice_max_audio_kb: int = 1024
     open_meteo_api_key: str | None = None
     weather_timeout_seconds: float = 8.0
 
@@ -71,6 +82,7 @@ class Settings(BaseSettings):
 
     # Owner digest email. Disabled until an SMTP host is configured; the text can always be copied.
     app_url: str = "http://localhost:3000"
+    demo_login_enabled: bool = False  # one-tap sample accounts per persona; never in production
     smtp_host: str | None = None
     smtp_port: int = 587
     smtp_user: str | None = None
@@ -90,6 +102,8 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _validate_production_secrets(self) -> Self:
         if self.is_production:
+            if self.demo_login_enabled:
+                raise ValueError("DEMO_LOGIN_ENABLED must be off in production")
             if self.jwt_secret_key == DEV_JWT_SECRET or len(self.jwt_secret_key) < 32:
                 raise ValueError("JWT_SECRET_KEY must be set to a random value of 32+ chars")
             if self.database_url.startswith("sqlite"):

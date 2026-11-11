@@ -7,20 +7,21 @@ POST /auth/logout-all   revoke every sign-in of the current user
 GET  /auth/me           who am I
 """
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
 
 from app.api.deps import AppSettings, CurrentUser, DbSession
 from app.core.config import Settings
-from app.core.errors import AppError, AuthenticationError, PermissionDeniedError
+from app.core.errors import AppError, AuthenticationError, NotFoundError, PermissionDeniedError
 from app.core.ratelimit import Limiter, RateLimitedError, make_limiter
 from app.core.security import create_access_token
 from app.models.user import User
 from app.schemas.auth import Token, UserCreate, UserRead
 from app.services import auth as auth_service
-from app.services import sessions
+from app.services import demo, personas, sessions
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 AUTH_PATH = "/api/v1/auth"  # the refresh cookie is only ever sent here
@@ -120,6 +121,50 @@ def login(
             lim.hit(k)  # only failures count
         raise
     lim.reset(keys[1])
+    token, expires_in = create_access_token(str(user.id), settings)
+    refresh = sessions.issue(db, user, settings, user_agent=request.headers.get("user-agent"))
+    db.commit()
+    _set_cookie(response, refresh, settings)
+    return Token(access_token=token, expires_in=expires_in)
+
+
+class DemoLogin(BaseModel):
+    persona: str
+
+
+@router.get("/demo-status")
+def demo_status(settings: AppSettings) -> dict[str, Any]:
+    """Whether one-tap persona sign-in is on, and the personas it offers (public, no data)."""
+    if not settings.demo_login_enabled:
+        return {"enabled": False, "personas": []}
+    return {
+        "enabled": True,
+        "personas": [
+            {
+                "key": p.key, "name": demo.NAMES[p.key], "label": p.label, "about": p.about,
+                "home": p.home,
+            }
+            for p in personas.PERSONAS.values()
+        ],
+    }  # fmt: skip
+
+
+@router.post("/demo-login", response_model=Token, dependencies=[Depends(csrf_guard)])
+def demo_login(
+    data: DemoLogin, db: DbSession, settings: AppSettings, request: Request, response: Response
+) -> Token:
+    if not settings.demo_login_enabled:
+        raise NotFoundError("Not found")
+    if data.persona not in personas.PERSONAS:
+        raise AppError("Unknown persona")
+    lim = limiter("login", settings)
+    key = f"demo:{_client_ip(request)}"
+    try:
+        lim.check(key)
+    except RateLimitedError as exc:
+        raise TooManyAttemptsError(exc.retry_after) from exc
+    lim.hit(key)
+    user = demo.ensure_persona_user(db, data.persona)
     token, expires_in = create_access_token(str(user.id), settings)
     refresh = sessions.issue(db, user, settings, user_agent=request.headers.get("user-agent"))
     db.commit()

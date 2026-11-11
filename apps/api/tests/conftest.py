@@ -3,6 +3,7 @@ import os
 os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("LOG_JSON", "false")
 os.environ.setdefault("LOG_LEVEL", "WARNING")
+os.environ["DEMO_LOGIN_ENABLED"] = "false"  # a developer .env may switch sample sign-in on
 
 import tempfile
 

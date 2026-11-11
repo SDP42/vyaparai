@@ -259,7 +259,7 @@ export function ClothOpening() {
       <svg
         ref={bow}
         viewBox="0 0 420 520"
-        className="pointer-events-none absolute left-1/2 top-1/2 w-[clamp(250px,38vw,420px)] -translate-x-1/2 -translate-y-[52%]"
+        className="pointer-events-none absolute left-1/2 top-1/2 w-[min(clamp(250px,38vw,420px),78vh)] -translate-x-1/2 -translate-y-[56%]"
         aria-hidden
       >
         <defs>
@@ -375,8 +375,8 @@ export function ClothOpening() {
         </svg>
       </button>
 
-      <div ref={hint} className="pointer-events-none absolute inset-x-0 bottom-[11%] text-center text-[#fff7e0] [text-shadow:0_2px_10px_rgba(50,22,0,.7)]">
-        <p className="font-serif text-2xl italic sm:text-3xl">The shop is closed.</p>
+      <div ref={hint} className="pointer-events-none absolute inset-x-0 bottom-[11%] text-center text-[#fff7e0] [text-shadow:0_2px_10px_rgba(50,22,0,.7)] [@media(max-height:520px)]:bottom-1">
+        <p className="font-serif text-2xl italic sm:text-3xl [@media(max-height:520px)]:hidden">The shop is closed.</p>
         <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.24em]">Drag the scissors to the ribbon and cut</p>
       </div>
 

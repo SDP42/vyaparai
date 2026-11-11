@@ -177,8 +177,8 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] Types generated from the API's OpenAPI description (`make gen-api`; `apps/api/openapi.json` is checked by a test so it cannot go stale). Shared shapes (workspace, jobs, data summary) now come from it; older page-specific types are replaced as pages are touched
 - [x] Workspace switcher and member invites (owner/admin)
 - [x] Remove the persona demo: the sign-in page now signs in as real sample accounts (Phase 20)
-- [ ] Consistent empty / loading / error states; mobile layouts for every table
-- [ ] Accessibility pass (keyboard, focus, screen-reader labels, contrast) and Lighthouse check
+- [x] Every data page has loading, empty and error states from the shared parts (the Data page was the last without them); wide tables scroll inside their own box on phones and no page scrolls sideways (checked at 390 px)
+- [x] Accessibility audit of the landing, sign-in and all 23 app pages with fixes ([ACCESSIBILITY](ACCESSIBILITY.md)); a real screen-reader test and Lighthouse run are still to do
 
 ## Phase 5 — Inventory & decision support ✅ ([notes](research/INVENTORY.md))
 

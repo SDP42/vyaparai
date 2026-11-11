@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { api, type DataSummary, type Dataset, type Page } from "@/lib/api";
+import { ApiError, api, type DataSummary, type Dataset, type Page } from "@/lib/api";
 import { formatINR, formatNumber, parseUtc } from "@/lib/format";
 import { useAnalyticsState, useWorkspace } from "./AppContext";
 import { ConnectionsCard } from "./ConnectionsCard";
 import { ImportWizard } from "./ImportWizard";
+import { ErrorNote, Skeleton } from "./analytics/parts";
 
 const STATUS: Record<Dataset["status"], { label: string; cls: string }> = {
   uploaded: { label: "Needs mapping", cls: "bg-haldi/15 text-haldi-deep" },
@@ -22,22 +23,28 @@ export function DataPage() {
   const base = `/workspaces/${workspace.id}`;
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [summary, setSummary] = useState<DataSummary | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [wizard, setWizard] = useState<{ open: boolean; dataset: Dataset | null }>({ open: false, dataset: null });
 
   const refresh = useCallback(async () => {
     const [d, s] = await Promise.all([api<Page<Dataset>>(`${base}/datasets?limit=50`), api<DataSummary>(`${base}/data-summary`)]);
     setDatasets(d.items);
     setSummary(s);
+    setError(null);
   }, [base]);
+  const load = useCallback(
+    () => refresh().catch((e) => setError(e instanceof ApiError ? e.message : "Could not load your data")),
+    [refresh],
+  );
   useEffect(() => {
-    refresh().catch(() => {});
-  }, [refresh]);
+    void load();
+  }, [load]);
 
   // After an import, the metric layer has new data: refresh the shared analytics state too.
   const onChanged = useCallback(() => {
-    refresh().catch(() => {});
+    void load();
     refreshOptions().catch(() => {});
-  }, [refresh, refreshOptions]);
+  }, [load, refreshOptions]);
 
   const empty = summary && summary.orders === 0;
 
@@ -55,6 +62,12 @@ export function DataPage() {
         )}
       </div>
 
+      {error && <ErrorNote message={error} onRetry={() => void load()} />}
+      {!summary && !error && (
+        <div className="fluid [--min:9rem]" aria-busy="true">
+          {[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20" />)}
+        </div>
+      )}
       {summary && (
         <div className="fluid [--min:9rem]">
           <Tile label="Orders" value={formatNumber(summary.orders)} />

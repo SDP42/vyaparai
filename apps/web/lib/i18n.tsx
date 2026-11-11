@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 /**
  * Interface language: English, Hinglish (Hindi in Roman letters) and Hindi (Devanagari).
  * Every language must define every key: the `Record<Key, string>` type makes the compiler check it.
- * Covered: navigation, the app shell, and the Ask, Next steps and Udhaar pages. Other pages stay in English.
+ * Covered: navigation, the app shell, voice, the Ask, Next steps and Udhaar pages in full, and the headline and introduction of every other page. Page bodies stay in English.
  * The Hinglish and Hindi wording has not been reviewed by a native speaker yet.
  */
 const en = {

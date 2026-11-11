@@ -16,7 +16,7 @@ A language switch (English, Hinglish, हिन्दी) sits in the sidebar an
 ## Limits
 
 - **The Hinglish and Hindi wording has not been reviewed by a native speaker.** Treat it as a good first draft.
-- Other pages (Sales, Customers, Forecasts, Stock, Pricing and so on) are English only; only the assistant and the reminder drafts speak all three languages today.
+- Every other page (Sales, Customers, Forecasts, Stock, Pricing and so on) has its headline and introduction in all three languages; the cards, tables and buttons below them are still English. The assistant and the reminder drafts speak all three languages fully. None of the Hinglish or Hindi wording has been reviewed by a native speaker.
 - The service worker could not be registered inside the build environment's embedded browser, so its behaviour is verified by running its real code in a simulated worker (`apps/web/tests/sw.test.mjs`: live fetch and save, offline serving, exclusions, no-store, clearing, offline page), not on a physical phone. Install it on a real phone once and check the offline banner.
 - Offline reading shows the last data seen, which may be old; the banner says so but not how old.
 - Voice input on the Ask page uses the browser's own speech recognition where it exists, set to Hindi-India.

@@ -114,11 +114,11 @@ function CloseForm({ base, v, canWrite, onSaved }: { base: string; v: View; canW
   return (
     <form onSubmit={submit} className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2">
-        {field("opening", "Cash in the drawer this morning", s?.opening_cash ?? v.suggested_opening, v.suggested_opening != null && !s ? "From the last close" : undefined)}
+        {field("opening", "Cash this morning", s?.opening_cash ?? v.suggested_opening, v.suggested_opening != null && !s ? "From the last close" : undefined)}
         {field("cash", "Sales in cash", s?.cash_sales)}
         {field("upi", "Sales by UPI", s?.upi_sales)}
         {field("card", "Sales by card", s?.card_sales)}
-        {field("out", "Taken out (banked or home)", s?.taken_out)}
+        {field("out", "Taken out of the drawer", s?.taken_out)}
         {field("counted", "Cash counted now", s?.counted_cash)}
       </div>
       <dl className="grid gap-x-6 gap-y-1 rounded-2xl bg-surface-2 p-4 text-sm sm:grid-cols-2">
@@ -157,9 +157,9 @@ function ExpenseForm({ base, cats, onSaved }: { base: string; cats: Cat[]; onSav
       setErr(x instanceof ApiError ? x.message : "Could not save");
     }
   };
-  const input = "rounded-xl border border-line bg-canvas px-3 py-2 text-sm outline-none focus:border-haldi";
+  const input = "w-full min-w-0 rounded-xl border border-line bg-canvas px-3 py-2 text-sm outline-none focus:border-haldi";
   return (
-    <form onSubmit={submit} className="grid gap-2 sm:grid-cols-[1fr_7rem]">
+    <form onSubmit={submit} className="grid grid-cols-[minmax(0,1fr)_minmax(0,6.5rem)] gap-2">
       <label className="sr-only" htmlFor="exp-cat">Category</label>
       <select id="exp-cat" name="category" className={input} defaultValue="tea">{cats.map((c) => <option key={c.key} value={c.key}>{c.en}</option>)}</select>
       <label className="sr-only" htmlFor="exp-amt">Amount</label>
@@ -168,8 +168,8 @@ function ExpenseForm({ base, cats, onSaved }: { base: string; cats: Cat[]; onSav
       <input id="exp-note" name="note" maxLength={200} placeholder="Note (optional)" className={input} />
       <label className="sr-only" htmlFor="exp-by">Paid by</label>
       <select id="exp-by" name="paid_by" className={input} defaultValue="cash"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="bank">Bank</option></select>
-      <button type="submit" className="rounded-full bg-fg px-4 py-2 text-sm font-semibold text-canvas hover:bg-sindoor sm:col-span-2">Add expense</button>
-      {err && <p role="alert" className="text-sm text-sindoor sm:col-span-2">{err}</p>}
+      <button type="submit" className="col-span-2 rounded-full bg-fg px-4 py-2 text-sm font-semibold text-canvas hover:bg-sindoor">Add expense</button>
+      {err && <p role="alert" className="col-span-2 text-sm text-sindoor">{err}</p>}
     </form>
   );
 }

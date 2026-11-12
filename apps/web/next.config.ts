@@ -23,6 +23,7 @@ const csp = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  devIndicators: false, // no Next.js badge in the corner during development
   output: "standalone",
   async headers() {
     return [

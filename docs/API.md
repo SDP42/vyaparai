@@ -115,6 +115,10 @@ coverage, excluded orders by status). Invalid ranges return `422 invalid_range`.
 | 7 | `GET /workspaces/{id}/documents/search` |
 | 8 | `POST /workspaces/{id}/copilot/runs` · `GET …/copilot/runs/{id}` |
 
+## Daily routines and automations
+
+See [DAILY](DAILY.md) and [AGENTS](AGENTS.md): `/workspaces/{id}/daily/{today,close,close/history,expenses,expense-categories,expiry,orders,quick/parse,quick/save}` and `/workspaces/{id}/agents/schedule`.
+
 ## Personas and voice
 
 | Method | Path | Role | Notes |

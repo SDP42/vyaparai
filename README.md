@@ -72,6 +72,7 @@ tools a shop already uses.
 
 | Area | Capabilities | Docs |
 |---|---|---|
+| **Every day** | A Today page (last day's sales, who to call for udhaar, what to order, what is expiring); the galla: a day-end cash count with expected against counted; expenses; supplier order lists to share; one-line entries such as "Ramesh ko 200 udhaar" read back before saving | [DAILY](docs/DAILY.md) |
 | **Data in** | CSV and Excel upload, header detection, remembered column mappings, row-level validation with a downloadable error file, idempotent import, connected Google Sheet or shared-file links with scheduled re-imports, optional Cashier/Staff column | [DATA_DICTIONARY](docs/DATA_DICTIONARY.md) |
 | **Trusted numbers** | One metric registry with versions; period comparisons; price-volume-mix drivers that sum exactly to the change; drill-through to the transactions | [METRICS](docs/METRICS.md) |
 | **Customers and products** | RFM segments, cohorts, ABC classes, margin and discount analysis, portfolio quadrants, basket pairs | [DATA_DICTIONARY](docs/DATA_DICTIONARY.md) |
@@ -86,7 +87,7 @@ tools a shop already uses.
 | **Reviews** | Language, sentiment and themes for English, Hindi and Hinglish reviews, with the phrase behind every claim | [REVIEWS](docs/REVIEWS.md) |
 | **Pricing and goals** | Which discounts paid off (against the same weekday, in profit after the discount), small safe price trials; targets with pace and a likely-finish range | [PRICING](docs/PRICING.md), [GOALS](docs/GOALS.md) |
 | **Next steps and reports** | Ranked recommendations with impact ranges, assumptions and outcome tracking; saved PDF/CSV summaries for an accountant or partner (amounts print with ₹) | [RECOMMENDATIONS](docs/RECOMMENDATIONS.md) |
-| **Investigations** | Bounded, traced LangGraph workflows ("why did sales change?") over existing services; no language model in the loop | [AGENTS](docs/AGENTS.md) |
+| **Agents** | Ten bounded, traced LangGraph workflows over existing services, no language model in the loop: four analysts ("why did sales change?", weekly review, customer health, stock risk) and six automations that can run every morning (morning brief, reorder planner, udhaar collector, day-end check, expiry clearance, price watch) and prepare drafts for you to send | [AGENTS](docs/AGENTS.md), [agents/](agents/) |
 | **Documents** | Search your own policies and supplier terms with cited passages (PDF, DOCX, TXT) | [DOCUMENTS](docs/DOCUMENTS.md) |
 | **Staff** | Sales by cashier or salesperson (bills, average bill, items per bill, discount, margin); counter staff see only their own | [PERSONAS](docs/PERSONAS.md) |
 | **Several shops** | Side-by-side comparison on growth, margin and order value; each shop keeps its own data and team | [STORES](docs/STORES.md) |
@@ -155,7 +156,8 @@ See [VOICE](docs/VOICE.md) for the failure modes it guards against and the measu
       │           ├─ ingestion · connectors · costs · bills (OCR) · inventory · alerts · digest
       │           ├─ campaigns · reviews NLP · documents (retrieval) · udhaar · pricing · goals
       │           ├─ assistant · nlu · tools · evidence · numbers · translit · personas · voice
-      │           └─ agents (LangGraph) · recommendations · reports · background runners
+      │           ├─ daily · galla · expenses · expiry · order lists · quick entries
+      │           └─ agents (LangGraph: 4 analysts, 6 automations, daily schedule) · recommendations · reports · runners
       ▼
  Every tenant-owned row carries workspace_id; membership is checked on every request
 ```
@@ -378,6 +380,7 @@ Every figure here is from a small synthetic or self-written set and is optimisti
 | 18 | Phones, PWA and Hinglish/Hindi | ✅ app · 🟡 wording and page bodies |
 | 19 | Goals and benchmarks | ✅ |
 | 20 | Personas and voice | ✅ first version |
+| 21 | Daily routines and automation agents | ✅ first version |
 
 Next, in order: record real shopkeeper questions and re-measure voice; confirm the persona definitions with real
 owners; native review of the Hindi and Hinglish wording and translation of page bodies; a real-phone test; a deployment
@@ -394,7 +397,7 @@ Gujarati, Tamil and Bengali speech. The ticked checklist per phase is in [PHASES
 | **Start here** | [ROADMAP](docs/ROADMAP.md) · [PHASES](docs/PHASES.md) · [MVP](docs/MVP.md) · [DEVLOG](docs/DEVLOG.md) · [CHANGELOG](CHANGELOG.md) |
 | **How it is built** | [ARCHITECTURE](docs/ARCHITECTURE.md) · [API](docs/API.md) · [DATA_DICTIONARY](docs/DATA_DICTIONARY.md) · [decision records](docs/adr/) · [RUNBOOK](docs/RUNBOOK.md) |
 | **Numbers and models** | [METRICS](docs/METRICS.md) · [MODELS](docs/MODELS.md) · [EVENTS](docs/EVENTS.md) · [REVIEWS](docs/REVIEWS.md) · [PRICING](docs/PRICING.md) · [GOALS](docs/GOALS.md) |
-| **Features** | [ASSISTANT](docs/ASSISTANT.md) · [VOICE](docs/VOICE.md) · [PERSONAS](docs/PERSONAS.md) · [DOCUMENTS](docs/DOCUMENTS.md) · [AGENTS](docs/AGENTS.md) · [RECOMMENDATIONS](docs/RECOMMENDATIONS.md) · [UDHAAR](docs/UDHAAR.md) · [BILLS](docs/BILLS.md) · [CAMPAIGN-RUNS](docs/CAMPAIGN-RUNS.md) · [STORES](docs/STORES.md) · [MOBILE](docs/MOBILE.md) |
+| **Features** | [DAILY](docs/DAILY.md) · [ASSISTANT](docs/ASSISTANT.md) · [VOICE](docs/VOICE.md) · [PERSONAS](docs/PERSONAS.md) · [DOCUMENTS](docs/DOCUMENTS.md) · [AGENTS](docs/AGENTS.md) · [RECOMMENDATIONS](docs/RECOMMENDATIONS.md) · [UDHAAR](docs/UDHAAR.md) · [BILLS](docs/BILLS.md) · [CAMPAIGN-RUNS](docs/CAMPAIGN-RUNS.md) · [STORES](docs/STORES.md) · [MOBILE](docs/MOBILE.md) |
 | **Security, licences, quality** | [THREAT_MODEL](docs/THREAT_MODEL.md) · [LICENSES](docs/LICENSES.md) · [ACCESSIBILITY](docs/ACCESSIBILITY.md) |
 | **Design** | [DESIGN_SYSTEM](docs/DESIGN_SYSTEM.md) · [frontend notes](docs/frontend/) |
 | **Research** | [docs/research/](docs/research/): method research, [what makes the product different](docs/research/DIFFERENTIATION.md), [personas and voice](docs/research/PERSONAS-VOICE.md) |

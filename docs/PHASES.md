@@ -255,6 +255,14 @@ Full plan: [research/PHASE-4-ML-PLAN.md](research/PHASE-4-ML-PLAN.md). Benchmark
 - [x] Per-field masking of cost and margin for personas without the margin capability; customer routes need the customers capability
 - [ ] Confirm persona definitions with real shop owners
 
+## Phase 21 — Daily routines and automation agents ✅ first version ([daily](DAILY.md), [agents](AGENTS.md), [research](research/DAILY-USE-FEATURES.md))
+- [x] Today page: last day's sales, udhaar to call, orders, expiry, galla status, urgent alerts; one-line udhaar and expense entry read back before saving (Hinglish and Hindi)
+- [x] Galla: day-end cash count with expected against counted, typed sales against the file, rough day profit; expenses by category and payment mode
+- [x] Expiry watch list; supplier order lists to copy or share
+- [x] Six automation agents (morning brief, reorder planner, udhaar collector, day-end check, expiry clearance, price watch) that run on demand or on a daily schedule, read-only, with drafts for a person to send
+- [ ] Payment mode on udhaar entries (the galla assumes cash); batches read from bills into the expiry list
+- [ ] Test the routines with real shopkeepers
+
 ## Definition of done
 
 A change is done when it is **implemented, tested, documented and demonstrable**:

@@ -28,13 +28,28 @@ A workflow is a small graph of nodes. Each node calls an existing, tested servic
 
 **stock_risk**: products that will run out, cash stuck in dead stock, festivals that may strain stock, and whether the forecast is current.
 
+## Automation agents
+
+Six more graphs prepare the shop's daily routine: **morning_brief** (start the day), **reorder_planner** (what to
+order, its cost against the last cash count, order lists per supplier), **udhaar_collector** (who to call first and
+a reminder drafted for each), **day_end_check** (was the galla closed and did it match), **expiry_clearance** (what to
+take off the shelf and sell first) and **price_watch** (costs that rose while prices did not). They are read-only
+like the others (a test checks the module), and their drafts are shown for a person to copy and send.
+
+Each can run on demand or every day at a chosen hour (`agent_schedules`; Investigate page, owner or admin). A cron
+entry runs whatever is due, at most once per local day:
+
+```bash
+*/15 * * * *  cd /path/to/apps/api && uv run python -m app.agent_runner
+```
+
 ## Limits
 
 - Weights are transparent rules (share of the change; fixed weights for context), not learned. They order findings; they are not probabilities.
 - The stock check sees today's stock, not the position during the period, so it can only suggest a possibility.
 - A running step cannot be interrupted without leaving the shared database session in an unknown state, so a step over 8 seconds is flagged and the 20-second budget stops the run; the hard stop is a database statement timeout set in production.
-- Four workflows so far; adding one means adding nodes that call existing services.
+- Ten workflows: four analyst workflows and six automations; adding one means adding nodes that call existing services.
 
 ## API
 
-`GET /workspaces/{id}/agents/workflows` · `POST .../agents/runs` `{workflow, date_from, date_to}` (analyst) · `GET .../agents/runs` · `GET .../agents/runs/{run}` (with steps)
+`GET /workspaces/{id}/agents/workflows` · `POST .../agents/runs` `{workflow, date_from, date_to, lang}` (analyst) · `GET .../agents/runs` · `GET .../agents/runs/{run}` (with steps) · `GET|PUT .../agents/schedule` (change: admin)

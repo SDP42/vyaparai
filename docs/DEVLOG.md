@@ -2,6 +2,16 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-12 · A real cloth, a new landing page, daily routines and automation agents
+
+**Opening.** The cloth is now simulated: a Verlet particle grid hung from a rail that is narrower than the fabric, so it gathers into real folds, lit from the side so each fold throws a shadow, with a satin ribbon and bow (three.js, MIT; textures generated in code). Cutting the ribbon removes its links at the cut, and the rail lets go from the middle outward so the cloth falls under gravity. The drawn version stays as the fallback without WebGL.
+
+**Landing page.** Rebuilt after the research on what reads as professional: a real Today screen in the hero, a strip of checkable facts instead of invented proof, one pinned how-it-works scene, product screens revealed with clip paths, stacking cards for each job in the shop, a voice section, and a plain "it will / it will not" section.
+
+**Daily routines.** A Today page, the galla (day-end cash count), expenses, an expiry list, supplier order lists to share, and one-line entries ("Ramesh ko 200 udhaar") read back before saving ([DAILY](DAILY.md)).
+
+**Agents.** Six automation agents on top of the four analysts, each a small read-only LangGraph graph that prepares findings and drafts, runnable now or every day at a chosen hour through a cron-friendly runner ([AGENTS](AGENTS.md)).
+
 ## 2026-11-11 · Engineering follow-ups, a new opening, staff sales
 
 **Opening.** The 3D key-and-lock scene is gone. The page now opens on a closed shop: a woven cloth tied with a red satin ribbon and a paper tag, scissors beside it. Drag them to the dotted line (or tap them, or press Enter) and the ribbon is cut, the bow and tag fall, and the cloth drops in strips from the middle out. It is drawn in code (no images, models or sounds), shown once per visit, skippable, and absent under reduced motion. The landing dashboard preview no longer clips numbers (its layout follows its own width) and the features section describes what the product really does.

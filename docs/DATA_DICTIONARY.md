@@ -41,6 +41,8 @@ quantity is `NUMERIC(12,3)` (loose goods sold by weight), never float.
 | Alerts, digest, goals, recommendations, reports | `alerts`, `digests`, `digest_settings`, `goals`, `recommendations`, `saved_reports` |
 | Campaigns | `campaigns`, `campaign_recipients`, `customer_contacts` (phone and consent, kept apart from `customers`) |
 | Credit and bills | `credit_entries` (udhaar ledger), `purchase_bills`, `purchase_bill_lines` |
+| Daily routines | `expenses` (day, category, amount, paid by, note), `day_closes` (one per day: morning cash, cash/UPI/card sales, taken out, counted cash), `expiry_items` (name, optional product, batch, expiry date, quantity, how it was cleared) |
+| Automations | `agent_schedules` (workflow, enabled, local hour, last day run) |
 | Language | `reviews`, `documents`, `document_chunks` (passage text and embedding), `agent_runs`, `agent_steps` (stored investigation traces) |
 
 Every one of these carries `workspace_id` and is only reached through workspace-scoped queries.

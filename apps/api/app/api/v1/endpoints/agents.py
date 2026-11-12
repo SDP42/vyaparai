@@ -7,10 +7,10 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
-from app.api.deps import AnalystCtx, DbSession, ViewerCtx
+from app.api.deps import AdminCtx, AnalystCtx, DbSession, ViewerCtx
 from app.api.masking import MaskedRoute
 from app.models.agent import AgentRun
-from app.services.agents import runner
+from app.services.agents import runner, schedule
 from app.services.agents.workflows import WORKFLOWS
 
 router = APIRouter(
@@ -22,6 +22,13 @@ class RunIn(BaseModel):
     workflow: str = Field(max_length=40)
     date_from: date | None = None
     date_to: date | None = None
+    lang: str | None = Field(default=None, pattern="^(en|hinglish|hi)$")
+
+
+class ScheduleIn(BaseModel):
+    workflow: str = Field(max_length=40)
+    enabled: bool
+    hour: int = Field(default=8, ge=0, le=23)
 
 
 def _run(r: AgentRun, detail: bool) -> dict[str, Any]:
@@ -43,7 +50,13 @@ def _run(r: AgentRun, detail: bool) -> dict[str, Any]:
 @router.get("/workflows")
 def workflows(ctx: ViewerCtx) -> list[dict[str, Any]]:
     return [
-        {"key": k, "title": v["title"], "about": v["about"], "params": v["params"]}
+        {
+            "key": k,
+            "title": v["title"],
+            "about": v["about"],
+            "params": v["params"],
+            "automation": v.get("automation", False),
+        }
         for k, v in WORKFLOWS.items()
     ]
 
@@ -53,6 +66,7 @@ def run(data: RunIn, ctx: AnalystCtx, db: DbSession) -> dict[str, Any]:
     params = {
         "from": data.date_from.isoformat() if data.date_from else None,
         "to": data.date_to.isoformat() if data.date_to else None,
+        "lang": data.lang,
     }
     r = runner.run_workflow(db, ctx.workspace, ctx.user.id, data.workflow, params)
     return _run(r, True)
@@ -68,3 +82,14 @@ def runs(
 @router.get("/runs/{run_id}")
 def get_run(run_id: uuid.UUID, ctx: ViewerCtx, db: DbSession) -> dict[str, Any]:
     return _run(runner.get_run(db, ctx.workspace_id, run_id), True)
+
+
+@router.get("/schedule")
+def get_schedule(ctx: ViewerCtx, db: DbSession) -> list[dict[str, Any]]:
+    """Automation agents and whether each runs on its own every day."""
+    return schedule.get(db, ctx.workspace_id)
+
+
+@router.put("/schedule")
+def set_schedule(data: ScheduleIn, ctx: AdminCtx, db: DbSession) -> list[dict[str, Any]]:
+    return schedule.set_one(db, ctx.workspace_id, data.workflow, data.enabled, data.hour)

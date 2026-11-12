@@ -1,10 +1,20 @@
 """Agent runs and their step-by-step trace. Read-only workflows: they never change business data."""
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, Uuid
+from sqlalchemy import (
+    JSON,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin, WorkspaceScopedMixin
@@ -46,3 +56,15 @@ class AgentStep(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, Base):
     ms: Mapped[int] = mapped_column(Integer, default=0)
 
     run: Mapped[AgentRun] = relationship(back_populates="steps")
+
+
+class AgentSchedule(UUIDPrimaryKeyMixin, WorkspaceScopedMixin, TimestampMixin, Base):
+    """Which automation agents run on their own each day, and at what local hour."""
+
+    __tablename__ = "agent_schedules"
+    __table_args__ = (UniqueConstraint("workspace_id", "workflow"),)
+
+    workflow: Mapped[str] = mapped_column(String(40))
+    enabled: Mapped[bool] = mapped_column(default=True)
+    hour: Mapped[int] = mapped_column(default=8)
+    last_run_for: Mapped[date | None] = mapped_column(Date)

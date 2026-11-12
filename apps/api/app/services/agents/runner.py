@@ -10,12 +10,19 @@ from app.core.errors import AppError, NotFoundError
 from app.models.agent import AgentRun
 from app.models.workspace import Workspace
 from app.services import audit
-from app.services.agents import engine
+from app.services.agents import (
+    automations,  # noqa: F401  (registers the automation agents)
+    engine,
+)
 from app.services.agents.workflows import WORKFLOWS
 
 
 def run_workflow(
-    db: Session, workspace: Workspace, user_id: uuid.UUID, workflow: str, params: dict[str, Any]
+    db: Session,
+    workspace: Workspace,
+    user_id: uuid.UUID | None,
+    workflow: str,
+    params: dict[str, Any],
 ) -> AgentRun:
     spec = WORKFLOWS.get(workflow)
     if spec is None:

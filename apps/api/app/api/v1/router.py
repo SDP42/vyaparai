@@ -11,6 +11,7 @@ from app.api.v1.endpoints import (
     campaign_runs,
     campaigns,
     costs,
+    daily,
     datasets,
     digests,
     documents,
@@ -33,6 +34,7 @@ from app.api.v1.endpoints import (
 
 api_router = APIRouter()
 api_router.include_router(goals.router)
+api_router.include_router(daily.router)
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
 api_router.include_router(assistant.router)

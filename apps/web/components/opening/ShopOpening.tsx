@@ -95,6 +95,7 @@ export function ShopOpening() {
     const place = () => {
       if (!stage) return;
       const p = stage.ribbonPoint(CUT_AT);
+      if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
       row.current = p.row;
       setLine({ x: p.x, y: p.y });
     };

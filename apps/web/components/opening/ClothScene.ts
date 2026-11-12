@@ -255,8 +255,8 @@ export class ClothScene {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
+    const w = canvas.clientWidth || window.innerWidth; // not laid out yet on the very first mount
+    const h = canvas.clientHeight || window.innerHeight;
     this.camera.position.set(0, 0, 11);
     this.fit(w, h);
 
@@ -410,7 +410,7 @@ export class ClothScene {
   }
 
   resize() {
-    this.fit(this.canvas.clientWidth, this.canvas.clientHeight);
+    this.fit(this.canvas.clientWidth || window.innerWidth, this.canvas.clientHeight || window.innerHeight);
   }
 
   /** Where the pointer is, in pixels, so the cloth gives a little under it. */

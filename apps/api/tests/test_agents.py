@@ -120,12 +120,10 @@ def test_runs_are_listed_read_back_and_permissioned(client: TestClient, shop, ma
     got = client.get(f"{base}/runs/{first['id']}", headers=h).json()
     assert got["steps"]
     assert got["steps"][0]["input"]["params"] == got["params"]
-    assert {w["key"] for w in client.get(f"{base}/workflows", headers=h).json()} == {
-        "investigate_sales",
-        "weekly_review",
-        "customer_health",
-        "stock_risk",
-    }
+    listed = {w["key"]: w for w in client.get(f"{base}/workflows", headers=h).json()}
+    analysts = {"investigate_sales", "weekly_review", "customer_health", "stock_risk"}
+    assert {k for k, w in listed.items() if not w["automation"]} == analysts
+    assert len(listed) == 10  # plus six automation agents
     viewer = make_user("viewer@shop.in")
     _join(client, ws, h, viewer, "viewer")
     assert client.get(f"{base}/runs/{first['id']}", headers=viewer).status_code == 200

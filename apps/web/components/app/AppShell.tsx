@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  Bell, Boxes, CalendarDays, ChartNoAxesColumn, CheckCheck, ClipboardList, Database, FileText, Gauge, Goal, HandCoins, Home, LineChart, Megaphone, MessageCircleQuestion,
+  Banknote, Bell, Boxes, CalendarClock, Sun, Truck, CalendarDays, ChartNoAxesColumn, CheckCheck, ClipboardList, Database, FileText, Gauge, Goal, HandCoins, Home, LineChart, Megaphone, MessageCircleQuestion,
   MessagesSquare, Microscope, Newspaper, Package, ReceiptText, Store, Tag, Target, TrendingUp, Users, UsersRound, UserRound, Wallet, X, Ellipsis, LogOut, type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -18,6 +18,7 @@ type Group = { key: Key; items: Item[] };
 
 const GROUPS: Group[] = [
   { key: "group.overview", items: [
+    { href: "/app/today", key: "nav.today", icon: Sun },
     { href: "/app", key: "nav.command", icon: Gauge, exact: true },
     { href: "/app/ask", key: "nav.ask", icon: MessageCircleQuestion },
     { href: "/app/recommendations", key: "nav.steps", icon: CheckCheck },
@@ -34,7 +35,10 @@ const GROUPS: Group[] = [
     { href: "/app/campaigns", key: "nav.campaigns", icon: Megaphone },
   ] },
   { key: "group.ops", items: [
+    { href: "/app/galla", key: "nav.galla", icon: Banknote },
     { href: "/app/inventory", key: "nav.stock", icon: Boxes },
+    { href: "/app/orders", key: "nav.orders", icon: Truck },
+    { href: "/app/expiry", key: "nav.expiry", icon: CalendarClock },
     { href: "/app/forecasts", key: "nav.forecasts", icon: LineChart },
     { href: "/app/festivals", key: "nav.festivals", icon: CalendarDays },
     { href: "/app/bills", key: "nav.bills", icon: ReceiptText },
@@ -52,7 +56,8 @@ const GROUPS: Group[] = [
   ] },
 ];
 const ALL = GROUPS.flatMap((g) => g.items);
-const TABS: Item[] = [ALL[0], ALL[1], ALL[2], ALL[4]]; // Command center, Ask, Next steps, Alerts; the last tab is "More"
+const TAB_HREFS = ["/app/today", "/app/ask", "/app/recommendations", "/app/alerts"];
+const TABS: Item[] = TAB_HREFS.map((h) => ALL.find((n) => n.href === h)).filter((n): n is Item => Boolean(n)); // the last tab is "More"
 
 /** Open alerts that need a look (high and medium), refreshed when alerts change. */
 function useAlertBadge(wsId: string): number {

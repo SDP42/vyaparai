@@ -20,9 +20,10 @@ export function Logo({ className = "", compact = false }: { className?: string; 
 }
 
 const LINKS = [
-  { href: "#story", label: "How it works" },
-  { href: "#product", label: "Product" },
-  { href: "#principles", label: "Principles" },
+  { href: "#how", label: "How it works" },
+  { href: "#features", label: "Features" },
+  { href: "#team", label: "Your team" },
+  { href: "#voice", label: "Voice" },
 ];
 
 export function Nav() {

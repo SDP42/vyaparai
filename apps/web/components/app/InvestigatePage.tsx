@@ -11,9 +11,10 @@ import { Tx } from "./Tx";
 type Ev = { label: string; value: string; source: string };
 type Finding = { kind: "measured" | "context"; title: string; detail: string; weight: number; evidence: Ev[] };
 type Step = { position: number; node: string; status: "ok" | "failed" | "skipped"; attempts: number; ms: number; summary: string; error: string | null; input: unknown; output: unknown };
-type Run = { id: string; workflow: string; status: string; params: { from?: string; to?: string }; started_at: string; finished_at: string | null; error: string | null; summary: string | null; result?: { summary: string; findings: Finding[]; notes: string[]; caveat: string }; steps?: Step[] };
+type Run = { id: string; workflow: string; status: string; params: { from?: string; to?: string }; started_at: string; finished_at: string | null; error: string | null; summary: string | null; result?: { summary: string; findings: Finding[]; notes: string[]; caveat: string; facts?: { drafts?: { name: string; phone: string | null; text: string }[]; order_lists?: { supplier: string | null; text: string; share_url: string }[] } }; steps?: Step[] };
 
 const NODE_LABEL: Record<string, string> = {
+  sales: "Last day's sales", money_owed: "Who owes money", shelves: "Shelves, expiry and the galla", need: "What needs ordering", cash: "Check cash on hand", lists: "Write order lists", drafts: "Draft reminders", galla: "Check the galla", spend: "Check spending", sort: "Sort by expiry", leaks: "Find margin leaks",
   overview: "Customer overview", reviews_check: "Check reviews", credit_check: "Check credit", stock: "Check stock levels", festival: "Check upcoming festivals", forecast_check: "Check the forecast", refresh: "Read every signal", alerts: "Read alerts", rank: "Rank suggestions",
   scope: "Choose the periods", headline: "Compare net sales", drivers: "Split the change into effects", movers: "Find the products behind it", stock_check: "Check stock",
   cost_check: "Check costs and supplier prices", discount_check: "Check discounts", calendar_check: "Check the festival calendar", review_check: "Check reviews", customers_check: "Orders or basket size?", conclude: "Rank what was found",
@@ -52,11 +53,31 @@ function Result({ run }: { run: Run }) {
   if (!r) return null;
   return (
     <div className="space-y-5">
-      <Card title="What the numbers show" subtitle={`${run.params.from ?? "default period"} → ${run.params.to ?? ""}`}>
+      <Card title="What the numbers show" subtitle={run.params.from ? `${run.params.from} → ${run.params.to ?? ""}` : undefined}>
         <p className="text-[15px] leading-relaxed">{r.summary}</p>
         <p className="mt-3 rounded-lg bg-haldi/15 px-3 py-2 text-xs">{r.caveat}</p>
         {r.notes.length > 0 && <ul className="mt-3 list-disc pl-5 text-xs text-muted">{r.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       </Card>
+      {(r.facts?.drafts?.length || r.facts?.order_lists?.length) ? (
+        <Card title={r.facts?.drafts?.length ? "Reminders, ready for you to send" : "Order lists, ready for you to send"}>
+          <ul className="grid gap-3 md:grid-cols-2">
+            {(r.facts?.drafts ?? []).map((d) => (
+              <li key={d.name} className="rounded-xl border border-line bg-canvas p-3 text-sm">
+                <p className="font-medium">{d.name}{d.phone ? <span className="ml-2 font-mono text-xs text-muted">{d.phone}</span> : null}</p>
+                <p className="mt-1.5 whitespace-pre-wrap leading-relaxed text-fg/80">{d.text}</p>
+                <button type="button" onClick={() => navigator.clipboard?.writeText(d.text)} className="mt-2 text-xs underline underline-offset-4">Copy</button>
+              </li>
+            ))}
+            {(r.facts?.order_lists ?? []).map((o) => (
+              <li key={o.supplier ?? "none"} className="rounded-xl border border-line bg-canvas p-3 text-sm">
+                <p className="font-medium">{o.supplier ?? "No supplier yet"}</p>
+                <pre className="mt-1.5 whitespace-pre-wrap font-sans leading-relaxed text-fg/80">{o.text}</pre>
+                <a href={o.share_url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs underline underline-offset-4">Share</a>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
       <div className="grid items-start gap-5 lg:grid-cols-[1.2fr_1fr] [&>*]:min-w-0">
         <section aria-label="Findings" className="space-y-3">
           <h2 className="font-semibold">Findings, strongest first</h2>
@@ -127,6 +148,8 @@ export function InvestigatePage() {
         </Card>
       ) : <EmptyNote>Viewers can read past investigations. Analysts and above can run them.</EmptyNote>}
 
+      <Automations base={base} canRun={canImport} busy={busy} onRun={(k) => go(k)} />
+
       {run && <Result run={run} />}
 
       <section aria-label="Past runs" className="rounded-2xl border border-line bg-surface">
@@ -145,5 +168,43 @@ export function InvestigatePage() {
         </ul>
       </section>
     </div>
+  );
+}
+
+
+type Auto = { workflow: string; title: string; about: string; enabled: boolean; hour: number; last_run_for: string | null };
+
+/** Automation agents: run one now, or let it run by itself every day at a chosen hour. They only prepare. */
+function Automations({ base, canRun, busy, onRun }: { base: string; canRun: boolean; busy: boolean; onRun: (k: string) => void }) {
+  const { workspace } = useWorkspace();
+  const [version, setVersion] = useState(0);
+  const list = useApi<Auto[]>(`${base}/schedule`, [version]);
+  const admin = ["owner", "admin"].includes(workspace.role);
+  const save = (a: Auto, enabled: boolean, hour: number) =>
+    api(`${base}/schedule`, { method: "PUT", body: JSON.stringify({ workflow: a.workflow, enabled, hour }) }).then(() => setVersion((v) => v + 1));
+  return (
+    <Card title="Daily helpers" subtitle="Each one prepares findings and drafts for you to check. They never send, order or change anything.">
+      {list.error && <ErrorNote message={list.error} />}
+      <ul className="grid gap-3 md:grid-cols-2">
+        {list.data?.map((a) => (
+          <li key={a.workflow} className="flex flex-col rounded-2xl border border-line bg-canvas p-4">
+            <p className="font-semibold">{a.title}</p>
+            <p className="mt-1 flex-1 text-sm text-fg/70">{a.about}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              {canRun && <button type="button" disabled={busy} onClick={() => onRun(a.workflow)} className="rounded-full bg-fg px-4 py-1.5 font-semibold text-canvas hover:bg-sindoor disabled:opacity-50">Run now</button>}
+              <label className="inline-flex items-center gap-2">
+                <input type="checkbox" checked={a.enabled} disabled={!admin} onChange={(e) => save(a, e.target.checked, a.hour)} className="h-4 w-4" />
+                Every day at
+              </label>
+              <label className="sr-only" htmlFor={`h-${a.workflow}`}>Hour for {a.title}</label>
+              <select id={`h-${a.workflow}`} value={a.hour} disabled={!admin} onChange={(e) => save(a, a.enabled, Number(e.target.value))} className="rounded-lg border border-line bg-surface px-2 py-1">
+                {Array.from({ length: 24 }, (_, h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
+              </select>
+              {a.last_run_for && <span className="text-xs text-muted">last ran {a.last_run_for}</span>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }

@@ -6217,6 +6217,18 @@
       ],
       "title": "Date To"
      },
+     "lang": {
+      "anyOf": [
+       {
+        "pattern": "^(en|hinglish|hi)$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lang"
+     },
      "workflow": {
       "maxLength": 40,
       "title": "Workflow",
@@ -6445,6 +6457,32 @@
      "note"
     ],
     "title": "RunVersion",
+    "type": "object"
+   },
+   "ScheduleIn": {
+    "properties": {
+     "enabled": {
+      "title": "Enabled",
+      "type": "boolean"
+     },
+     "hour": {
+      "default": 8,
+      "maximum": 23.0,
+      "minimum": 0.0,
+      "title": "Hour",
+      "type": "integer"
+     },
+     "workflow": {
+      "maxLength": 40,
+      "title": "Workflow",
+      "type": "string"
+     }
+    },
+    "required": [
+     "workflow",
+     "enabled"
+    ],
+    "title": "ScheduleIn",
     "type": "object"
    },
    "SearchIn": {
@@ -8833,6 +8871,181 @@
      }
     ],
     "summary": "Get Run",
+    "tags": [
+     "agents"
+    ]
+   }
+  },
+  "/api/v1/workspaces/{workspace_id}/agents/schedule": {
+   "get": {
+    "description": "Automation agents and whether each runs on its own every day.",
+    "operationId": "get_schedule_api_v1_workspaces__workspace_id__agents_schedule_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "workspace_id",
+      "required": true,
+      "schema": {
+       "format": "uuid",
+       "title": "Workspace Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "title": "Response Get Schedule Api V1 Workspaces  Workspace Id  Agents Schedule Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unprocessable Entity"
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "summary": "Get Schedule",
+    "tags": [
+     "agents"
+    ]
+   },
+   "put": {
+    "operationId": "set_schedule_api_v1_workspaces__workspace_id__agents_schedule_put",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "workspace_id",
+      "required": true,
+      "schema": {
+       "format": "uuid",
+       "title": "Workspace Id",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScheduleIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "title": "Response Set Schedule Api V1 Workspaces  Workspace Id  Agents Schedule Put",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unprocessable Entity"
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "summary": "Set Schedule",
     "tags": [
      "agents"
     ]

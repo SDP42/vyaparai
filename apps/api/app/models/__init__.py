@@ -7,6 +7,7 @@ from app.models.bill import PurchaseBill, PurchaseBillLine
 from app.models.campaign import Campaign, CampaignRecipient, CustomerContact
 from app.models.commerce import Customer, Order, OrderItem, OrderStatus, Product
 from app.models.credit import CreditEntry
+from app.models.daily import DayClose, Expense, ExpiryItem
 from app.models.dataset import Dataset, DatasetStatus, Job, JobStatus, JobType
 from app.models.digest import Digest, DigestSettings
 from app.models.document import Document, DocumentChunk
@@ -34,10 +35,13 @@ __all__ = [
     "CustomerContact",
     "Dataset",
     "DatasetStatus",
+    "DayClose",
     "Digest",
     "DigestSettings",
     "Document",
     "DocumentChunk",
+    "Expense",
+    "ExpiryItem",
     "ForecastRun",
     "ForecastSeries",
     "Goal",

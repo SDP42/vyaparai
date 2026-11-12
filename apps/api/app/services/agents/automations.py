@@ -368,4 +368,10 @@ NEW = {
     ),
 }
 for key, (title, about, fn) in NEW.items():
-    WORKFLOWS[key] = {"title": title, "about": about, "params": ["today", "lang"], "run": fn, "automation": True}
+    WORKFLOWS[key] = {
+        "title": title,
+        "about": about,
+        "params": ["today", "lang"],
+        "run": fn,
+        "automation": True,
+    }

@@ -1,4 +1,4 @@
-"""Report Markdown links to files or headings that do not exist.
+"""Report Markdown links and images to files or headings that do not exist.
 
 Usage: python3 scripts/check-doc-links.py   (from the repository root; exit code 1 when a link is broken)
 
@@ -14,7 +14,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKIP = {"node_modules", ".venv", ".next", ".git", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
-LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+IMG = re.compile(r"<img[^>]+src=\"([^\"]+)\"")
 FENCE = re.compile(r"^(```|~~~)")
 
 
@@ -57,7 +58,7 @@ def main() -> int:
                 continue
             if in_code:
                 continue
-            for target in LINK.findall(line):
+            for target in LINK.findall(line) + IMG.findall(line):
                 if target.startswith(("http://", "https://", "mailto:")):
                     continue
                 path_part, _, frag = target.partition("#")

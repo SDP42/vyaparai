@@ -66,6 +66,14 @@ laptop for free.
 It is **not** a billing or accounting system, a marketplace, or an autonomous agent. It reads exports from the
 tools a shop already uses.
 
+<p align="center">
+  <img src="docs/linkedin/showcase/cover.png" alt="Vyapar AI: Command center on a laptop and Today on a phone" width="32%">
+  <img src="docs/linkedin/showcase/ask.png" alt="Ask in Hinglish, typed or spoken" width="32%">
+  <img src="docs/linkedin/showcase/agents.png" alt="Ten read-only agents" width="32%">
+</p>
+
+More screenshots of every page are in [docs/linkedin/images](docs/linkedin/images/).
+
 ---
 
 ## What it does

@@ -17,7 +17,7 @@ each phase contains and its exit criteria.
 | 3 | Customer & product intelligence | 6 | P0 | ✅ |
 | 3B | Campaigns and retention automation ([plan](research/CAMPAIGNS-PLAN.md), [consent, sending and measuring](CAMPAIGN-RUNS.md)) | 9-10 | P1 | ✅ |
 | 4 | Forecasting & predictive MVP | 7 | P0 | ✅ |
-| F2 | App shell wired to real APIs | 2–7 | P0 | 🟡 sessions and team done |
+| F2 | App shell wired to real APIs | 2–7 | P0 | ✅ all items; real screen-reader test open |
 | — | **MVP release (end-to-end journey works)** ([checklist](MVP.md)) | — | — | ✅ |
 | 5 | Inventory & decision support | 8 | P1 | ✅ |
 | 5B | Festivals, regions and cricket | - | P1 | ✅ |

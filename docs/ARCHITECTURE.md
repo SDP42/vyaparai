@@ -71,6 +71,10 @@ A `jobs` table records long-running work (imports, training, embeddings) with st
 The MVP runs jobs in-process; a Redis-backed queue can replace the runner without API changes,
 because clients only see `GET /jobs/{id}`.
 
+Scheduled automations run outside the web process: `python -m app.agent_runner` (from cron, every 15 minutes)
+runs each enabled agent whose local hour has come, at most once per shop per local day, and stores the run like
+any other.
+
 ## Ingestion pipeline (Phase 1)
 
 ```

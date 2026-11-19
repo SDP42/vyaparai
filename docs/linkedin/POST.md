@@ -1,47 +1,54 @@
 # LinkedIn post
 
-Paste the text between the lines. LinkedIn allows 3,000 characters; only the first two lines (about 210 characters)
-show before "see more", so they carry the hook. Suggested images, in order: `showcase/cover.png`,
-`showcase/ask.png`, `showcase/agents.png`, `showcase/opening.png`, `images/00-repo-summary.png`,
-`images/26-github-repo.png`, then any app screenshots from `images/`.
+Copy everything between the two lines and paste it into LinkedIn as is. It is about 2,850 characters by LinkedIn's
+count (limit 3,000). Only the first two lines show before "see more", so they carry the hook.
 
-The project document is on Google Drive and the code on GitHub (both linked in the post). The repository has no
-licence file yet, so the post says "code", not "open source".
+The opening is an illustrative scene, not a personal story. If you have a real moment from a family shop or a
+shopkeeper you know, swap it in: it will read even better.
+
+Images, in this order (all in `Vyapar-AI-images.zip`):
+
+1. `showcase/cover.png`
+2. `showcase/problem.png`
+3. `showcase/ask.png`
+4. `showcase/agents.png`
+5. `showcase/architecture.png`
+6. `showcase/stack.png`
+7. `showcase/opening.png`
+8. `images/00-repo-summary.png`
+9. `images/26-github-repo.png`
 
 ---
 
-India has more than a crore kirana stores. Almost all of them already have their data. Almost none of them use it to decide anything. 🛍️
+9 PM. The shutter is half down. The galla is ₹1,340 short, the udhaar notebook has three new names, and the supplier is coming at 8 AM tomorrow. What should the owner order? 🛍️
 
-That gap is what I spent the last two weeks on.
+That moment happens in lakhs of Indian shops every night. I spent the last two weeks building something for it.
 
-𝗧𝗵𝗲 𝗽𝗿𝗼𝗯𝗹𝗲𝗺
-A shop owner has a billing export, a udhaar notebook and a cash drawer counted every night. What they don't have is the time or the vocabulary to turn that into decisions:
-→ Fast movers run out before the supplier visits, while slow stock ties up cash
-→ A supplier raises a price quietly and margin leaks for weeks
-→ Udhaar grows and nobody tracks who to call first
-→ Dashboards speak "AOV" and "gross margin", not the language of the counter
+The shop already has the data: a billing export, an udhaar notebook, a cash drawer counted by hand. What it doesn't have is time. Nobody at the counter wants a dashboard full of "AOV" and "gross margin". So fast movers run out, slow stock sits on cash, a supplier's quiet price rise eats the margin for weeks, and nobody knows which udhaar to chase first.
 
-𝗧𝗵𝗲 𝘀𝗼𝗹𝘂𝘁𝗶𝗼𝗻: 𝗩𝘆𝗮𝗽𝗮𝗿 𝗔𝗜
-Decision support that reads the exports a shop already has and answers in English, Hinglish or Hindi, typed or spoken.
-📊 A Today page: yesterday's sales, who to call for udhaar, what to order, what expires
-🗣️ Ask like you talk: "kal kitna becha?" or "Ramesh ko 200 udhaar"
-💸 Galla close: counted cash against expected cash, with expenses
-📈 Forecasts that must beat "repeat last week" before they're used
-🤖 10 LangGraph agents (morning brief, reorder planner, udhaar collector, expiry clearance, price watch) that prepare the work, with every step traced
-👥 Five shop jobs, from owner to counter staff, each seeing only what that job needs
+So I built 𝗩𝘆𝗮𝗽𝗮𝗿 𝗔𝗜: decision support for Indian kirana and retail shops.
+
+Here's that same night with it:
+🌙 The galla close shows cash counted against cash expected, so the ₹1,340 gap gets found the same evening, not at month end
+🌅 Next morning, the Today page has yesterday's sales, who to call for udhaar, what to order and what expires this week
+📦 The reorder planner turns the forecast into an order list per supplier, ready to share
+🗣️ The owner asks the way they talk, typed or spoken: "kal kitna becha?", "Ramesh ko 200 udhaar"
+🤖 10 LangGraph agents prepare the work: morning brief, udhaar collector, expiry clearance, price watch and more. A person still decides and sends
+👥 The owner, manager, accountant and counter staff each see only what their job needs
 
 𝗪𝗵𝗮𝘁 𝗺𝗮𝗸𝗲𝘀 𝗶𝘁 𝗱𝗶𝗳𝗳𝗲𝗿𝗲𝗻𝘁
-1️⃣ No language model writes the answers. Questions go to tested calculations and every answer shows its evidence, so it can't invent a number.
-2️⃣ Agents only read. Nothing is ordered, sent or changed without a person; reminders are drafts the owner sends.
-3️⃣ Built for Indian retail: lakh and crore formatting, festival calendars, udhaar, and Hinglish the way people actually type it.
-4️⃣ Free to run. Only permissively licensed software, no paid API keys, speech recognition on the shop's own server.
-5️⃣ Honest by design. Forecasts show how wrong they have been, and the docs list what is not proven yet.
+1️⃣ No language model writes the answers. Questions go to tested calculations, and every answer shows its evidence, so it can't make up a number
+2️⃣ Agents only read. Nothing is ordered, messaged or changed without a person
+3️⃣ Made for India: lakh and crore, festival calendars, udhaar, Hinglish typed the way people really type it
+4️⃣ Free to run: only permissively licensed software, no paid API keys, speech recognition on the shop's own server
+5️⃣ Forecasts have to beat "repeat last week" before they're used, and they show how wrong they've been
 
-𝗛𝗼𝘄 𝗶𝘁'𝘀 𝗯𝘂𝗶𝗹𝘁
-FastAPI · PostgreSQL · LightGBM · LangGraph · faster-whisper · Next.js 15 · TypeScript · Tailwind · three.js
+𝗨𝗻𝗱𝗲𝗿 𝘁𝗵𝗲 𝗵𝗼𝗼𝗱
+⚙️ FastAPI, PostgreSQL, LightGBM, LangGraph, faster-whisper
+🎨 Next.js 15, TypeScript, Tailwind, three.js (the shop "opens" when you cut the ribbon ✂️)
 ✅ 664 backend tests, strict typing, CI on every push, a written threat model
 
-Where it stands: no real shopkeeper has used it yet, the voice tests use synthetic speech and the Hindi needs a native review. That's the next step, and the reason for this post.
+The honest part: no real shopkeeper has used it yet. The voice tests use synthetic speech, and the Hindi needs a native speaker's review. That's what comes next.
 
 If you run a shop, or know someone who does, I'd love 15 minutes of feedback. 🙏
 

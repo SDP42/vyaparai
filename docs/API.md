@@ -122,7 +122,7 @@ See [DAILY](DAILY.md) and [AGENTS](AGENTS.md). "Job" is the persona capability t
 | Method | Path | Role | Job | Description |
 |---|---|---|---|---|
 | GET | `/workspaces/{id}/daily/today` | viewer | — | Yesterday's sales, udhaar to collect, what to order, what expires; sections the job may not see are left out |
-| GET / PUT | `/workspaces/{id}/daily/close` | viewer / admin | cash | The day's galla: expected cash, counted cash, difference (`day` optional) |
+| GET / PUT | `/workspaces/{id}/daily/close` | viewer / admin | cash | The day's galla: opening cash, cash, UPI and card sales, cash taken out, counted cash; expected cash and the difference are computed (`day` optional) |
 | GET | `/workspaces/{id}/daily/close/history` | viewer | cash | Past day-end counts |
 | GET / POST | `/workspaces/{id}/daily/expenses` | viewer / admin | cash | List or add an expense |
 | DELETE | `/workspaces/{id}/daily/expenses/{expense_id}` | admin | cash | Remove an expense |

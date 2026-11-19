@@ -408,6 +408,7 @@ Gujarati, Tamil and Bengali speech. The ticked checklist per phase is in [PHASES
 | **Features** | [DAILY](docs/DAILY.md) · [ASSISTANT](docs/ASSISTANT.md) · [VOICE](docs/VOICE.md) · [PERSONAS](docs/PERSONAS.md) · [DOCUMENTS](docs/DOCUMENTS.md) · [AGENTS](docs/AGENTS.md) · [RECOMMENDATIONS](docs/RECOMMENDATIONS.md) · [UDHAAR](docs/UDHAAR.md) · [BILLS](docs/BILLS.md) · [CAMPAIGN-RUNS](docs/CAMPAIGN-RUNS.md) · [STORES](docs/STORES.md) · [MOBILE](docs/MOBILE.md) |
 | **Security, licences, quality** | [THREAT_MODEL](docs/THREAT_MODEL.md) · [LICENSES](docs/LICENSES.md) · [ACCESSIBILITY](docs/ACCESSIBILITY.md) |
 | **Design** | [DESIGN_SYSTEM](docs/DESIGN_SYSTEM.md) · [frontend notes](docs/frontend/) |
+| **Showcase** | [LinkedIn kit](docs/linkedin/README.md): post, slides, screenshots and the [complete project document (PDF)](docs/linkedin/Vyapar-AI-Project-Document.pdf) |
 | **Research** | [docs/research/](docs/research/): method research, [what makes the product different](docs/research/DIFFERENTIATION.md), [personas and voice](docs/research/PERSONAS-VOICE.md) |
 
 ---

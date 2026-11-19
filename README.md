@@ -292,7 +292,7 @@ apps/
         personas.py voice.py demo.py team.py credit.py inventory.py …
       models/ schemas/ repositories/ core/ db/ assets/fonts/
     alembic/versions/     migrations (batch mode for SQLite)
-    tests/                633 tests, including tenancy, sessions, hardening and a licence audit
+    tests/                664 tests, including tenancy, sessions, hardening and a licence audit
     scripts/              export_openapi.py
     openapi.json          checked by a test so it cannot go stale
   web/

@@ -9,7 +9,7 @@ Bring your sales in. See what happened and why, what is likely next, and which a
 ![Python](https://img.shields.io/badge/python-3.12-3776AB)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![Tests](https://img.shields.io/badge/backend%20tests-630%2B-2E7D32)
+![Tests](https://img.shields.io/badge/backend%20tests-664-2E7D32)
 ![Status](https://img.shields.io/badge/status-first%20version%20of%20every%20planned%20phase-E9A426)
 
 </div>

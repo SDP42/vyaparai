@@ -9,7 +9,8 @@ page in the browser console. It checks: page language, one `h1`, heading order, 
 without alt text, links and buttons without a name, form controls without a label, duplicate ids, positive
 `tabindex`, touch targets under 24 px, and text contrast against WCAG 2.1 AA (4.5:1, or 3:1 for large text).
 
-On 2026-11-11 it was run on the landing page, the sign-in page and all 23 app pages.
+On 2026-11-11 it was run on the landing page, the sign-in page and all 23 app pages of that day. The Today, Galla,
+Orders and Expiry pages and the new landing page came on 2026-11-12 and have not been through it yet.
 
 ## Found and fixed
 

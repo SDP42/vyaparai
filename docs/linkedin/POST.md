@@ -6,17 +6,21 @@ count (limit 3,000). Only the first two lines show before "see more", so they ca
 The opening is an illustrative scene, not a personal story. If you have a real moment from a family shop or a
 shopkeeper you know, swap it in: it will read even better.
 
-Images, in this order (all in `Vyapar-AI-images.zip`):
+Images: LinkedIn shows up to 20; these 12 are the pick, already numbered in posting order in
+`Vyapar-AI-LinkedIn-12.zip` (rebuilt from the files below):
 
 1. `showcase/cover.png`
 2. `showcase/problem.png`
 3. `showcase/ask.png`
-4. `showcase/agents.png`
-5. `showcase/architecture.png`
-6. `showcase/stack.png`
-7. `showcase/opening.png`
-8. `images/00-repo-summary.png`
-9. `images/26-github-repo.png`
+4. `images/11-app-today.png`
+5. `showcase/agents.png`
+6. `images/12-app-command-center.png`
+7. `images/14-app-forecasts.png`
+8. `showcase/architecture.png`
+9. `showcase/stack.png`
+10. `showcase/opening.png`
+11. `images/00-repo-summary.png`
+12. `images/26-github-repo.png`
 
 ---
 

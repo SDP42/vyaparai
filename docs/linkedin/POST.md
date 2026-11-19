@@ -3,7 +3,8 @@
 Paste the text between the lines. It is about 2,300 characters (LinkedIn allows 3,000; the first ~210 show
 before "see more"). Suggested images, in order: `showcase/cover.png`, `showcase/ask.png`,
 `showcase/agents.png`, `showcase/opening.png`, `images/00-repo-summary.png`, then any app screenshots from
-`images/`. Attach `Vyapar-AI-Project-Document.pdf` as a document post, or put its Drive link in the first comment.
+`images/`. The project document is on Google Drive (link in the post). **The GitHub repository is private: make it public
+before posting, or readers will see a 404.**
 
 ---
 

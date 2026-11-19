@@ -1,6 +1,6 @@
 # LinkedIn post
 
-Copy everything between the two lines and paste it into LinkedIn as is. It is about 2,365 characters by LinkedIn's
+Copy everything between the two lines and paste it into LinkedIn as is. It is about 2,956 characters by LinkedIn's
 count (limit 3,000). Only the first lines show before "see more", so the post opens on one short, concrete line.
 
 Posting tips: post on a weekday morning (India time); reply to every comment in the first hour, early replies
@@ -31,7 +31,7 @@ Images: LinkedIn shows up to 20; these 12 are the pick, already numbered in post
 
 That's what the galla said at 9 PM. Three new names in the udhaar notebook. The supplier comes at 8 AM, and the owner still has to decide what to order.
 
-This happens in lakhs of Indian shops every single night.
+This happens in lakhs of Indian shops every night.
 
 The data already exists: the billing export, the notebook, the cash count. What's missing is someone to turn it into a decision before the shutter goes up.
 
@@ -49,7 +49,7 @@ Here's the same night, with it:
 
 🗣️ Anytime: "Kal kitna becha?" Typed or spoken. The answer comes with its proof.
 
-Behind it, 10 automated agents do the prep work: a morning brief, a reorder planner, an udhaar collector that drafts polite reminders, an expiry watch, a price watch, and more.
+Behind it, 10 automated agents do the prep: a morning brief, a reorder planner, an udhaar collector that drafts polite reminders, an expiry watch, a price watch and more.
 
 But this is the part I care about most:
 
@@ -57,17 +57,24 @@ But this is the part I care about most:
 
 ❌ No agent acts alone. They only read. A person decides, a person sends.
 
-❌ No paid APIs. Every library is free and permissively licensed, and even the speech recognition runs on the shop's own server.
+❌ No paid APIs. Every library is free and permissively licensed; even speech recognition runs on the shop's own server.
 
-Under the hood: FastAPI, PostgreSQL, LightGBM, LangGraph, Whisper, Next.js 15 and three.js.
-664 tests. 22 build phases. 578 commits in two weeks.
+For the engineers, how it works 🛠️
+→ Forecasting: LightGBM, Theta or a moving average picked per product by rolling backtest; conformal intervals at 80% coverage; a ship gate vs seasonal-naive
+→ Agents: LangGraph state graphs over tested services, capped at 16 steps and 20 s, every node stored as a trace
+→ Assistant: rule-based intent routing in 3 languages, with consonant-skeleton matching for spoken Hindi
+→ Voice: faster-whisper (Whisper medium, int8, CPU); audio never touches disk
+→ Backend: multi-tenant FastAPI monolith, per-field masking by job, rotating refresh tokens with reuse detection
+→ Frontend: Next.js 15, TypeScript, Tailwind 4, and a three.js Verlet cloth you cut open ✂️
+
+664 tests, strict mypy, CI on every push. 578 commits in two weeks.
 
 What it hasn't done yet: meet a real shopkeeper. The voice is tested on synthetic speech, and the Hindi still needs a native speaker's review.
 
 That's where you come in. 🙏
 If you run a shop, or your family does, I'd love 15 minutes of honest feedback. Drop a comment or DM me.
 
-And a question for everyone: what's the one decision you think small shop owners struggle with most? 👇
+Question for everyone: what's the one decision you think small shop owners struggle with most? 👇
 
 📄 Full write-up: https://drive.google.com/drive/folders/1FtSuD1PuTelw9huB_Uoz9cdQK3vUowm7?usp=sharing
 💻 Code: https://github.com/SDP42/vyaparai

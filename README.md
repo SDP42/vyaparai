@@ -317,7 +317,7 @@ cd apps/api && .venv/bin/python -m ruff check . && .venv/bin/python -m mypy app
 cd apps/web && npm run lint && npm test && npm run build
 ```
 
-- **Tests (633):** unit and API tests across every area, tenancy isolation (a non-member sees a 404 everywhere),
+- **Tests (664):** unit and API tests across every area, tenancy isolation (a non-member sees a 404 everywhere),
   session security (rotation, reuse detection, throttling), hostile uploads that must never produce a server error,
   prompt-injection strings stored as text, persona remit for every assistant intent, response masking, the full MVP
   journey, and a licence audit of both dependency trees.

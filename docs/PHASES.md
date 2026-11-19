@@ -59,7 +59,7 @@ review validation → command center → sales investigation → forecast → gr
 - [x] CI (lint, format, type-check, tests), PR/issue templates
 - [x] Benchmark data decided: synthetic only in the repo, a permissive public set only for outside runs ([ADR 0008](adr/0008-benchmark-data.md))
 - [x] Command center and sales explorer designed directly in code during Phase 2 (no separate wireframes)
-- [ ] Product name/trademark: **owner decision**, see [RESEARCH.md](RESEARCH.md#naming-risk). "Vyapar" is an existing Indian billing app; fine privately, check before going public
+- [ ] Product name/trademark: **owner decision**, see [RESEARCH.md](RESEARCH.md#5-naming-risk). "Vyapar" is an existing Indian billing app; fine privately, check before going public
 
 **Exit:** migrations run cleanly; protected-API tests prove tenant boundaries. ✅
 

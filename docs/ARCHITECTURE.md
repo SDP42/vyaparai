@@ -114,7 +114,7 @@ settings are validated at start-up (secret length, PostgreSQL, https origins, de
 
 ## Frontend (`apps/web`)
 
-- Routes: `/` (opening and landing), `/login`, `/join`, `/offline`, and `/app/*`: the command center and 23 pages
+- Routes: `/` (opening and landing), `/login`, `/join`, `/offline`, and `/app/*`: the command center and the daily pages (today, galla, orders, expiry) plus 23 more
   (sales, customers, products, staff, pricing, reviews, campaigns, stock, forecasts, festivals, bills, costs,
   udhaar, documents, investigate, digest, reports, stores, data, team, goals, next steps, ask).
 - **Marketing:** Lenis smooth scroll and GSAP ScrollTrigger for the pinned and scrubbed scenes. The opening

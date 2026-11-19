@@ -7,7 +7,9 @@ cp .env.example .env.local
 npm install
 npm run dev        # http://localhost:3000
 npm run lint       # tsc --noEmit
-npm run build
+npm test           # service worker and audio tests (node --test)
+npm run gen:api    # regenerate lib/api-types.ts from ../api/openapi.json
+npm run build      # never while the dev server runs: it shares .next
 ```
 
 | Route | What |

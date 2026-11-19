@@ -1,6 +1,6 @@
 # apps/web: Vyapar AI frontend
 
-Next.js 15 (App Router) · TypeScript · Tailwind v4 · React Three Fiber · GSAP ScrollTrigger · Lenis · Motion.
+Next.js 15 (App Router) · TypeScript · Tailwind v4 · three.js (the cloth opening) · GSAP ScrollTrigger · Lenis · Motion.
 
 ```bash
 cp .env.example .env.local

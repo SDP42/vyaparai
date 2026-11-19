@@ -28,11 +28,13 @@ npm run build      # never while the dev server runs: it shares .next
 ```
 app/                 routes
 components/
-  opening/           3D opening (ShopScene, CinematicOpening)
-  landing/           landing sections
-  app/               product UI (import wizard, dashboards, charts)
-lib/                 api client, session, sound effects, formatting (en-IN), demo data
-public/assets/       CC0 HDRI + PBR textures (see LICENSES.md), sample CSV
+  opening/           ShopOpening + ClothScene (three.js Verlet cloth), ClothOpening (drawn fallback)
+  landing/v2/        landing sections
+  app/               product UI (shell, pages, charts)
+  ui/                shared parts (cards, states, buttons)
+lib/                 api client, generated api-types, session, i18n (en, Hinglish, hi), formatting (en-IN), wav and speech helpers
+public/              PWA manifest, service worker, icons, sample files
+tests/               node --test suites (service worker, audio)
 ```
 
 Design tokens: `app/globals.css`. Rationale: [docs/DESIGN_SYSTEM.md](../../docs/DESIGN_SYSTEM.md).

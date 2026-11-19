@@ -43,7 +43,7 @@ been built to a first version; what remains is proof, not features.
 
 ## 2. What is done
 
-### Backend (`apps/api`): 633 tests, strict mypy, ruff clean
+### Backend (`apps/api`): 664 tests, strict mypy, ruff clean
 - FastAPI app factory, `/api/v1`, uniform error envelope, request IDs, JSON logs, health probes, hardening middleware
 - Auth (Argon2id, rotating HttpOnly refresh sessions with reuse detection), workspaces with four roles and five
   personas, invitations, audit log, 404-on-non-member tenancy (tested), production settings guards

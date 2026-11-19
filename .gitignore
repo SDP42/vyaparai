@@ -42,3 +42,6 @@ rag/indexes/
 
 # Bundled download of the LinkedIn images (rebuilt from docs/linkedin, not tracked)
 docs/linkedin/Vyapar-AI-images.zip
+
+# Local editor and assistant settings
+.claude/

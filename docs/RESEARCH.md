@@ -12,7 +12,7 @@ small and medium retailers. Items here are **proposals** until they move into
 | No **returns/refunds** table | "Net sales" (§13) cannot be defined without it | Add `returns` (order_item_id, qty, amount, reason, date) | 1–2 |
 | No **inventory snapshot** table | §15 needs stock-on-hand over time | `inventory_snapshots` (product, date, on_hand, reserved, inbound) | 5 |
 | No **reviews** / **documents** tables | §17 and §18 need storage + lineage | `reviews`, `documents`, `document_chunks` | 6–7 |
-| Starter **dataset** not chosen | Every metric test needs fixtures | See [starter datasets](#starter-datasets) | 0 |
+| Starter **dataset** not chosen | Every metric test needs fixtures | See [starter datasets](#3-starter-datasets) | 0 |
 | **Background job** runner not chosen | Imports and training are long-running | DB-backed `jobs` table + in-process worker; Redis queue later | 1 |
 | **Token lifecycle** (refresh, revoke, reset) | Blueprint asks for short sessions + recovery | Refresh token in HttpOnly cookie, rotation, password reset | F2 |
 | **Rate limiting** | Login brute force, upload abuse | `slowapi` or reverse-proxy limits | 11 |

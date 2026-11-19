@@ -5,6 +5,10 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### 2026-11-12
+**Added**
+- **Daily routines:** Today page, galla (day-end cash count) with expenses, expiry watch, supplier order lists to share, one-line udhaar and expense entries read back before saving ([DAILY](docs/DAILY.md)).
+
 ### 2026-11-11
 **Added**
 - **Personas:** five jobs with their own pages, assistant remit, capability-guarded routes and per-field hiding of cost and margin; one-tap sample sign-in (development only); Team page job and bill-name selectors.

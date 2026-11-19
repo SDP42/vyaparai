@@ -33,6 +33,7 @@ And being honest about where it stands: it hasn't been tested with real shopkeep
 
 461 commits, 22 phases, 31 documents.
 📄 Full project document (architecture, benchmarks, security, limits): https://drive.google.com/drive/folders/1FtSuD1PuTelw9huB_Uoz9cdQK3vUowm7?usp=sharing
+💻 Code: https://github.com/SDP42/vyaparai
 
 If you run a shop, or know someone who does, I'd love 15 minutes of your feedback. 🙏
 

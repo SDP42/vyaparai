@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}html,body{margin:0}
+body{width:1080px;height:1350px;overflow:hidden;font-family:"Helvetica Neue",-apple-system,Arial,sans-serif}
+.s{position:relative;width:1080px;height:1350px;overflow:hidden;display:none}
+.s.on{display:block}
+.dark{background:radial-gradient(1200px 800px at 80% 10%,#3a1410 0,#16110d 55%);color:#f6efe2}
+.paper{background:#f6efe2;color:#1b1612}
+.kick{font:600 20px/1 Menlo,monospace;letter-spacing:.28em;text-transform:uppercase;color:#f2a71b}
+.paper .kick{color:#bf2b21}
+h1{margin:18px 0 0;font-size:112px;line-height:.92;letter-spacing:-4px;font-weight:800}
+h2{margin:18px 0 0;font-size:84px;line-height:.95;letter-spacing:-3px;font-weight:800}
+.lede{font-size:30px;line-height:1.35;margin-top:22px;max-width:860px;opacity:.86}
+.pad{position:absolute;left:72px;right:72px;top:80px}
+.lap{position:absolute;border-radius:18px;background:#0d0a08;padding:14px;box-shadow:0 50px 120px rgba(0,0,0,.55)}
+.lap img{display:block;width:100%;border-radius:8px}
+.lap:before{content:"";position:absolute;left:50%;top:5px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#333}
+.phone{position:absolute;border-radius:58px;background:#0d0a08;padding:14px;box-shadow:0 50px 110px rgba(0,0,0,.6)}
+.phone img{display:block;width:100%;border-radius:44px}
+.chips{position:absolute;left:72px;right:72px;bottom:64px;display:flex;gap:14px;flex-wrap:wrap}
+.chip{border:1.5px solid rgba(246,239,226,.35);border-radius:999px;padding:14px 22px;font-size:23px;font-weight:600}
+.paper .chip{border-color:#1b1612}
+.chip b{color:#f2a71b}.paper .chip b{color:#bf2b21}
+.red{color:#e0473b}.paper .red{color:#bf2b21}
+.bubble{position:absolute;background:#fffaf1;color:#1b1612;border-radius:28px;padding:22px 28px;font-size:30px;font-weight:600;box-shadow:0 24px 60px rgba(0,0,0,.25);border:1.5px solid #dccfb8}
+.bubble small{display:block;font:500 16px Menlo,monospace;letter-spacing:.14em;color:#8a7c68;margin-bottom:8px;text-transform:uppercase}
+.list{position:absolute;left:72px;top:520px;width:420px;font-size:25px;line-height:1.25}
+.list div{padding:13px 0;border-bottom:1px solid rgba(246,239,226,.18)}
+.list span{font:500 16px Menlo,monospace;color:#f2a71b;display:block;letter-spacing:.12em;margin-bottom:4px}
+.full{position:absolute;inset:0}.full img{width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,10,8,.82) 0,rgba(14,10,8,0) 38%,rgba(14,10,8,0) 62%,rgba(14,10,8,.9) 100%)}
+.brand{position:absolute;right:72px;top:84px;font-weight:800;font-size:30px}
+.brand i{font-family:Georgia,serif;font-weight:400;color:#f2a71b}
+</style></head><body>
+
+<section class="s dark" id="cover">
+ <div class="pad"><div class="kick">Built for Indian kirana &amp; retail</div>
+ <h1>Vyapar <span class="red">AI</span></h1>
+ <div class="lede">Your shop's own numbers, in English, Hinglish or Hindi. Typed or spoken. Every answer shows where it came from.</div></div>
+ <div class="lap" style="left:72px;top:560px;width:800px;transform:rotate(-4deg)"><img src="../images/12-app-command-center.png"></div>
+ <div class="phone" style="left:730px;top:540px;width:272px;transform:rotate(5deg)"><img src="../images/23-phone-today.png"></div>
+ <div class="chips"><div class="chip"><b>664</b> backend tests</div><div class="chip"><b>10</b> read-only agents</div><div class="chip"><b>24</b> app pages</div><div class="chip"><b>0</b> paid APIs</div></div>
+</section>
+
+<section class="s paper" id="ask">
+ <div class="pad"><div class="kick">Ask like you talk</div>
+ <h2>"Kal kitna<br>becha?"</h2>
+ <div class="lede">Hinglish, Hindi or English, typed or spoken. Whisper runs on the shop's own server; the answer comes from tested calculations, never a guessing model.</div></div>
+ <div class="lap" style="left:72px;top:640px;width:760px;transform:rotate(-2.5deg)"><img src="../images/21-app-ask-hinglish.png"></div>
+ <div class="phone" style="left:748px;top:540px;width:268px;transform:rotate(4deg)"><img src="../images/24-phone-ask.png"></div>
+ <div class="bubble" style="left:72px;top:1170px;transform:rotate(-2deg)"><small>Spoken</small>"Ramesh ko 200 udhaar"</div>
+ <div class="bubble" style="left:470px;top:1200px;transform:rotate(2deg)"><small>Understood</small>₹200 credit · Ramesh</div>
+</section>
+
+<section class="s dark" id="agents">
+ <div class="pad"><div class="kick">10 LangGraph agents</div>
+ <h2>They prepare.<br><span class="red">You decide.</span></h2>
+ <div class="lede">Every agent only reads. Each step is traced, every draft waits for a person to send it.</div></div>
+ <div class="list">
+  <div><span>Start the day</span>Morning brief</div>
+  <div><span>What to order</span>Reorder planner</div>
+  <div><span>Who to call first</span>Udhaar collector</div>
+  <div><span>Did the galla match?</span>Day-end galla check</div>
+  <div><span>Sell first, remove</span>Expiry clearance</div>
+  <div><span>Costs up, prices not</span>Price watch</div>
+  <div><span>Analyst</span>Why did sales change?</div>
+ </div>
+ <div class="lap" style="left:470px;top:560px;width:760px;transform:rotate(-3deg)"><img src="../images/22-app-agent-udhaar-collector.png"></div>
+ <div class="chips" style="left:470px"><div class="chip"><b>6</b> automations</div><div class="chip"><b>4</b> analysts</div><div class="chip">run now or every day</div></div>
+</section>
+
+<section class="s dark" id="opening">
+ <div class="full"><img src="../images/02-opening-ribbon-cut.png" style="object-position:58% 50%"></div><div class="shade"></div>
+ <div class="pad"><div class="kick">The opening</div><h2>Drag the scissors.<br>Cut the ribbon.</h2></div>
+ <div class="brand">vyapar <i>ai</i></div>
+ <div class="pad" style="top:auto;bottom:80px"><div class="lede" style="font-size:32px">A real cloth simulation in three.js: the ribbon snaps, the cloth falls in strips, the shop opens. Tap, Enter or Esc work too.</div></div>
+</section>
+
+<script>document.getElementById(location.hash.slice(1)||'cover').classList.add('on')</script>
+</body></html>

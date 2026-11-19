@@ -11,6 +11,10 @@ versioning: [SemVer](https://semver.org/).
 - **Agents:** six read-only automation agents (morning brief, reorder planner, udhaar collector, day-end check, expiry clearance, price watch), a per-shop daily schedule and a cron runner (`app.agent_runner`).
 - **Web:** Today, Galla, Orders and Expiry in the navigation in three languages; Today is the first phone tab; Investigate runs helpers now or every day.
 
+**Changed**
+- **Opening:** the cloth is a three.js Verlet simulation that gathers into folds and falls when the ribbon is cut; the drawn version stays as the fallback.
+- **Landing:** rebuilt with a real Today screen in the hero, a pinned how-it-works scene, stacking job cards, a voice section and an "it will / it will not" section.
+
 ### 2026-11-11
 **Added**
 - **Personas:** five jobs with their own pages, assistant remit, capability-guarded routes and per-field hiding of cost and margin; one-tap sample sign-in (development only); Team page job and bill-name selectors.

@@ -13,6 +13,8 @@ here, but Docker and PostgreSQL were not available in the build environment, so 
 | `api` | `apps/api/Dockerfile` | runs `alembic upgrade head` on start, then uvicorn with 2 workers; uploaded files in `/data/storage`, downloaded search model in `/data/models` |
 | `web` | `apps/web/Dockerfile` | Next.js standalone server; the API address is baked in at build (`PUBLIC_API_URL`) |
 
+| agent runner | the `api` image | not a service: add `*/15 * * * * docker compose exec -T api python -m app.agent_runner` to the host's cron so scheduled automations run |
+
 TLS, the domain and routing `/api` to the API and everything else to the web app belong to a proxy in front (Caddy, nginx or a cloud load balancer). Cookies are `Secure` in production, so HTTPS is required.
 
 ## First deployment

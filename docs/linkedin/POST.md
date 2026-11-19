@@ -31,7 +31,8 @@ Two choices I'm proud of:
 
 And being honest about where it stands: it hasn't been tested with real shopkeepers yet. The voice numbers come from synthetic speech, and the Hindi wording needs a native review. That's the next step.
 
-461 commits, 22 phases, 31 documents. The full write-up with architecture, benchmarks, security and limits is in the document attached below. 📄
+461 commits, 22 phases, 31 documents.
+📄 Full project document (architecture, benchmarks, security, limits): https://drive.google.com/drive/folders/1FtSuD1PuTelw9huB_Uoz9cdQK3vUowm7?usp=sharing
 
 If you run a shop, or know someone who does, I'd love 15 minutes of your feedback. 🙏
 

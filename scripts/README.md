@@ -10,3 +10,4 @@ Developer and operations utilities. Run them from the repository root unless a l
 | `backup.sh` | Dumps PostgreSQL and archives uploaded files, keeping the 14 newest; copy them off the machine | `./scripts/backup.sh [dir]` |
 | `restore-check.sh` | Restores a dump into a throw-away database and counts users, workspaces and orders | `./scripts/restore-check.sh backups/db-<time>.dump` |
 | `capture-screens.mjs` | Screenshots of the running prototype with headless Chrome over the DevTools protocol, into `docs/linkedin/images` | Dev servers running, then `node scripts/capture-screens.mjs [landing]` |
+| `check-doc-links.py` | Fails when a Markdown link or image points to a missing file or heading; runs in CI | `make docs-links` |

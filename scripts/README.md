@@ -11,3 +11,5 @@ Developer and operations utilities. Run them from the repository root unless a l
 | `restore-check.sh` | Restores a dump into a throw-away database and counts users, workspaces and orders | `./scripts/restore-check.sh backups/db-<time>.dump` |
 | `capture-screens.mjs` | Screenshots of the running prototype with headless Chrome over the DevTools protocol, into `docs/linkedin/images` | Dev servers running, then `node scripts/capture-screens.mjs [landing]` |
 | `check-doc-links.py` | Fails when a Markdown link or image points to a missing file or heading; runs in CI | `make docs-links` |
+
+`apps/api/scripts/export_openapi.py` lives with the API: it writes `apps/api/openapi.json`, which a test keeps current (`make gen-api` also regenerates the web types).

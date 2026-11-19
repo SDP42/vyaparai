@@ -43,7 +43,7 @@ Indian number formatting everywhere: ₹12,34,567 and compact ₹4.2L / ₹1.3Cr
 |---|---|---|
 | Smooth scroll | Lenis | Marketing page only; the app uses native scroll |
 | Scroll scenes | GSAP ScrollTrigger | Scrubbed, pinned, reversible; never trap scrolling |
-| Opening | GSAP, SVG, CSS | A cloth tied with a ribbon; draggable scissors; cloth drops in strips. No images, models or sounds |
+| Opening | three.js (fallback: GSAP, SVG, CSS) | A simulated cloth tied with a ribbon; draggable scissors; the cloth falls under gravity. No images, models or sounds |
 | UI transitions | Motion | 150–300 ms; entrances play on first load only |
 | Reduced motion | all | Opening is skipped; scenes become static; marquee and grain stop |
 

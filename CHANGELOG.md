@@ -8,6 +8,7 @@ versioning: [SemVer](https://semver.org/).
 ### 2026-11-19
 **Added**
 - **Showcase kit** in `docs/linkedin`: announcement post, four slides, 26 screenshots, a repository summary card and the complete project document as a 28-page PDF.
+- **Scripts:** `capture-screens.mjs` (headless Chrome screenshots) and `check-doc-links.py` (Markdown links and images), now a CI job and `make docs-links`.
 
 ### 2026-11-12
 **Added**

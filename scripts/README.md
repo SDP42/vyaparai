@@ -1,3 +1,3 @@
 # scripts
 
-Developer utilities such as the synthetic demo-data generator (Phase 1).
+Developer and operations utilities. Run them from the repository root unless a line says otherwise.

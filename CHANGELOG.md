@@ -9,6 +9,7 @@ versioning: [SemVer](https://semver.org/).
 **Added**
 - **Daily routines:** Today page, galla (day-end cash count) with expenses, expiry watch, supplier order lists to share, one-line udhaar and expense entries read back before saving ([DAILY](docs/DAILY.md)).
 - **Agents:** six read-only automation agents (morning brief, reorder planner, udhaar collector, day-end check, expiry clearance, price watch), a per-shop daily schedule and a cron runner (`app.agent_runner`).
+- **Web:** Today, Galla, Orders and Expiry in the navigation in three languages; Today is the first phone tab; Investigate runs helpers now or every day.
 
 ### 2026-11-11
 **Added**

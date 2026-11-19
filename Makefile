@@ -24,6 +24,9 @@ lint:         ## Lint + type-check backend and frontend
 	cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy app
 	cd apps/web && npm run lint
 
+docs-links:   ## Check that Markdown links point to real files and headings
+	python3 scripts/check-doc-links.py
+
 format:       ## Auto-format backend
 	cd apps/api && uv run ruff check . --fix && uv run ruff format .
 

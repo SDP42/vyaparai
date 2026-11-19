@@ -5,6 +5,10 @@ versioning: [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### 2026-11-19
+**Added**
+- **Showcase kit** in `docs/linkedin`: announcement post, four slides, 26 screenshots, a repository summary card and the complete project document as a 28-page PDF.
+
 ### 2026-11-12
 **Added**
 - **Daily routines:** Today page, galla (day-end cash count) with expenses, expiry watch, supplier order lists to share, one-line udhaar and expense entries read back before saving ([DAILY](docs/DAILY.md)).

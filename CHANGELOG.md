@@ -15,6 +15,9 @@ versioning: [SemVer](https://semver.org/).
 - **Opening:** the cloth is a three.js Verlet simulation that gathers into folds and falls when the ribbon is cut; the drawn version stays as the fallback.
 - **Landing:** rebuilt with a real Today screen in the hero, a pinned how-it-works scene, stacking job cards, a voice section and an "it will / it will not" section.
 
+**Fixed**
+- Galla expense form fits narrow columns; Next.js development badge hidden.
+
 ### 2026-11-11
 **Added**
 - **Personas:** five jobs with their own pages, assistant remit, capability-guarded routes and per-field hiding of cost and margin; one-tap sample sign-in (development only); Team page job and bill-name selectors.

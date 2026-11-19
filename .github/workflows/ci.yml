@@ -37,6 +37,14 @@ jobs:
       - run: uv run mypy app
       - run: uv run pytest --cov=app --cov-report=term-missing
 
+  docs:
+    name: Docs · links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check-doc-links.py
+
   web:
     name: Web · types, build
     runs-on: ubuntu-latest

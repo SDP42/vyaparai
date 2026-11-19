@@ -34,7 +34,8 @@ the code understandable; one deployable unit keeps it operable by one person.
 | Decisions | `inventory`, `costs`, `alerts`, `digest`, `digest_delivery`, `pricing`, `goals`, `stores`, `recommend/` | stock advice, margin leaks, alerts, goals, ranked next steps |
 | Money | `credit` (udhaar), `bills/` (OCR), `campaigns`, `campaign_runs`, `uplift` | ledger and ageing, supplier bills, consent-aware campaigns, holdout uplift |
 | Language | `reviews/`, `docs/`, `assistant/`, `voice` | review NLP, document retrieval, the assistant, speech to text |
-| Workflows and output | `agents/`, `reports/` | LangGraph investigations with stored traces; PDF and CSV reports |
+| Daily routine | `daily` | Today, galla close and expenses, expiry watch, supplier order lists, one-line entries |
+| Workflows and output | `agents/`, `reports/` | LangGraph analysts and automations with stored traces and a daily schedule; PDF and CSV reports |
 
 ## Layers
 

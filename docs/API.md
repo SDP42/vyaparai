@@ -117,7 +117,22 @@ coverage, excluded orders by status). Invalid ranges return `422 invalid_range`.
 
 ## Daily routines and automations
 
-See [DAILY](DAILY.md) and [AGENTS](AGENTS.md): `/workspaces/{id}/daily/{today,close,close/history,expenses,expense-categories,expiry,orders,quick/parse,quick/save}` and `/workspaces/{id}/agents/schedule`.
+See [DAILY](DAILY.md) and [AGENTS](AGENTS.md). "Job" is the persona capability the route also needs ([PERSONAS](PERSONAS.md)).
+
+| Method | Path | Role | Job | Description |
+|---|---|---|---|---|
+| GET | `/workspaces/{id}/daily/today` | viewer | — | Yesterday's sales, udhaar to collect, what to order, what expires; sections the job may not see are left out |
+| GET / PUT | `/workspaces/{id}/daily/close` | viewer / admin | cash | The day's galla: expected cash, counted cash, difference (`day` optional) |
+| GET | `/workspaces/{id}/daily/close/history` | viewer | cash | Past day-end counts |
+| GET / POST | `/workspaces/{id}/daily/expenses` | viewer / admin | cash | List or add an expense |
+| DELETE | `/workspaces/{id}/daily/expenses/{expense_id}` | admin | cash | Remove an expense |
+| GET | `/workspaces/{id}/daily/expense-categories` | viewer | — | Fixed category list |
+| GET / POST | `/workspaces/{id}/daily/expiry` | viewer | stock | Items expiring soon; add one |
+| POST | `/workspaces/{id}/daily/expiry/{item_id}/clear` | viewer | stock | Mark an item sold, removed or returned |
+| GET | `/workspaces/{id}/daily/orders` | viewer | supplier | Order lists grouped by supplier, ready to share |
+| POST | `/workspaces/{id}/daily/quick/parse` | viewer | — | Read a one-line entry ("Ramesh ko 200 udhaar") back before saving |
+| POST | `/workspaces/{id}/daily/quick/save` | admin | — | Save a parsed entry |
+| GET / PUT | `/workspaces/{id}/agents/schedule` | viewer / admin | — | Which automations run every day, and at what hour |
 
 ## Personas and voice
 

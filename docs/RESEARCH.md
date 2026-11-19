@@ -80,4 +80,4 @@ the purple-blue "AI SaaS" gradient look — see [DESIGN_SYSTEM.md](DESIGN_SYSTEM
 "Vyapar" is also the name of a widely used Indian GST billing/accounting app. If this project
 is ever public or commercial, check trademark conflicts and consider a distinct name or a
 clear sub-brand. Fine for a private portfolio project as-is; recorded as decision **D2** in
-[ROADMAP.md](ROADMAP.md#open-decisions-need-owner-input).
+[ROADMAP.md](ROADMAP.md#5-open-decisions).

@@ -20,7 +20,7 @@ FENCE = re.compile(r"^(```|~~~)")
 
 
 def slug(heading: str) -> str:
-    text = re.sub(r"[`*_]", "", heading.strip().lower())
+    text = re.sub(r"[`*]", "", heading.strip().lower())  # GitHub keeps underscores
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
     text = re.sub(r"[^\w\- ]", "", text, flags=re.UNICODE)
     return text.replace(" ", "-")

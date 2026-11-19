@@ -11,7 +11,7 @@
 
 ## Language
 
-A language switch (English, Hinglish, हिन्दी) sits in the sidebar and the phone header and is remembered on the device. Covered: the navigation, the app shell, the Ask, Next steps and Udhaar pages (headings, tabs, buttons, labels), the daily pages, and every page's headline and intro. Page bodies (cards and tables) stay English. A missing word falls back to English; the compiler checks that all three languages define every key, and a test checks the Hindi dictionary is really Devanagari.
+A language switch (English, Hinglish, हिन्दी) sits in the sidebar and the phone header and is remembered on the device. Covered: the navigation, the app shell, the Ask, Next steps and Udhaar pages (headings, tabs, buttons, labels), and every page's headline and intro. Page bodies (cards and tables) stay English. A missing word falls back to English; the compiler checks that all three languages define every key, and a test checks the Hindi dictionary is really Devanagari.
 
 ## Limits
 

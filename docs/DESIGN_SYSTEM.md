@@ -49,7 +49,11 @@ Indian number formatting everywhere: ₹12,34,567 and compact ₹4.2L / ₹1.3Cr
 
 ## The marketing site
 
-### 1. The closed shop (`components/opening/ClothOpening.tsx`)
+### 1. The closed shop (`components/opening/ShopOpening.tsx`)
+Since 2026-11-12 the cloth is simulated (`ClothScene.ts`): a Verlet particle grid hung from a rail narrower than
+the fabric so it gathers into folds, lit from the side, with the rail letting go from the middle outward once the
+ribbon's links are cut. The drawn version below (`ClothOpening.tsx`) is the fallback without WebGL.
+
 The shop is closed. A woven cotton cloth in turmeric yellow hangs over the front, tied with a red satin ribbon and
 bow, and a paper tag reads "vyapar.ai". A pair of scissors rests beside the ribbon with a dotted "cut here" line
 across it. **Drag the scissors to the line** (or tap them, or press Enter): the blades snip, the lower length of

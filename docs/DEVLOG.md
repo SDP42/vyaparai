@@ -2,6 +2,14 @@
 
 Short, dated notes on what changed and why. Newest first.
 
+## 2026-11-19 · Showcase kit and the complete project document
+
+**Screenshots.** `scripts/capture-screens.mjs` drives headless Chrome over the DevTools protocol (Node's built-in WebSocket, no Puppeteer), signs in with a sample account and saves 25 screens: the opening, the landing sections, sign-in, nine app pages and three phone views ([docs/linkedin](linkedin/README.md)). Landing shots skip the opening through its session flag so the cloth is not caught mid-fade.
+
+**Slides and repository card.** Four 4:5 slides frame real screenshots (cover, Ask, agents, opening), and a repository card is drawn from the real Git history: 461 commits from 7 to 12 November, Python 55% and TypeScript 44%.
+
+**Project document.** A 16-section document (problem, tour, jobs, assistant and voice, agents, forecasting, architecture with a diagram, stack and licences, design, security, quality, measured results and limits, deployment, roadmap, repository) exported to a 28-page PDF with 13 figures.
+
 ## 2026-11-12 · A real cloth, a new landing page, daily routines and automation agents
 
 **Opening.** The cloth is now simulated: a Verlet particle grid hung from a rail that is narrower than the fabric, so it gathers into real folds, lit from the side so each fold throws a shadow, with a satin ribbon and bow (three.js, MIT; textures generated in code). Cutting the ribbon removes its links at the cut, and the rail lets go from the middle outward so the cloth falls under gravity. The drawn version stays as the fallback without WebGL.

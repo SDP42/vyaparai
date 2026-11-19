@@ -39,3 +39,6 @@ rag/indexes/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Bundled download of the LinkedIn images (rebuilt from docs/linkedin, not tracked)
+docs/linkedin/Vyapar-AI-images.zip

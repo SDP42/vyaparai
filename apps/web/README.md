@@ -14,11 +14,16 @@ npm run build      # never while the dev server runs: it shares .next
 
 | Route | What |
 |---|---|
-| `/` | Cinematic key-and-lock opening (pinned, scroll-driven) → landing page |
-| `/login` | Persona demo, or sign in / create an account against the API |
-| `/app` | Account: command center · Persona: illustrative demo dashboard |
-| `/app/sales` | Sales explorer: drivers, contributions, drill-through (Phase 2) |
+| `/` | Closed-shop opening (simulated cloth, ribbon, draggable scissors) → landing page |
+| `/login` | Sign in or create an account; in development, one-tap sample accounts for each job |
+| `/join` | Accept a team invite |
+| `/app` | Command center |
+| `/app/today`, `galla`, `orders`, `expiry` | The daily routine ([DAILY](../../docs/DAILY.md)) |
+| `/app/ask` | The assistant, typed or spoken |
+| `/app/investigate` | Agent workflows: run now or every day |
+| `/app/sales`, `customers`, `products`, `staff`, `forecasts`, `inventory`, `udhaar`, … | One page per area; the navigation shows only what the signed-in job may use |
 | `/app/data` | Imports: upload → map → review → import |
+| `/offline` | Shown by the service worker when there is no network |
 
 ```
 app/                 routes

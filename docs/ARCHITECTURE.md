@@ -118,8 +118,9 @@ settings are validated at start-up (secret length, PostgreSQL, https origins, de
   (sales, customers, products, staff, pricing, reviews, campaigns, stock, forecasts, festivals, bills, costs,
   udhaar, documents, investigate, digest, reports, stores, data, team, goals, next steps, ask).
 - **Marketing:** Lenis smooth scroll and GSAP ScrollTrigger for the pinned and scrubbed scenes. The opening
-  (`components/opening/ClothOpening.tsx`) is SVG and CSS animated with GSAP: a cloth tied with a ribbon that is cut
-  with draggable scissors. No three.js, images or sounds.
+  (`components/opening/ShopOpening.tsx`) runs a three.js Verlet cloth (`ClothScene.ts`) tied with a ribbon that is
+  cut with draggable scissors; `ClothOpening.tsx` (SVG and CSS with GSAP) is the fallback without WebGL. No images
+  or sounds; textures are generated in code.
 - **App shell:** a client-side shell (`AppShell`) with a workspace context and a persona context. It shows a
   pinned, scrollable, grouped sidebar on desktop, an icon rail on tablets and a bottom bar plus a "More" sheet on
   phones, filtered to the pages of the member's persona.

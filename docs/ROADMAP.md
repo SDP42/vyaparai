@@ -11,7 +11,7 @@ Checklists and exit criteria for every phase: [PHASES.md](PHASES.md).
 | # | Phase | Status | What it delivers |
 |---|---|---|---|
 | 0 | Foundation & discovery | ✅ | API skeleton, auth, workspaces/RBAC, audit log, migrations, CI |
-| M | Marketing site (opening + landing) | ✅ | Key-and-lock opening, scroll-driven unlock, landing page |
+| M | Marketing site (opening + landing) | ✅ | Closed-shop opening with a simulated cloth, ribbon and draggable scissors; landing page |
 | 1 | Data ingestion & quality | ✅ | Upload → inspect → map → validate → import; wizard UI |
 | 2 | Metric layer & sales analytics | ✅ | Versioned metric registry, comparisons, price-volume-mix drivers, command center, sales explorer |
 | 3 | Customer & product intelligence | ✅ | RFM, cohorts, margin and discount analysis, ABC, portfolio quadrants, basket pairs |

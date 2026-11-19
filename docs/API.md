@@ -128,7 +128,7 @@ See [DAILY](DAILY.md) and [AGENTS](AGENTS.md). "Job" is the persona capability t
 | DELETE | `/workspaces/{id}/daily/expenses/{expense_id}` | admin | cash | Remove an expense |
 | GET | `/workspaces/{id}/daily/expense-categories` | viewer | — | Fixed category list |
 | GET / POST | `/workspaces/{id}/daily/expiry` | viewer | stock | Items expiring soon; add one |
-| POST | `/workspaces/{id}/daily/expiry/{item_id}/clear` | viewer | stock | Mark an item sold, removed or returned |
+| POST | `/workspaces/{id}/daily/expiry/{item_id}/clear` | viewer | stock | Clear an item: `how` is sold, returned, discounted or thrown |
 | GET | `/workspaces/{id}/daily/orders` | viewer | supplier | Order lists grouped by supplier, ready to share |
 | POST | `/workspaces/{id}/daily/quick/parse` | viewer | — | Read a one-line entry ("Ramesh ko 200 udhaar") back before saving |
 | POST | `/workspaces/{id}/daily/quick/save` | admin | — | Save a parsed entry |

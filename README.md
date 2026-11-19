@@ -312,7 +312,7 @@ docker-compose.yml        API, web, PostgreSQL, Redis
 ## Quality: tests, static checks, audits
 
 ```bash
-cd apps/api && .venv/bin/python -m pytest          # 633 tests, about 6 minutes
+cd apps/api && .venv/bin/python -m pytest          # 664 tests, about 6 minutes
 cd apps/api && .venv/bin/python -m ruff check . && .venv/bin/python -m mypy app
 cd apps/web && npm run lint && npm test && npm run build
 ```
